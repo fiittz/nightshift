@@ -165,6 +165,31 @@ const server = createServer(async (req, res) => {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ ok: true, id: backlog[backlog.length - 1].id }));
   }
+  // POST /api/agents — create a new agent
+  else if (req.url === '/api/agents' && req.method === 'POST') {
+    const body = await parseBody(req);
+    if (!body?.id || !body?.name || !body?.role) { res.writeHead(400); res.end('{"error":"id, name, role required"}'); return; }
+    const reg = readJSON('company.json') || { agents: [] };
+    if (reg.agents.find(a => a.id === body.id)) { res.writeHead(400); res.end('{"error":"agent ID already exists"}'); return; }
+    reg.agents.push({
+      id: body.id, name: body.name, role: body.role,
+      department: body.department || 'Other',
+      status: 'idle', reportsTo: body.reportsTo || null,
+      permissions: {},
+      adapterConfig: { model: body.model || 'deepseek/deepseek-v3.2', promptFile: `agents/${body.id}.md` },
+      budget: { monthlyCentsLimit: 3000, spentCents: 0, totalTokens: 0 },
+      stats: { totalRuns: 0 }
+    });
+    writeJSON('company.json', reg);
+    // Write agent instructions file if provided
+    if (body.instructions) {
+      const { writeFileSync: wf } = await import('fs');
+      const agentPath = join(PROJECT_ROOT, 'agents', `${body.id}.md`);
+      wf(agentPath, `# ${body.name} — ${body.role}\n\n## Role\n${body.instructions}\n`);
+    }
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: true, id: body.id }));
+  }
   // Serve dashboard
   else if (req.url === '/' || req.url === '/index.html') {
     res.writeHead(200, { 'Content-Type': 'text/html' });

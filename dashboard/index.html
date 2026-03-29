@@ -202,7 +202,54 @@
     <div class="content hidden" id="tab-engineering"><div class="content-inner"><div class="card"><div class="card-header"><h2>Pipeline</h2></div><div class="pipeline" id="eng-pipeline"></div></div><div class="card"><div class="card-header"><h2>Tasks</h2></div><div class="card-body" id="eng-tasks"></div></div><div class="grid-2"><div class="card"><div class="card-header"><h2>Backend</h2></div><div class="card-body"><pre class="output-pre" id="eng-backend-log">No output</pre></div></div><div class="card"><div class="card-header"><h2>Frontend</h2></div><div class="card-body"><pre class="output-pre" id="eng-frontend-log">No output</pre></div></div></div></div></div>
     <div class="content hidden" id="tab-sales"><div class="content-inner"><div class="card"><div class="card-header"><h2>Prospects</h2><span class="count-badge" id="sales-count">0</span></div><div class="card-body" id="sales-prospects"></div></div><div class="card"><div class="card-header"><h2>SDR</h2></div><div class="card-body"><pre class="output-pre" id="sales-sdr-log">No output</pre></div></div></div></div>
     <div class="content hidden" id="tab-tickets"><div class="content-inner"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><div class="filters"><button class="filter-btn active" onclick="filterTickets('all',this)">All</button><button class="filter-btn" onclick="filterTickets('engineering',this)">Engineering</button><button class="filter-btn" onclick="filterTickets('quality',this)">Quality</button><button class="filter-btn" onclick="filterTickets('sales',this)">Sales</button></div><button class="btn" onclick="document.getElementById('ntf').style.display=document.getElementById('ntf').style.display==='none'?'block':'none'">+ New Task</button></div><div id="ntf" class="card" style="display:none;margin-bottom:16px"><div style="padding:16px 20px;display:grid;gap:10px"><input id="nt-title" placeholder="Task title" class="input"><textarea id="nt-desc" placeholder="Description" rows="3" class="input" style="resize:vertical"></textarea><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px"><select id="nt-type" class="input"><option value="backend">Backend</option><option value="frontend">Frontend</option></select><select id="nt-domain" class="input"><option value="general">General</option><option value="custom">Custom</option></select><select id="nt-pri" class="input"><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select></div><div style="display:flex;gap:8px"><button class="btn" onclick="createTask()">Create</button><button class="btn btn-outline" onclick="document.getElementById('ntf').style.display='none'">Cancel</button></div></div></div><div id="tickets-list"></div></div></div>
-    <div class="content hidden" id="tab-flow"><div class="content-inner"><div class="card"><div class="card-header"><h2>Company Flow</h2></div><div class="flow-canvas" id="flow-canvas"></div></div><div class="card" id="flow-detail" style="display:none"><div class="card-header"><h2 id="fd-title">Agent</h2></div><div style="padding:16px 20px" id="fd-body"></div></div></div></div>
+    <div class="content hidden" id="tab-flow"><div class="content-inner">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+        <div class="filters">
+          <button class="filter-btn active" onclick="flowView='org';rF();this.parentNode.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Org Chart</button>
+          <button class="filter-btn" onclick="flowView='pipeline';rF();this.parentNode.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Pipeline Flow</button>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn" onclick="showAddAgent()">+ Add Agent</button>
+          <button class="btn btn-outline" onclick="showEditPipeline()">Edit Pipeline</button>
+        </div>
+      </div>
+      <div class="card"><div class="card-header"><h2 id="flow-view-title">Org Chart</h2><span style="font-size:11px;color:var(--fg-muted)">Click any node to view/edit</span></div><div class="flow-canvas" id="flow-canvas"></div></div>
+      <div class="card" id="flow-detail" style="display:none"><div class="card-header"><h2 id="fd-title">Agent</h2></div><div style="padding:16px 20px" id="fd-body"></div></div>
+      <!-- Add Agent Form -->
+      <div class="card" id="add-agent-form" style="display:none">
+        <div class="card-header"><h2>Add New Agent</h2></div>
+        <div style="padding:16px 20px;display:grid;gap:10px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <input id="new-agent-id" placeholder="Agent ID (lowercase, no spaces)" class="input">
+            <input id="new-agent-name" placeholder="Display Name" class="input">
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <input id="new-agent-role" placeholder="Role (e.g. Backend Engineer)" class="input">
+            <select id="new-agent-dept" class="input">
+              <option value="Leadership">Leadership</option>
+              <option value="Engineering">Engineering</option>
+              <option value="Product">Product</option>
+              <option value="Quality">Quality</option>
+              <option value="Sales">Sales</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Finance">Finance</option>
+              <option value="Support">Support</option>
+              <option value="Revenue">Revenue</option>
+            </select>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <select id="new-agent-reports" class="input"><option value="">Reports to (none — top level)</option></select>
+            <select id="new-agent-model" class="input">
+              <option value="deepseek/deepseek-v3.2">DeepSeek V3.2</option>
+              <option value="deepseek/deepseek-r1-0528">DeepSeek R1</option>
+              <option value="qwen/qwen3-235b-a22b-2507">Qwen 3 235B</option>
+            </select>
+          </div>
+          <textarea id="new-agent-instructions" placeholder="Agent instructions (what they do, how they work)" rows="4" class="input" style="resize:vertical"></textarea>
+          <div style="display:flex;gap:8px"><button class="btn" onclick="addAgent()">Create Agent</button><button class="btn btn-outline" onclick="document.getElementById('add-agent-form').style.display='none'">Cancel</button></div>
+        </div>
+      </div>
+    </div></div>
     <div class="content hidden" id="tab-agent"><div class="content-inner" id="agent-detail"><div class="empty">Select an agent from the sidebar.</div></div></div>
     <!-- Connections tab -->
     <div class="content hidden" id="tab-connections">
@@ -353,10 +400,38 @@ function buildOrgTree(agents) {
 
 const DEPT_COLORS = { Leadership:'var(--amber)', Engineering:'var(--blue)', Product:'var(--fg-dim)', Quality:'var(--green)', Sales:'var(--amber)', Marketing:'var(--accent)', Finance:'var(--green)', Revenue:'var(--amber)', Support:'var(--blue)' };
 
+// Pipeline view — shows the task flow: PM → Engineers → QA → Compliance → Security → Done
+function buildPipelineTree(agents) {
+  const stages = [
+    { label: 'Goals', ids: agents.filter(a=>a.role.toLowerCase().includes('chief executive')).map(a=>a.id) },
+    { label: 'Specs', ids: agents.filter(a=>a.role.toLowerCase().includes('product manager')).map(a=>a.id) },
+    { label: 'Build', ids: agents.filter(a=>a.role.toLowerCase().includes('engineer')).map(a=>a.id) },
+    { label: 'Review', ids: agents.filter(a=>a.role.toLowerCase().includes('qa')).map(a=>a.id) },
+    { label: 'Validate', ids: agents.filter(a=>a.role.toLowerCase().includes('compliance')).map(a=>a.id) },
+    { label: 'Secure', ids: agents.filter(a=>a.role.toLowerCase().includes('security')).map(a=>a.id) },
+    { label: 'Sales', ids: agents.filter(a=>a.role.toLowerCase().includes('sales')||a.role.toLowerCase().includes('sdr')).map(a=>a.id) },
+  ];
+
+  const nodes = [];
+  const edges = [];
+  stages.forEach((stage, si) => {
+    stage.ids.forEach((id, i) => {
+      nodes.push({ id, x: si * 140 + 20, y: 20 + i * 80 });
+      // Connect to next stage
+      if (si < stages.length - 1 && stages[si+1].ids.length) {
+        stages[si+1].ids.forEach(nextId => edges.push([id, nextId]));
+      }
+    });
+  });
+
+  return { nodes, edges };
+}
+
 function rF() {
   if(!S?.registry?.agents) return;
+  document.getElementById('flow-view-title').textContent = flowView==='org' ? 'Org Chart' : 'Pipeline Flow';
   const agents = S.registry.agents;
-  const { nodes, edges } = buildOrgTree(agents);
+  const { nodes, edges } = flowView==='pipeline' ? buildPipelineTree(agents) : buildOrgTree(agents);
   const nodeMap = {}; nodes.forEach(n => nodeMap[n.id] = n);
   const canvas = document.getElementById('flow-canvas');
   // Set canvas height based on tree depth
@@ -424,6 +499,31 @@ function showFlowDetail(id) {
   `;
 }
 async function updateAgent(id,model){await fetch('/api/settings/agent/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({model})});refresh()}
+
+let flowView = 'org';
+
+function showAddAgent(){
+  document.getElementById('add-agent-form').style.display='block';
+  const sel = document.getElementById('new-agent-reports');
+  sel.innerHTML = '<option value="">Reports to (none)</option>';
+  if(S?.registry?.agents) S.registry.agents.forEach(a => { sel.innerHTML += `<option value="${a.id}">${a.name} (${a.role})</option>`; });
+}
+
+function showEditPipeline(){ alert('Pipeline editing coming soon — for now, edit reportsTo in company.json'); }
+
+async function addAgent(){
+  const id=document.getElementById('new-agent-id').value;
+  const name=document.getElementById('new-agent-name').value;
+  const role=document.getElementById('new-agent-role').value;
+  const dept=document.getElementById('new-agent-dept').value;
+  const reportsTo=document.getElementById('new-agent-reports').value||null;
+  const model=document.getElementById('new-agent-model').value;
+  const instructions=document.getElementById('new-agent-instructions').value;
+  if(!id||!name||!role)return alert('ID, name, and role are required');
+  await fetch('/api/agents',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id,name,role,department:dept,reportsTo,model,instructions})});
+  document.getElementById('add-agent-form').style.display='none';
+  refresh();
+}
 function rS(){if(!S?.registry)return;const r=S.registry,co=r.company||{},repos=co.repos||[],settings=co.settings||{},agents=r.agents||[];document.getElementById('s-repos').innerHTML=repos.length?repos.map(x=>`<div class="row" style="justify-content:space-between"><div><div style="font-weight:500">${esc(x.id)}</div><div style="font-size:11px;color:var(--fg-muted)">${esc(x.url)} (${x.branch})</div></div><button class="btn btn-danger" onclick="deleteRepo('${x.id}')" style="font-size:11px;padding:4px 10px">Remove</button></div>`).join(''):'<div class="empty">No repos</div>';if(settings.requireApprovalForNewHires!==undefined)document.getElementById('s-approval').checked=settings.requireApprovalForNewHires;if(settings.defaultModel)document.getElementById('s-model').value=settings.defaultModel;document.getElementById('s-agents').innerHTML=agents.map(a=>`<div class="row" style="gap:12px"><span style="width:80px;font-weight:500;color:${AC[a.id]||'var(--fg)'}">${a.name}</span><span style="flex:1;color:var(--fg-muted);font-size:12px">${a.role}</span><span style="font-family:'JetBrains Mono';font-size:11px;color:var(--fg-muted)">$${((a.budget?.spentCents||0)/100).toFixed(2)}</span></div>`).join('');const sp=agents.reduce((s,a)=>s+(a.budget?.spentCents||0),0),tk=agents.reduce((s,a)=>s+(a.budget?.totalTokens||0),0),rn=agents.reduce((s,a)=>s+(a.stats?.totalRuns||0),0);document.getElementById('s-budget').innerHTML=`<div class="stats"><div class="stat"><div class="stat-value">$${(sp/100).toFixed(2)}</div><div class="stat-label">Spent</div></div><div class="stat"><div class="stat-value">${(tk/1000).toFixed(0)}k</div><div class="stat-label">Tokens</div></div><div class="stat"><div class="stat-value">${rn}</div><div class="stat-label">Runs</div></div></div>`}
 function showAddRepo(){document.getElementById('arf').style.display='block'}
 async function addRepo(){const u=document.getElementById('r-url').value;if(!u)return;await fetch('/api/settings/repos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:u,branch:document.getElementById('r-branch').value||'main',description:document.getElementById('r-desc').value})});document.getElementById('arf').style.display='none';refresh()}
