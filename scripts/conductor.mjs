@@ -41,8 +41,8 @@ function log(msg) {
 
 // ─── Agent Registry (same as before) ────────────────────
 
-function getRegistry() { return readJSON('agents.json') || { agents: [], pendingHires: [] }; }
-function saveRegistry(reg) { writeJSON('agents.json', reg); }
+function getRegistry() { return readJSON('company.json') || { agents: [], pendingHires: [] }; }
+function saveRegistry(reg) { writeJSON('company.json', reg); }
 function getAgent(id) { return getRegistry().agents.find(a => a.id === id); }
 function setAgentStatus(id, status) {
   const reg = getRegistry();
@@ -255,12 +255,19 @@ async function conductorRound(round) {
   }
   for (const t of backlog.filter(x => x.status === 'approved' && !x._scanned)) { t._scanned = true; }
 
-  // Assign todos (1 per agent)
+  // Assign todos (1 per agent) — find agents by role dynamically
+  const allAgents = reg.agents || [];
+  const findAgent = (role) => allAgents.find(a => a.role.toLowerCase().includes(role))?.id;
+  const backendId = findAgent('backend') || 'backend';
+  const frontendId = findAgent('frontend') || 'frontend';
+  const sdrId = findAgent('sales') || findAgent('sdr') || 'sdr';
+  const securityId = findAgent('security') || 'security';
+
   const busy = new Set(backlog.filter(x => x.status === 'in-progress').map(x => x.assignee));
   for (const t of backlog.filter(x => x.status === 'todo')) {
-    const isSales = t.domain==='crm'||t.domain==='sales'||t.title.toLowerCase().includes('prospect');
-    const isSec = t.title.toLowerCase().includes('security');
-    let agent = isSales ? 'saoirse' : isSec ? 'declan' : t.type === 'frontend' ? 'siobhan' : 'carl';
+    const isSales = t.domain==='crm'||t.domain==='sales'||t.title.toLowerCase().includes('prospect')||t.title.toLowerCase().includes('outreach');
+    const isSec = t.title.toLowerCase().includes('security')||t.title.toLowerCase().includes('audit dep');
+    let agent = isSales ? sdrId : isSec ? securityId : t.type === 'frontend' ? frontendId : backendId;
     if (busy.has(agent)) continue;
     t.status = 'in-progress'; t.assignee = agent;
     t.branch = isSales ? null : `${agent}/${t.title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/-+$/,'')}`;
@@ -268,22 +275,47 @@ async function conductorRound(round) {
   }
   writeJSON('backlog.json', backlog);
 
-  // Get job for every agent
-  function getJob(id) {
+  // Get job for every agent — by role, not hardcoded name
+  const qaId = findAgent('qa') || 'qa';
+  const complianceId = findAgent('compliance') || 'compliance';
+  const pmId = findAgent('product manager') || 'pm';
+
+  function getJob(agent) {
+    const id = agent.id;
+    const role = agent.role.toLowerCase();
     const my = backlog.find(t=>t.assignee===id&&t.status==='in-progress');
     const review = backlog.find(t=>t.status==='review');
-    if (id==='carl') return my ? { task:`Work on ${my.id}: "${my.title}". ${my.description}. Branch: ${my.branch}. Implement, test, commit, push.`, key:my.id } : { task:'Scan backend for bugs. Fix on carl/maintenance.', key:'maint' };
-    if (id==='siobhan') return my ? { task:`Work on ${my.id}: "${my.title}". Branch: ${my.branch}. Build UI.`, key:my.id } : { task:'Scan frontend for issues. Fix on siobhan/maintenance.', key:'maint' };
-    if (id==='ciara') return review ? { task:`Review ${review.id}: "${review.title}" on ${review.branch}. Code quality, tests, impact.`, key:review.id } : { task:'Run full test suite. Report failures.', key:'maint' };
-    if (id==='roisin') { const c = backlog.find(t=>t.status==='approved'&&(t.domain==='tax'||t.domain==='filing')&&!t.compliance_status); return c ? { task:`Compliance review ${c.id}: "${c.title}".`, key:c.id } : { task:'Audit existing tax logic for correctness.', key:'maint' }; }
-    if (id==='declan') { const s = backlog.find(t=>t.status==='approved'&&t.security_status!=='cleared'); return s ? { task:`Security scan ${s.id}: "${s.title}" on ${s.branch}.`, key:s.id } : { task:'Full security audit on main.', key:'maint' }; }
-    if (id==='pat') return { task:`Review backlog (${backlog.length} tasks). Scan for gaps. Write new tasks if needed.`, key:'maint' };
-    if (id==='saoirse') return my ? { task:`Work on ${my.id}: "${my.title}". ${my.description}`, key:my.id } : { task:'Research next prospect. Draft outreach.', key:'sales' };
-    return { task:'Check your area.', key:'maint' };
+
+    if (role.includes('backend') || role.includes('engineer') && !role.includes('frontend') && !role.includes('qa')) {
+      return my ? { task:`Work on ${my.id}: "${my.title}". ${my.description||''}. Branch: ${my.branch}. Implement, test, commit, push.`, key:my.id } : { task:`Scan backend for bugs, missing error handling, untested code. Fix on ${id}/maintenance.`, key:'maint' };
+    }
+    if (role.includes('frontend')) {
+      return my ? { task:`Work on ${my.id}: "${my.title}". Branch: ${my.branch}. Build UI.`, key:my.id } : { task:`Scan frontend for broken components, accessibility issues. Fix on ${id}/maintenance.`, key:'maint' };
+    }
+    if (role.includes('qa')) {
+      return review ? { task:`Review ${review.id}: "${review.title}" on ${review.branch}. Code quality, tests, impact.`, key:review.id } : { task:'Run full test suite on main. Report failures.', key:'maint' };
+    }
+    if (role.includes('compliance')) {
+      const c = backlog.find(t=>t.status==='approved'&&!t.compliance_status);
+      return c ? { task:`Compliance review ${c.id}: "${c.title}".`, key:c.id } : { task:'Audit existing domain logic for correctness.', key:'maint' };
+    }
+    if (role.includes('security')) {
+      const s = backlog.find(t=>t.status==='approved'&&t.security_status!=='cleared');
+      return s ? { task:`Security scan ${s.id}: "${s.title}" on ${s.branch}.`, key:s.id } : { task:'Full security audit on main.', key:'maint' };
+    }
+    if (role.includes('product manager')) {
+      return { task:`Review backlog (${backlog.length} tasks). Scan for gaps. Write new tasks if needed.`, key:'maint' };
+    }
+    if (role.includes('sales') || role.includes('sdr')) {
+      return my ? { task:`Work on ${my.id}: "${my.title}". ${my.description||''}`, key:my.id } : { task:'Research next prospect. Draft outreach.', key:'sales' };
+    }
+    // Default for any other role — do maintenance for your area
+    return { task:`Check your area (${agent.role}) for work. Scan, audit, improve.`, key:'maint' };
   }
 
-  const AGENTS = ['carl','siobhan','ciara','roisin','declan','pat','saoirse'];
-  const jobs = AGENTS.map(id => { const j = getJob(id); log(`${id}: ${j.task.substring(0,50)}...`); return runAgent(id, j.task, j.key); });
+  // Fire all working agents (skip CEO and COO — they run in Phase 1)
+  const workingAgents = allAgents.filter(a => a.id !== 'ceo' && a.id !== 'coo' && !a.role.toLowerCase().includes('chief financial') && !a.role.toLowerCase().includes('chief revenue'));
+  const jobs = workingAgents.map(agent => { const j = getJob(agent); log(`${agent.id}: ${j.task.substring(0,50)}...`); return runAgent(agent.id, j.task, j.key); });
 
   log(`Firing ALL ${jobs.length} agents in parallel...`);
   await Promise.all(jobs);
