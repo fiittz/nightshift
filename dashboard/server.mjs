@@ -69,7 +69,7 @@ const server = createServer(async (req, res) => {
           agentLogs: getAgentLogs(),
           registry: { company: company || {}, agents: agents || [] },
           runs: runs || [],
-          connections: connections || [],
+          connections: readJSON('connections.json') || {},
           schedules: schedules || [],
           knowledge: knowledge || [],
           marketplace: readJSON('marketplace.json') || [],
