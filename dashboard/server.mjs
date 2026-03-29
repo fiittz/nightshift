@@ -69,6 +69,7 @@ const server = createServer(async (req, res) => {
       connections: readJSON('connections.json') || {},
       knowledge: getKnowledge(),
       schedules: readJSON('schedules.json') || [],
+      marketplace: readJSON('marketplace.json') || [],
       agenda: readJSON('agenda.json'),
       timestamp: new Date().toISOString()
     }));
@@ -189,7 +190,15 @@ const server = createServer(async (req, res) => {
   // GET knowledge files for state
   // (injected into /api/state response above)
 
-  // POST /api/schedules
+  // POST /api/marketplace/:id/install
+  else if (req.url.match(/^\/api\/marketplace\/[\w-]+\/install$/) && req.method === 'POST') {
+    const id = req.url.split('/')[3];
+    const templates = readJSON('marketplace.json') || [];
+    const template = templates.find(t => t.id === id);
+    if (!template) { res.writeHead(404); res.end('{"error":"not found"}'); return; }
+    res.writeHead(200); res.end(JSON.stringify({ ok: true, agents: template.agents }));
+  }
+  // POST /api/schedules — create
   else if (req.url === '/api/schedules' && req.method === 'POST') {
     const body = await parseBody(req);
     if (!body?.name) { res.writeHead(400); res.end('{"error":"name required"}'); return; }

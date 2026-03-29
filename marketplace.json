@@ -1,0 +1,71 @@
+[
+  {
+    "id": "saas-starter",
+    "name": "SaaS Starter Pack",
+    "description": "Essential agents for running a SaaS company: CEO, PM, Backend + Frontend Engineers, QA, Security, SDR",
+    "category": "starter",
+    "agents": ["ceo", "pm", "backend", "frontend", "qa", "security", "sdr"],
+    "icon": "rocket"
+  },
+  {
+    "id": "accounting-firm",
+    "name": "Accounting Practice",
+    "description": "Agents for Irish accounting: CEO, PM, Engineers, QA, Tax Compliance Specialist, Security, SDR with CRM",
+    "category": "industry",
+    "agents": ["ceo", "pm", "backend", "frontend", "qa", "compliance", "security", "sdr"],
+    "domain": "Irish tax law, CT1, Form 11, VAT3, CRO B1 filing",
+    "icon": "calculator"
+  },
+  {
+    "id": "ecommerce",
+    "name": "E-Commerce",
+    "description": "Agents for online stores: CEO, PM, Engineers, QA, Security, Marketing, Customer Success, SDR",
+    "category": "industry",
+    "agents": ["ceo", "pm", "backend", "frontend", "qa", "security", "marketing", "cs", "sdr"],
+    "domain": "Payment processing, inventory, shipping, customer service",
+    "icon": "shop"
+  },
+  {
+    "id": "legal-firm",
+    "name": "Legal Practice",
+    "description": "Agents for law firms: CEO, PM, Engineers, QA, Legal Compliance, Security, SDR, Document Manager",
+    "category": "industry",
+    "agents": ["ceo", "pm", "backend", "frontend", "qa", "compliance", "security", "sdr"],
+    "domain": "Contract law, court filings, client management, billing",
+    "icon": "gavel"
+  },
+  {
+    "id": "healthcare",
+    "name": "Healthcare SaaS",
+    "description": "HIPAA-compliant agents: CEO, PM, Engineers, QA, HIPAA Compliance, Security (hardened), SDR",
+    "category": "industry",
+    "agents": ["ceo", "pm", "backend", "frontend", "qa", "compliance", "security", "sdr"],
+    "domain": "HIPAA compliance, patient data, consent management, HL7/FHIR",
+    "icon": "health"
+  },
+  {
+    "id": "devtools",
+    "name": "Developer Tools",
+    "description": "For building dev tools: CEO, PM, Backend + Frontend, QA, Security, DevRel (Marketing), SDR",
+    "category": "industry",
+    "agents": ["ceo", "pm", "backend", "frontend", "qa", "security", "marketing", "sdr"],
+    "domain": "API design, SDK development, documentation, developer experience",
+    "icon": "code"
+  },
+  {
+    "id": "solo-founder",
+    "name": "Solo Founder",
+    "description": "Minimal setup: CEO, one engineer, SDR. For validating an idea fast.",
+    "category": "starter",
+    "agents": ["ceo", "backend", "sdr"],
+    "icon": "person"
+  },
+  {
+    "id": "enterprise",
+    "name": "Enterprise Full Stack",
+    "description": "Complete org: CEO, COO, CFO, CRO, PM, Engineers, QA, Compliance, Security, SDR, Marketing, CS, Data, Finance Ops",
+    "category": "starter",
+    "agents": ["ceo", "coo", "cfo", "cro", "pm", "backend", "frontend", "qa", "compliance", "security", "sdr", "marketing", "cs", "finance-ops", "data"],
+    "icon": "building"
+  }
+]
