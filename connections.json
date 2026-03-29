@@ -1,35 +1,213 @@
 {
   "compute": {
-    "active": "local",
+    "active": "oracle",
     "providers": {
-      "local": { "name": "Local Machine", "status": "connected", "config": {} },
-      "oracle": { "name": "Oracle Cloud", "status": "disconnected", "config": { "host": "", "user": "ubuntu", "keyPath": "~/.ssh/oracle_opc" } },
-      "daytona": { "name": "Daytona Sandboxes", "status": "disconnected", "config": { "snapshot": "daytona-small", "region": "eu" } },
-      "docker": { "name": "Docker Containers", "status": "disconnected", "config": { "socket": "/var/run/docker.sock" } },
-      "ssh": { "name": "Custom SSH Server", "status": "disconnected", "config": { "host": "", "user": "", "keyPath": "" } }
+      "local": {
+        "name": "Local Machine",
+        "status": "connected",
+        "config": {}
+      },
+      "oracle": {
+        "name": "Oracle Cloud",
+        "status": "disconnected",
+        "config": {
+          "host": "145.241.243.171",
+          "user": "ubuntu",
+          "keyPath": "~/.ssh/oracle_opc"
+        }
+      },
+      "daytona": {
+        "name": "Daytona Sandboxes",
+        "status": "disconnected",
+        "config": {
+          "snapshot": "daytona-small",
+          "region": "eu"
+        }
+      },
+      "docker": {
+        "name": "Docker Containers",
+        "status": "disconnected",
+        "config": {
+          "socket": "/var/run/docker.sock"
+        }
+      },
+      "ssh": {
+        "name": "Custom SSH Server",
+        "status": "disconnected",
+        "config": {
+          "host": "",
+          "user": "",
+          "keyPath": ""
+        }
+      }
     }
   },
   "llm": {
     "active": "tensorix",
     "providers": {
-      "tensorix": { "name": "Tensorix", "status": "disconnected", "models": ["deepseek/deepseek-v3.2", "deepseek/deepseek-r1-0528", "qwen/qwen3-235b-a22b-2507"], "config": { "baseUrl": "https://api.tensorix.ai/v1", "keyEnvVar": "LLM_API_KEY" } },
-      "anthropic": { "name": "Anthropic", "status": "disconnected", "models": ["claude-sonnet-4-20250514", "claude-opus-4-20250514", "claude-haiku-4-5-20251001"], "config": { "baseUrl": "https://api.anthropic.com/v1", "keyEnvVar": "ANTHROPIC_API_KEY" } },
-      "openai": { "name": "OpenAI", "status": "disconnected", "models": ["gpt-4o", "gpt-4o-mini", "o1"], "config": { "baseUrl": "https://api.openai.com/v1", "keyEnvVar": "OPENAI_API_KEY" } },
-      "openrouter": { "name": "OpenRouter", "status": "disconnected", "models": ["anthropic/claude-sonnet-4", "openai/gpt-4o", "deepseek/deepseek-v3"], "config": { "baseUrl": "https://openrouter.ai/api/v1", "keyEnvVar": "OPENROUTER_API_KEY" } },
-      "ollama": { "name": "Ollama (Local)", "status": "disconnected", "models": ["llama3", "codellama", "mixtral"], "config": { "baseUrl": "http://localhost:11434/v1", "keyEnvVar": "" } },
-      "custom": { "name": "Custom API", "status": "disconnected", "models": [], "config": { "baseUrl": "", "keyEnvVar": "LLM_API_KEY" } }
+      "tensorix": {
+        "name": "Tensorix",
+        "status": "disconnected",
+        "models": [
+          "deepseek/deepseek-v3.2",
+          "deepseek/deepseek-r1-0528",
+          "qwen/qwen3-235b-a22b-2507"
+        ],
+        "config": {
+          "baseUrl": "https://api.tensorix.ai/v1",
+          "keyEnvVar": "LLM_API_KEY"
+        }
+      },
+      "anthropic": {
+        "name": "Anthropic",
+        "status": "disconnected",
+        "models": [
+          "claude-sonnet-4-20250514",
+          "claude-opus-4-20250514",
+          "claude-haiku-4-5-20251001"
+        ],
+        "config": {
+          "baseUrl": "https://api.anthropic.com/v1",
+          "keyEnvVar": "ANTHROPIC_API_KEY"
+        }
+      },
+      "openai": {
+        "name": "OpenAI",
+        "status": "disconnected",
+        "models": [
+          "gpt-4o",
+          "gpt-4o-mini",
+          "o1"
+        ],
+        "config": {
+          "baseUrl": "https://api.openai.com/v1",
+          "keyEnvVar": "OPENAI_API_KEY"
+        }
+      },
+      "openrouter": {
+        "name": "OpenRouter",
+        "status": "disconnected",
+        "models": [
+          "anthropic/claude-sonnet-4",
+          "openai/gpt-4o",
+          "deepseek/deepseek-v3"
+        ],
+        "config": {
+          "baseUrl": "https://openrouter.ai/api/v1",
+          "keyEnvVar": "OPENROUTER_API_KEY"
+        }
+      },
+      "ollama": {
+        "name": "Ollama (Local)",
+        "status": "disconnected",
+        "models": [
+          "llama3",
+          "codellama",
+          "mixtral"
+        ],
+        "config": {
+          "baseUrl": "http://localhost:11434/v1",
+          "keyEnvVar": ""
+        }
+      },
+      "custom": {
+        "name": "Custom API",
+        "status": "disconnected",
+        "models": [],
+        "config": {
+          "baseUrl": "",
+          "keyEnvVar": "LLM_API_KEY"
+        }
+      }
     }
   },
   "integrations": {
-    "github": { "name": "GitHub", "icon": "git", "status": "disconnected", "config": { "tokenEnvVar": "GITHUB_TOKEN", "defaultOrg": "" } },
-    "telegram": { "name": "Telegram", "icon": "msg", "status": "disconnected", "config": { "botTokenEnvVar": "TELEGRAM_BOT_TOKEN", "chatIdEnvVar": "TELEGRAM_CHAT_ID" } },
-    "slack": { "name": "Slack", "icon": "msg", "status": "disconnected", "config": { "webhookEnvVar": "SLACK_WEBHOOK" } },
-    "discord": { "name": "Discord", "icon": "msg", "status": "disconnected", "config": { "webhookEnvVar": "DISCORD_WEBHOOK" } },
-    "resend": { "name": "Resend (Email)", "icon": "mail", "status": "disconnected", "config": { "keyEnvVar": "RESEND_API_KEY", "fromEmail": "" } },
-    "sendgrid": { "name": "SendGrid (Email)", "icon": "mail", "status": "disconnected", "config": { "keyEnvVar": "SENDGRID_API_KEY", "fromEmail": "" } },
-    "supabase": { "name": "Supabase (CRM/DB)", "icon": "db", "status": "disconnected", "config": { "urlEnvVar": "SUPABASE_URL", "keyEnvVar": "SUPABASE_ANON_KEY" } },
-    "stripe": { "name": "Stripe (Payments)", "icon": "pay", "status": "disconnected", "config": { "keyEnvVar": "STRIPE_SECRET_KEY" } },
-    "linear": { "name": "Linear (Tickets)", "icon": "ticket", "status": "disconnected", "config": { "keyEnvVar": "LINEAR_API_KEY" } },
-    "jira": { "name": "Jira (Tickets)", "icon": "ticket", "status": "disconnected", "config": { "urlEnvVar": "JIRA_URL", "tokenEnvVar": "JIRA_API_TOKEN", "email": "" } }
+    "github": {
+      "name": "GitHub",
+      "icon": "git",
+      "status": "disconnected",
+      "config": {
+        "tokenEnvVar": "GITHUB_TOKEN",
+        "defaultOrg": ""
+      }
+    },
+    "telegram": {
+      "name": "Telegram",
+      "icon": "msg",
+      "status": "disconnected",
+      "config": {
+        "botTokenEnvVar": "TELEGRAM_BOT_TOKEN",
+        "chatIdEnvVar": "TELEGRAM_CHAT_ID"
+      }
+    },
+    "slack": {
+      "name": "Slack",
+      "icon": "msg",
+      "status": "disconnected",
+      "config": {
+        "webhookEnvVar": "SLACK_WEBHOOK"
+      }
+    },
+    "discord": {
+      "name": "Discord",
+      "icon": "msg",
+      "status": "disconnected",
+      "config": {
+        "webhookEnvVar": "DISCORD_WEBHOOK"
+      }
+    },
+    "resend": {
+      "name": "Resend (Email)",
+      "icon": "mail",
+      "status": "disconnected",
+      "config": {
+        "keyEnvVar": "RESEND_API_KEY",
+        "fromEmail": ""
+      }
+    },
+    "sendgrid": {
+      "name": "SendGrid (Email)",
+      "icon": "mail",
+      "status": "disconnected",
+      "config": {
+        "keyEnvVar": "SENDGRID_API_KEY",
+        "fromEmail": ""
+      }
+    },
+    "supabase": {
+      "name": "Supabase (CRM/DB)",
+      "icon": "db",
+      "status": "disconnected",
+      "config": {
+        "urlEnvVar": "SUPABASE_URL",
+        "keyEnvVar": "SUPABASE_ANON_KEY"
+      }
+    },
+    "stripe": {
+      "name": "Stripe (Payments)",
+      "icon": "pay",
+      "status": "disconnected",
+      "config": {
+        "keyEnvVar": "STRIPE_SECRET_KEY"
+      }
+    },
+    "linear": {
+      "name": "Linear (Tickets)",
+      "icon": "ticket",
+      "status": "disconnected",
+      "config": {
+        "keyEnvVar": "LINEAR_API_KEY"
+      }
+    },
+    "jira": {
+      "name": "Jira (Tickets)",
+      "icon": "ticket",
+      "status": "disconnected",
+      "config": {
+        "urlEnvVar": "JIRA_URL",
+        "tokenEnvVar": "JIRA_API_TOKEN",
+        "email": ""
+      }
+    }
   }
 }

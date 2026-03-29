@@ -31,6 +31,7 @@ const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 const WORKSPACE = process.env.WORKSPACE || join(ROOT, 'workspace');
 const COMPANY_ID = process.env.COMPANY_ID || 'bb18cce2-25b1-4304-a046-47b113052ec4';
 const useSupabase = !!process.env.SUPABASE_URL;
+const BUDGET_CAP_CENTS = parseInt(process.env.BUDGET_CAP_CENTS || '1000'); // $10 default cap
 
 if (!LLM_API_KEY) { console.error('Set LLM_API_KEY'); process.exit(1); }
 
@@ -468,12 +469,20 @@ async function round(num) {
   // Reload agents from Supabase each round
   await loadAgents();
 
-  let backlog = json('backlog.json') || [];
+  let backlog = useSupabase ? await db.getTasks(COMPANY_ID) : json('backlog.json') || [];
   const agents = _agents || [];
   const counts = {}; backlog.forEach(t => { counts[t.status] = (counts[t.status] || 0) + 1; });
   const spent = agents.reduce((s, a) => s + (a.budget_spent_cents ?? a.budget?.spentCents ?? 0), 0);
 
-  console.log(`Pipeline: ${counts['todo'] || 0} todo | ${counts['in-progress'] || 0} building | ${counts['review'] || 0} review | ${counts['approved'] || 0} approved | ${counts['ready'] || 0} ready | $${(spent / 100).toFixed(2)} spent`);
+  console.log(`Pipeline: ${counts['todo'] || 0} todo | ${counts['in-progress'] || 0} building | ${counts['review'] || 0} review | ${counts['approved'] || 0} approved | ${counts['ready'] || 0} ready | $${(spent / 100).toFixed(2)} spent (cap: $${(BUDGET_CAP_CENTS / 100).toFixed(2)})`);
+
+  // Budget cap check
+  if (spent >= BUDGET_CAP_CENTS) {
+    await logEvent('budget_cap_hit', 'system', { spent, cap: BUDGET_CAP_CENTS });
+    console.log(`BUDGET CAP HIT: $${(spent/100).toFixed(2)} >= $${(BUDGET_CAP_CENTS/100).toFixed(2)}. Stopping.`);
+    await telegram(`TROVEK — Budget cap reached ($${(spent/100).toFixed(2)}). Engine paused. Text "status" to check or increase cap in .env BUDGET_CAP_CENTS.`);
+    process.exit(0);
+  }
 
   // Phase 1: CEO + PM (synchronous — sets up work)
   if (founderGoals.length > 0) {
@@ -542,7 +551,30 @@ async function round(num) {
     }
   }
 
-  logEvent('round_end', 'coo', { round: num, agentsFired: jobs.length });
+  // Check scheduled jobs
+  try {
+    const schedules = useSupabase ? await db.getSchedules(COMPANY_ID) : json('schedules.json') || [];
+    const now = new Date();
+    const hour = now.getHours();
+    const minute = now.getMinutes();
+    const dow = now.getDay();
+
+    for (const s of schedules) {
+      if (!s.enabled) continue;
+      const parts = (s.cron || '').split(' ');
+      if (parts.length < 5) continue;
+      const [cronMin, cronHour] = parts;
+      const matchMin = cronMin === '*' || parseInt(cronMin) === minute;
+      const matchHour = cronHour === '*' || parseInt(cronHour) === hour;
+      if (matchMin && matchHour) {
+        const agentId = s.agent_id || s.agent || 'ceo';
+        await logEvent('schedule_triggered', 'coo', { schedule: s.name, agent: agentId });
+        await runAgent(agentId, s.task || 'Scheduled task: ' + s.name, 'schedule-' + s.id);
+      }
+    }
+  } catch {}
+
+  await logEvent('round_end', 'coo', { round: num, agentsFired: jobs.length });
 }
 
 // ─── MAIN ───────────────────────────────────────────────

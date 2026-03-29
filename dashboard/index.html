@@ -456,7 +456,7 @@ function updateControls(){
 
   // Server
   document.getElementById('env-server-dot').style.background='var(--green)';
-  document.getElementById('env-server').textContent='Online';
+  document.getElementById('env-server').textContent=S.registry?.company ? 'Supabase' : 'Local';
 
   // LLM
   const llmProvider = S.registry.company?.llm?.provider||'--';

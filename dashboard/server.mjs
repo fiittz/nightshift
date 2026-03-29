@@ -276,6 +276,12 @@ const server = createServer(async (req, res) => {
             created++;
           }
         }
+        // Create .md instruction file if it doesn't exist
+        const mdPath = join(PROJECT_ROOT, 'agents', agentId + '.md');
+        if (!existsSync(mdPath)) {
+          const role = ROLE_MAP[agentId] || agentId;
+          writeFileSync(mdPath, '# ' + role + '\n\n## Role\nYou are the ' + role + '. Work autonomously.\n\n## When idle\nScan your area for work.\n');
+        }
       }
       res.writeHead(200); res.end(JSON.stringify({ ok: true, created, total: template.agents.length }));
     }
