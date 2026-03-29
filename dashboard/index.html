@@ -194,6 +194,8 @@
       <div class="tab" onclick="switchTab('tickets')">Tickets</div>
       <div class="tab" onclick="switchTab('flow')">Flow</div>
       <div class="tab" onclick="switchTab('agent')">Agent Detail</div>
+      <div class="tab" onclick="switchTab('connections')">Connections</div>
+      <div class="tab" onclick="switchTab('monitor')">Monitor</div>
       <div class="tab" onclick="switchTab('settings')">Settings</div>
     </div>
     <div class="content" id="tab-overview"><div class="content-inner"><div class="card"><div class="card-header"><h2>Pipeline</h2></div><div class="pipeline" id="pipeline"></div></div><div class="grid-2"><div class="card"><div class="card-header"><h2>Backlog</h2><span class="count-badge" id="task-count">0</span></div><div class="card-body" id="task-list"></div></div><div class="card"><div class="card-header"><h2>Live Activity</h2></div><div class="card-body" id="activity-feed"></div></div></div></div></div>
@@ -202,6 +204,52 @@
     <div class="content hidden" id="tab-tickets"><div class="content-inner"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px"><div class="filters"><button class="filter-btn active" onclick="filterTickets('all',this)">All</button><button class="filter-btn" onclick="filterTickets('engineering',this)">Engineering</button><button class="filter-btn" onclick="filterTickets('quality',this)">Quality</button><button class="filter-btn" onclick="filterTickets('sales',this)">Sales</button></div><button class="btn" onclick="document.getElementById('ntf').style.display=document.getElementById('ntf').style.display==='none'?'block':'none'">+ New Task</button></div><div id="ntf" class="card" style="display:none;margin-bottom:16px"><div style="padding:16px 20px;display:grid;gap:10px"><input id="nt-title" placeholder="Task title" class="input"><textarea id="nt-desc" placeholder="Description" rows="3" class="input" style="resize:vertical"></textarea><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px"><select id="nt-type" class="input"><option value="backend">Backend</option><option value="frontend">Frontend</option></select><select id="nt-domain" class="input"><option value="general">General</option><option value="custom">Custom</option></select><select id="nt-pri" class="input"><option value="high">High</option><option value="medium">Medium</option><option value="low">Low</option></select></div><div style="display:flex;gap:8px"><button class="btn" onclick="createTask()">Create</button><button class="btn btn-outline" onclick="document.getElementById('ntf').style.display='none'">Cancel</button></div></div></div><div id="tickets-list"></div></div></div>
     <div class="content hidden" id="tab-flow"><div class="content-inner"><div class="card"><div class="card-header"><h2>Company Flow</h2></div><div class="flow-canvas" id="flow-canvas"></div></div><div class="card" id="flow-detail" style="display:none"><div class="card-header"><h2 id="fd-title">Agent</h2></div><div style="padding:16px 20px" id="fd-body"></div></div></div></div>
     <div class="content hidden" id="tab-agent"><div class="content-inner" id="agent-detail"><div class="empty">Select an agent from the sidebar.</div></div></div>
+    <!-- Connections tab -->
+    <div class="content hidden" id="tab-connections">
+      <div class="content-inner">
+        <!-- Compute -->
+        <div class="card">
+          <div class="card-header"><h2>Compute</h2><span style="font-size:11px;color:var(--fg-muted)">Where your agents run</span></div>
+          <div class="card-body" id="conn-compute"></div>
+        </div>
+        <!-- LLM -->
+        <div class="card">
+          <div class="card-header"><h2>LLM Providers</h2><span style="font-size:11px;color:var(--fg-muted)">What your agents think with</span></div>
+          <div class="card-body" id="conn-llm"></div>
+        </div>
+        <!-- Integrations -->
+        <div class="card">
+          <div class="card-header"><h2>Integrations</h2><span style="font-size:11px;color:var(--fg-muted)">What your agents connect to</span></div>
+          <div class="card-body" id="conn-integrations"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Monitor tab -->
+    <div class="content hidden" id="tab-monitor">
+      <div class="content-inner">
+        <div class="stats" id="mon-stats"></div>
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-header"><h2>Token Usage (last 20 runs)</h2></div>
+            <div style="padding:20px;height:200px" id="mon-chart"></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><h2>Agent Performance</h2></div>
+            <div class="card-body" id="mon-perf"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h2>Recent Runs</h2></div>
+          <div class="card-body" id="mon-runs"></div>
+        </div>
+        <div class="card">
+          <div class="card-header"><h2>Errors</h2></div>
+          <div class="card-body" id="mon-errors"></div>
+        </div>
+      </div>
+    </div>
+
     <div class="content hidden" id="tab-settings"><div class="content-inner"><div class="card"><div class="card-header"><h2>Repositories</h2><button class="btn" onclick="document.getElementById('arf').style.display='block'">+ Add Repo</button></div><div class="card-body" id="s-repos"></div><div id="arf" style="display:none;padding:16px 20px;border-top:1px solid var(--border)"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px"><input id="r-url" placeholder="https://github.com/user/repo.git" class="input"><input id="r-branch" placeholder="Branch (main)" class="input"></div><input id="r-desc" placeholder="Description" class="input" style="margin-bottom:10px"><div style="display:flex;gap:8px"><button class="btn" onclick="addRepo()">Save</button><button class="btn btn-outline" onclick="document.getElementById('arf').style.display='none'">Cancel</button></div></div></div><div class="card"><div class="card-header"><h2>Company</h2></div><div style="padding:16px 20px;display:grid;gap:14px"><label style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>Require approval for hires</span><input type="checkbox" id="s-approval" onchange="saveCo()"></label><label style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>Default model</span><select id="s-model" onchange="saveCo()" class="input" style="width:auto"><option value="deepseek/deepseek-v3.2">DeepSeek V3.2</option><option value="deepseek/deepseek-r1-0528">DeepSeek R1</option><option value="qwen/qwen3-235b-a22b-2507">Qwen 3 235B</option></select></label></div></div><div class="card"><div class="card-header"><h2>Agents</h2></div><div class="card-body" id="s-agents"></div></div><div class="card"><div class="card-header"><h2>Budget</h2></div><div id="s-budget"></div></div></div></div>
   </div>
 </div>
@@ -385,7 +433,111 @@ async function createTask(){const t=document.getElementById('nt-title').value;if
 async function refresh(){try{const r=await fetch('/api/state');S=await r.json();
 // Build AD dynamically from registry
 if(S.registry?.agents){AD=S.registry.agents.map(a=>({id:a.id,name:a.name,role:a.role,section:a.department||'Other'}));AC={};S.registry.agents.forEach(a=>{AC[a.id]=DEPT_COLORS[a.department]||'var(--fg)'});}
-rSB();rP('pipeline',S.backlog);rTK('task-list',S.backlog);document.getElementById('task-count').textContent=(S.backlog||[]).length;rAC(S.activity);rP('eng-pipeline',S.backlog);rTK('eng-tasks',S.backlog);['backend','frontend'].forEach(id=>{const el=document.getElementById(`eng-${id}-log`);if(el)el.textContent=S.agentLogs?.[id]||'No output'});document.getElementById('sales-count').textContent=(S.prospects||[]).length;const sp=document.getElementById('sales-prospects');if(S.prospects?.length)sp.innerHTML=S.prospects.map(p=>`<div class="row"><span class="row-title">${esc(p.name)}</span><span style="color:var(--fg-muted);font-size:12px">${esc(p.location||'')}</span><span class="badge badge-${p.status==='new'?'todo':'in-progress'}"><span class="badge-dot"></span>${p.status}</span></div>`).join('');else sp.innerHTML='<div class="empty">No prospects</div>';const sl=document.getElementById('sales-sdr-log');if(sl)sl.textContent=S.agentLogs?.sdr||'No output';if(CT==='agent'&&SA)rAD();if(CT==='tickets')rT();if(CT==='flow')rF();if(CT==='settings')rS();updateControls()}catch(e){console.error(e)}}
+rSB();rP('pipeline',S.backlog);rTK('task-list',S.backlog);document.getElementById('task-count').textContent=(S.backlog||[]).length;rAC(S.activity);rP('eng-pipeline',S.backlog);rTK('eng-tasks',S.backlog);['backend','frontend'].forEach(id=>{const el=document.getElementById(`eng-${id}-log`);if(el)el.textContent=S.agentLogs?.[id]||'No output'});document.getElementById('sales-count').textContent=(S.prospects||[]).length;const sp=document.getElementById('sales-prospects');if(S.prospects?.length)sp.innerHTML=S.prospects.map(p=>`<div class="row"><span class="row-title">${esc(p.name)}</span><span style="color:var(--fg-muted);font-size:12px">${esc(p.location||'')}</span><span class="badge badge-${p.status==='new'?'todo':'in-progress'}"><span class="badge-dot"></span>${p.status}</span></div>`).join('');else sp.innerHTML='<div class="empty">No prospects</div>';const sl=document.getElementById('sales-sdr-log');if(sl)sl.textContent=S.agentLogs?.sdr||'No output';if(CT==='agent'&&SA)rAD();if(CT==='tickets')rT();if(CT==='flow')rF();if(CT==='connections')rConn();if(CT==='monitor')rMon();if(CT==='settings')rS();updateControls()}catch(e){console.error(e)}}
+
+// ─── Connections ────────────────────────────────
+function rConn(){
+  if(!S?.connections) { document.getElementById('conn-compute').innerHTML='<div class="empty">Loading...</div>'; return; }
+  const c = S.connections;
+
+  // Compute
+  document.getElementById('conn-compute').innerHTML = Object.entries(c.compute?.providers||{}).map(([k,v])=>{
+    const isActive = c.compute?.active === k;
+    return `<div class="row" style="justify-content:space-between">
+      <div class="control-label"><span class="control-dot" style="background:${isActive?'var(--green)':v.status==='connected'?'var(--amber)':'var(--fg-muted)'}"></span><span style="font-weight:${isActive?'600':'400'}">${v.name}</span></div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <span class="control-value">${isActive?'Active':v.status}</span>
+        ${!isActive?`<button class="control-btn" onclick="setCompute('${k}')">Use</button>`:'<span class="badge badge-approved" style="margin:0"><span class="badge-dot"></span>Active</span>'}
+      </div>
+    </div>`;
+  }).join('');
+
+  // LLM
+  document.getElementById('conn-llm').innerHTML = Object.entries(c.llm?.providers||{}).map(([k,v])=>{
+    const isActive = c.llm?.active === k;
+    return `<div class="row" style="justify-content:space-between">
+      <div class="control-label"><span class="control-dot" style="background:${isActive?'var(--green)':v.status==='connected'?'var(--amber)':'var(--fg-muted)'}"></span><span style="font-weight:${isActive?'600':'400'}">${v.name}</span></div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <span class="control-value">${v.models?.slice(0,2).join(', ')||'--'}</span>
+        ${!isActive?`<button class="control-btn" onclick="setLLM('${k}')">Use</button>`:'<span class="badge badge-approved" style="margin:0"><span class="badge-dot"></span>Active</span>'}
+        <button class="control-btn" onclick="testConn('llm','${k}')">Test</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Integrations
+  document.getElementById('conn-integrations').innerHTML = Object.entries(c.integrations||{}).map(([k,v])=>{
+    return `<div class="row" style="justify-content:space-between">
+      <div class="control-label"><span class="control-dot" style="background:${v.status==='connected'?'var(--green)':'var(--fg-muted)'}"></span><span>${v.name}</span></div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <span class="control-value">${v.status}</span>
+        <button class="control-btn" onclick="toggleIntegration('${k}')">${v.status==='connected'?'Disconnect':'Connect'}</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+async function setCompute(k){await fetch('/api/connections/compute',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({active:k})});refresh()}
+async function setLLM(k){await fetch('/api/connections/llm',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({active:k})});refresh()}
+async function testConn(type,k){const r=await fetch(`/api/connections/test/${type}/${k}`,{method:'POST'});const d=await r.json();alert(d.ok?'Connected!':'Failed: '+(d.error||'unknown'))}
+async function toggleIntegration(k){await fetch(`/api/connections/integration/${k}/toggle`,{method:'POST'});refresh()}
+
+// ─── Monitor ────────────────────────────────────
+function rMon(){
+  const runs = S?.runs||[];
+  const agents = S?.registry?.agents||[];
+  const totalTokens = runs.reduce((s,r)=>s+r.totalTokens,0);
+  const totalCost = runs.reduce((s,r)=>s+r.costCents,0);
+  const avgDuration = runs.length ? Math.round(runs.reduce((s,r)=>s+r.durationMs,0)/runs.length) : 0;
+  const errors = runs.filter(r=>r.outputPreview?.includes('FAILED')||r.outputPreview?.includes('error'));
+
+  // Stats
+  document.getElementById('mon-stats').innerHTML=`
+    <div class="stat"><div class="stat-value">${runs.length}</div><div class="stat-label">Total Runs</div></div>
+    <div class="stat"><div class="stat-value">${totalTokens>1000?(totalTokens/1000).toFixed(0)+'k':totalTokens}</div><div class="stat-label">Tokens Used</div></div>
+    <div class="stat"><div class="stat-value">$${(totalCost/100).toFixed(2)}</div><div class="stat-label">Total Cost</div></div>
+    <div class="stat"><div class="stat-value">${(avgDuration/1000).toFixed(1)}s</div><div class="stat-label">Avg Duration</div></div>
+    <div class="stat"><div class="stat-value">${errors.length}</div><div class="stat-label">Errors</div></div>
+  `;
+
+  // Token chart (simple bar chart)
+  const recent = runs.slice(-20);
+  const maxTokens = Math.max(...recent.map(r=>r.totalTokens),1);
+  document.getElementById('mon-chart').innerHTML = recent.length ? `<div style="display:flex;align-items:flex-end;gap:4px;height:100%">${recent.map(r=>{
+    const h = Math.max(4, (r.totalTokens/maxTokens)*160);
+    const col = AC[r.agentId]||'var(--accent)';
+    return `<div title="${r.agentId}: ${r.totalTokens} tokens" style="flex:1;height:${h}px;background:${col};border-radius:3px 3px 0 0;opacity:0.7;min-width:8px"></div>`;
+  }).join('')}</div>` : '<div class="empty">No runs yet</div>';
+
+  // Agent performance
+  const perfMap = {};
+  runs.forEach(r => { if(!perfMap[r.agentId])perfMap[r.agentId]={runs:0,tokens:0,cost:0,time:0}; perfMap[r.agentId].runs++; perfMap[r.agentId].tokens+=r.totalTokens; perfMap[r.agentId].cost+=r.costCents; perfMap[r.agentId].time+=r.durationMs; });
+  document.getElementById('mon-perf').innerHTML = Object.entries(perfMap).length ? Object.entries(perfMap).sort((a,b)=>b[1].runs-a[1].runs).map(([id,p])=>`
+    <div class="row" style="gap:16px">
+      <span style="width:80px;font-weight:500;color:${AC[id]||'var(--fg)'}">${id}</span>
+      <span class="control-value">${p.runs} runs</span>
+      <span class="control-value">${(p.tokens/1000).toFixed(0)}k tok</span>
+      <span class="control-value">$${(p.cost/100).toFixed(2)}</span>
+      <span class="control-value">${(p.time/p.runs/1000).toFixed(1)}s avg</span>
+    </div>`).join('') : '<div class="empty">No data</div>';
+
+  // Recent runs
+  document.getElementById('mon-runs').innerHTML = runs.length ? runs.slice(-15).reverse().map(r=>`
+    <div class="row" style="gap:8px">
+      <span style="width:60px;color:${AC[r.agentId]||'var(--fg)'}; font-weight:500;font-size:12px">${r.agentId}</span>
+      <span class="row-title" style="font-size:12px;color:var(--fg-dim)">${esc(r.inputPreview)}</span>
+      <span class="control-value">${r.totalTokens} tok</span>
+      <span class="control-value">$${(r.costCents/100).toFixed(3)}</span>
+      <span class="control-value">${(r.durationMs/1000).toFixed(1)}s</span>
+    </div>`).join('') : '<div class="empty">No runs</div>';
+
+  // Errors
+  document.getElementById('mon-errors').innerHTML = errors.length ? errors.slice(-10).reverse().map(r=>`
+    <div class="row" style="gap:8px">
+      <span style="width:60px;color:var(--red);font-weight:500;font-size:12px">${r.agentId}</span>
+      <span style="flex:1;font-size:12px;color:var(--fg-dim)">${esc(r.outputPreview)}</span>
+      <span class="control-value">${r.timestamp?.substring(11,19)||''}</span>
+    </div>`).join('') : '<div class="empty" style="color:var(--green)">No errors</div>';
+}
 refresh();setInterval(refresh,3000);
 </script>
 </body>

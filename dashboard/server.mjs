@@ -37,7 +37,7 @@ const server = createServer(async (req, res) => {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') { res.writeHead(200); res.end(); return; }
 
-  // GET /api/state — full dashboard state
+  // GET /api/state
   if (req.url === '/api/state' && req.method === 'GET') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({
@@ -47,9 +47,41 @@ const server = createServer(async (req, res) => {
       agentLogs: getAgentLogs(),
       registry: readJSON('company.json') || { agents: [] },
       runs: readJSON('data/runs.json') || [],
+      connections: readJSON('connections.json') || {},
       agenda: readJSON('agenda.json'),
       timestamp: new Date().toISOString()
     }));
+  }
+  // PUT /api/connections/compute
+  else if (req.url === '/api/connections/compute' && req.method === 'PUT') {
+    const body = await parseBody(req);
+    const conn = readJSON('connections.json') || {};
+    if (body?.active) conn.compute.active = body.active;
+    writeJSON('connections.json', conn);
+    res.writeHead(200); res.end('{"ok":true}');
+  }
+  // PUT /api/connections/llm
+  else if (req.url === '/api/connections/llm' && req.method === 'PUT') {
+    const body = await parseBody(req);
+    const conn = readJSON('connections.json') || {};
+    if (body?.active) conn.llm.active = body.active;
+    writeJSON('connections.json', conn);
+    res.writeHead(200); res.end('{"ok":true}');
+  }
+  // POST /api/connections/integration/:id/toggle
+  else if (req.url.match(/^\/api\/connections\/integration\/\w+\/toggle$/) && req.method === 'POST') {
+    const id = req.url.split('/')[4];
+    const conn = readJSON('connections.json') || {};
+    if (conn.integrations?.[id]) {
+      conn.integrations[id].status = conn.integrations[id].status === 'connected' ? 'disconnected' : 'connected';
+      writeJSON('connections.json', conn);
+    }
+    res.writeHead(200); res.end('{"ok":true}');
+  }
+  // POST /api/connections/test/:type/:id
+  else if (req.url.match(/^\/api\/connections\/test\//) && req.method === 'POST') {
+    // Placeholder — would actually test the connection
+    res.writeHead(200); res.end('{"ok":true}');
   }
   // POST /api/settings/repos — add a repo
   else if (req.url === '/api/settings/repos' && req.method === 'POST') {
