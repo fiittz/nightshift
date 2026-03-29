@@ -1,0 +1,10 @@
+{
+  "id": 1,
+  "company": "Vercel",
+  "website": "https://vercel.com",
+  "contact": "contact@vercel.com",
+  "status": "drafted",
+  "lastContact": "2025-04-10",
+  "touchCount": 1,
+  "notes": "Researched: Focus on Next.js 15, Turbopack, developer performance. Drafted email referencing blog content about build performance. Email drafted, awaiting approval."
+}

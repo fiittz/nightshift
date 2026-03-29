@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body { background: #0a0a0a; display: flex; flex-wrap: wrap; gap: 60px; padding: 60px; font-family: 'Inter', -apple-system, sans-serif; }
+  .option { text-align: center; }
+  .option h3 { color: #555; font-size: 12px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; }
+  .logo-row { display: flex; gap: 40px; align-items: center; justify-content: center; margin-bottom: 40px; }
+  .on-dark { background: #0a0a0a; padding: 40px 60px; border-radius: 12px; border: 1px solid #222; }
+  .on-light { background: #fff; padding: 40px 60px; border-radius: 12px; }
+</style>
+</head>
+<body>
+
+<!-- Option 1: Abstract T from two bars -->
+<div class="option">
+  <h3>Option 1 — Geometric T</h3>
+  <div class="logo-row">
+    <div class="on-dark">
+      <svg width="200" height="48" viewBox="0 0 200 48">
+        <rect x="0" y="0" width="28" height="6" rx="1" fill="#e8e8e8"/>
+        <rect x="10" y="0" width="6" height="36" rx="1" fill="#e8e8e8"/>
+        <text x="40" y="29" font-family="Inter, -apple-system, sans-serif" font-size="28" font-weight="600" letter-spacing="0.5" fill="#e8e8e8">trovek</text>
+      </svg>
+    </div>
+    <div class="on-light">
+      <svg width="200" height="48" viewBox="0 0 200 48">
+        <rect x="0" y="0" width="28" height="6" rx="1" fill="#0a0a0a"/>
+        <rect x="10" y="0" width="6" height="36" rx="1" fill="#0a0a0a"/>
+        <text x="40" y="29" font-family="Inter, -apple-system, sans-serif" font-size="28" font-weight="600" letter-spacing="0.5" fill="#0a0a0a">trovek</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- Option 2: Abstract chevron/arrow -->
+<div class="option">
+  <h3>Option 2 — Forward Chevron</h3>
+  <div class="logo-row">
+    <div class="on-dark">
+      <svg width="220" height="48" viewBox="0 0 220 48">
+        <path d="M4 4 L20 20 L4 36" stroke="#e8e8e8" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M16 4 L32 20 L16 36" stroke="#e8e8e8" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/>
+        <text x="48" y="30" font-family="Inter, -apple-system, sans-serif" font-size="28" font-weight="600" letter-spacing="1" fill="#e8e8e8">trovek</text>
+      </svg>
+    </div>
+    <div class="on-light">
+      <svg width="220" height="48" viewBox="0 0 220 48">
+        <path d="M4 4 L20 20 L4 36" stroke="#0a0a0a" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M16 4 L32 20 L16 36" stroke="#0a0a0a" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.4"/>
+        <text x="48" y="30" font-family="Inter, -apple-system, sans-serif" font-size="28" font-weight="600" letter-spacing="1" fill="#0a0a0a">trovek</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- Option 3: Stacked lines (like Anthropic's abstract feel) -->
+<div class="option">
+  <h3>Option 3 — Stacked Lines</h3>
+  <div class="logo-row">
+    <div class="on-dark">
+      <svg width="220" height="48" viewBox="0 0 220 48">
+        <rect x="0" y="4" width="24" height="4" rx="2" fill="#e8e8e8"/>
+        <rect x="4" y="14" width="20" height="4" rx="2" fill="#e8e8e8" opacity="0.7"/>
+        <rect x="8" y="24" width="16" height="4" rx="2" fill="#e8e8e8" opacity="0.4"/>
+        <text x="38" y="28" font-family="Inter, -apple-system, sans-serif" font-size="26" font-weight="700" letter-spacing="2" fill="#e8e8e8">TROVEK</text>
+      </svg>
+    </div>
+    <div class="on-light">
+      <svg width="220" height="48" viewBox="0 0 220 48">
+        <rect x="0" y="4" width="24" height="4" rx="2" fill="#0a0a0a"/>
+        <rect x="4" y="14" width="20" height="4" rx="2" fill="#0a0a0a" opacity="0.7"/>
+        <rect x="8" y="24" width="16" height="4" rx="2" fill="#0a0a0a" opacity="0.4"/>
+        <text x="38" y="28" font-family="Inter, -apple-system, sans-serif" font-size="26" font-weight="700" letter-spacing="2" fill="#0a0a0a">TROVEK</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- Option 4: Minimal dot + wordmark (most Anthropic-like) -->
+<div class="option">
+  <h3>Option 4 — Dot Mark (Most Anthropic-like)</h3>
+  <div class="logo-row">
+    <div class="on-dark">
+      <svg width="200" height="48" viewBox="0 0 200 48">
+        <circle cx="14" cy="20" r="10" fill="none" stroke="#e8e8e8" stroke-width="3"/>
+        <circle cx="14" cy="20" r="3" fill="#e8e8e8"/>
+        <text x="34" y="28" font-family="Inter, -apple-system, sans-serif" font-size="26" font-weight="500" letter-spacing="1.5" fill="#e8e8e8">trovek</text>
+      </svg>
+    </div>
+    <div class="on-light">
+      <svg width="200" height="48" viewBox="0 0 200 48">
+        <circle cx="14" cy="20" r="10" fill="none" stroke="#0a0a0a" stroke-width="3"/>
+        <circle cx="14" cy="20" r="3" fill="#0a0a0a"/>
+        <text x="34" y="28" font-family="Inter, -apple-system, sans-serif" font-size="26" font-weight="500" letter-spacing="1.5" fill="#0a0a0a">trovek</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- Option 5: Hexagon node (represents network/agents) -->
+<div class="option">
+  <h3>Option 5 — Hex Node</h3>
+  <div class="logo-row">
+    <div class="on-dark">
+      <svg width="220" height="48" viewBox="0 0 220 48">
+        <polygon points="14,2 26,9 26,23 14,30 2,23 2,9" fill="none" stroke="#e8e8e8" stroke-width="2.5"/>
+        <circle cx="14" cy="16" r="4" fill="#e8e8e8"/>
+        <text x="38" y="26" font-family="Inter, -apple-system, sans-serif" font-size="24" font-weight="600" letter-spacing="3" fill="#e8e8e8">TROVEK</text>
+      </svg>
+    </div>
+    <div class="on-light">
+      <svg width="220" height="48" viewBox="0 0 220 48">
+        <polygon points="14,2 26,9 26,23 14,30 2,23 2,9" fill="none" stroke="#0a0a0a" stroke-width="2.5"/>
+        <circle cx="14" cy="16" r="4" fill="#0a0a0a"/>
+        <text x="38" y="26" font-family="Inter, -apple-system, sans-serif" font-size="24" font-weight="600" letter-spacing="3" fill="#0a0a0a">TROVEK</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<!-- Option 6: Connected nodes — FINAL -->
+<div class="option">
+  <h3>Option 6 — Connected Nodes (Final)</h3>
+  <div class="logo-row">
+    <div class="on-dark">
+      <svg width="230" height="48" viewBox="0 0 230 48">
+        <circle cx="8" cy="10" r="4" fill="#e8e8e8"/>
+        <circle cx="24" cy="20" r="5" fill="#e8e8e8"/>
+        <circle cx="8" cy="30" r="3" fill="#e8e8e8" opacity="0.6"/>
+        <line x1="8" y1="10" x2="24" y2="20" stroke="#e8e8e8" stroke-width="1.5" opacity="0.5"/>
+        <line x1="8" y1="30" x2="24" y2="20" stroke="#e8e8e8" stroke-width="1.5" opacity="0.5"/>
+        <text x="42" y="28" font-family="Inter, -apple-system, sans-serif" font-size="26" font-weight="600" letter-spacing="1" fill="#e8e8e8">Trovek</text>
+      </svg>
+    </div>
+    <div class="on-light">
+      <svg width="230" height="48" viewBox="0 0 230 48">
+        <circle cx="8" cy="10" r="4" fill="#0a0a0a"/>
+        <circle cx="24" cy="20" r="5" fill="#0a0a0a"/>
+        <circle cx="8" cy="30" r="3" fill="#0a0a0a" opacity="0.6"/>
+        <line x1="8" y1="10" x2="24" y2="20" stroke="#0a0a0a" stroke-width="1.5" opacity="0.5"/>
+        <line x1="8" y1="30" x2="24" y2="20" stroke="#0a0a0a" stroke-width="1.5" opacity="0.5"/>
+        <text x="42" y="28" font-family="Inter, -apple-system, sans-serif" font-size="26" font-weight="600" letter-spacing="1" fill="#0a0a0a">Trovek</text>
+      </svg>
+    </div>
+  </div>
+  <!-- Sizes -->
+  <div class="logo-row">
+    <div class="on-dark">
+      <p style="color:#555;font-size:11px;margin-bottom:10px">Small</p>
+      <svg width="130" height="28" viewBox="0 0 130 28">
+        <circle cx="5" cy="6" r="2.5" fill="#e8e8e8"/>
+        <circle cx="15" cy="12" r="3" fill="#e8e8e8"/>
+        <circle cx="5" cy="18" r="2" fill="#e8e8e8" opacity="0.6"/>
+        <line x1="5" y1="6" x2="15" y2="12" stroke="#e8e8e8" stroke-width="1" opacity="0.5"/>
+        <line x1="5" y1="18" x2="15" y2="12" stroke="#e8e8e8" stroke-width="1" opacity="0.5"/>
+        <text x="25" y="17" font-family="Inter, -apple-system, sans-serif" font-size="16" font-weight="600" letter-spacing="0.5" fill="#e8e8e8">Trovek</text>
+      </svg>
+    </div>
+    <div class="on-dark">
+      <p style="color:#555;font-size:11px;margin-bottom:10px">Icon only</p>
+      <svg width="40" height="40" viewBox="0 0 40 40">
+        <circle cx="10" cy="8" r="5" fill="#e8e8e8"/>
+        <circle cx="28" cy="20" r="6.5" fill="#e8e8e8"/>
+        <circle cx="10" cy="32" r="4" fill="#e8e8e8" opacity="0.6"/>
+        <line x1="10" y1="8" x2="28" y2="20" stroke="#e8e8e8" stroke-width="2" opacity="0.5"/>
+        <line x1="10" y1="32" x2="28" y2="20" stroke="#e8e8e8" stroke-width="2" opacity="0.5"/>
+      </svg>
+    </div>
+    <div class="on-dark">
+      <p style="color:#555;font-size:11px;margin-bottom:10px">Large</p>
+      <svg width="320" height="64" viewBox="0 0 320 64">
+        <circle cx="12" cy="14" r="6" fill="#e8e8e8"/>
+        <circle cx="34" cy="28" r="7.5" fill="#e8e8e8"/>
+        <circle cx="12" cy="42" r="4.5" fill="#e8e8e8" opacity="0.6"/>
+        <line x1="12" y1="14" x2="34" y2="28" stroke="#e8e8e8" stroke-width="2" opacity="0.5"/>
+        <line x1="12" y1="42" x2="34" y2="28" stroke="#e8e8e8" stroke-width="2" opacity="0.5"/>
+        <text x="56" y="40" font-family="Inter, -apple-system, sans-serif" font-size="36" font-weight="600" letter-spacing="1.5" fill="#e8e8e8">Trovek</text>
+      </svg>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

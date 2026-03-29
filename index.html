@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NightShift CRM - Prospect Management System</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <div class="container">
+        <header class="header" role="banner">
+            <h1>NightShift CRM</h1>
+            <nav aria-label="Main navigation">
+                <ul role="menubar">
+                    <li role="none"><a href="#dashboard" role="menuitem">Dashboard</a></li>
+                    <li role="none"><a href="#prospects" role="menuitem">Prospects</a></li>
+                    <li role="none"><a href="#analytics" role="menuitem">Analytics</a></li>
+                </ul>
+            </nav>
+        </header>
+        
+        <main id="main-content" role="main">
+            <section id="dashboard" role="region" aria-labelledby="dashboard-heading">
+                <h2 id="dashboard-heading">Dashboard</h2>
+                <div class="stats">
+                    <div class="stat-card" role="article">
+                        <h3>Active Prospects</h3>
+                        <p class="stat-value" aria-live="polite">2</p>
+                    </div>
+                    <div class="stat-card" role="article">
+                        <h3>Touchpoints Today</h3>
+                        <p class="stat-value" aria-live="polite">0</p>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="prospects" role="region" aria-labelledby="prospects-heading" hidden>
+                <h2 id="prospects-heading">Prospects</h2>
+                <div class="table-container" role="region" aria-labelledby="prospects-heading">
+                    <table class="prospects-table" aria-describedby="prospects-description">
+                        <caption id="prospects-description" class="visually-hidden">List of prospect companies with their status and last contact date</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col">Company</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Last Contact</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="prospects-list">
+                            <!-- Filled by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                <button id="add-prospect" aria-label="Add new prospect">Add Prospect</button>
+            </section>
+            
+            <section id="analytics" role="region" aria-labelledby="analytics-heading" hidden>
+                <h2 id="analytics-heading">Analytics</h2>
+                <div class="chart-container">
+                    <canvas id="touchpoints-chart" aria-label="Touchpoints over time chart" role="img"></canvas>
+                </div>
+            </section>
+        </main>
+        
+        <footer role="contentinfo">
+            <p>&copy; 2024 NightShift CRM</p>
+        </footer>
+    </div>
+    
+    <!-- Modal for prospect details (hidden by default) -->
+    <div id="prospect-modal" class="modal" role="dialog" aria-labelledby="modal-title" aria-modal="true" hidden>
+        <div class="modal-content">
+            <h3 id="modal-title">Prospect Details</h3>
+            <div id="modal-body"></div>
+            <button id="close-modal" aria-label="Close modal">Close</button>
+        </div>
+    </div>
+    
+    <script src="scripts/main.js"></script>
+</body>
+</html>

@@ -10,24 +10,380 @@
       "stabilityFirst": true
     },
     "repos": [],
-    "llm": { "provider": "openai-compatible", "baseUrl": "${LLM_BASE_URL}", "apiKeyEnvVar": "LLM_API_KEY" }
+    "llm": {
+      "provider": "openai-compatible",
+      "baseUrl": "${LLM_BASE_URL}",
+      "apiKeyEnvVar": "LLM_API_KEY"
+    }
   },
   "agents": [
-    { "id": "ceo", "name": "CEO", "role": "Chief Executive Officer", "department": "Leadership", "status": "idle", "reportsTo": null, "permissions": { "canCreateAgents": true, "canSetAgenda": true }, "adapterConfig": { "model": "deepseek/deepseek-v3.2", "promptFile": "agents/ceo.md" }, "runtimeConfig": { "heartbeat": { "intervalRounds": 5 } }, "budget": { "monthlyCentsLimit": 5000, "spentCents": 0, "totalTokens": 0 }, "stats": { "totalRuns": 0 } },
-    { "id": "coo", "name": "COO", "role": "Chief Operating Officer", "department": "Leadership", "status": "idle", "reportsTo": "ceo", "permissions": { "canTriggerAgents": true, "canSendTelegram": true }, "adapterConfig": { "model": "deepseek/deepseek-v3.2", "promptFile": "agents/coo.md" }, "budget": { "monthlyCentsLimit": 1000, "spentCents": 0, "totalTokens": 0 }, "stats": { "totalRuns": 0 } },
-    { "id": "cfo", "name": "CFO", "role": "Chief Financial Officer", "department": "Finance", "status": "idle", "reportsTo": "ceo", "permissions": { "canViewBudget": true }, "adapterConfig": { "model": "deepseek/deepseek-v3.2", "promptFile": "agents/cfo.md" }, "budget": { "monthlyCentsLimit": 1000, "spentCents": 0, "totalTokens": 0 }, "stats": { "totalRuns": 0 } },
-    { "id": "cro", "name": "CRO", "role": "Chief Revenue Officer", "department": "Revenue", "status": "idle", "reportsTo": "ceo", "permissions": { "canViewCRM": true }, "adapterConfig": { "model": "deepseek/deepseek-v3.2", "promptFile": "agents/cro.md" }, "budget": { "monthlyCentsLimit": 2000, "spentCents": 0, "totalTokens": 0 }, "stats": { "totalRuns": 0 } },
-    { "id": "pm", "name": "PM", "role": "Product Manager", "department": "Product", "status": "idle", "reportsTo": "coo", "permissions": { "canWriteBacklog": true }, "adapterConfig": { "model": "deepseek/deepseek-v3.2", "promptFile": "agents/pm.md" }, "budget": { "monthlyCentsLimit": 3000, "spentCents": 0, "totalTokens": 0 }, "stats": { "totalRuns": 0 } },
-    { "id": "backend", "name": "Backend", "role": "Backend Engineer", "department": "Engineering", "status": "idle", "reportsTo": "coo", "permissions": { "canWriteCode": true, "canPushBranches": true }, "adapterConfig": { "model": "deepseek/deepseek-v3.2", "promptFile": "agents/backend.md" }, "budget": { "monthlyCentsLimit": 5000, "spentCents": 0, "totalTokens": 0 }, "stats": { "totalRuns": 0 } },
-    { "id": "frontend", "name": "Frontend", "role": "Frontend Engineer", "department": "Engineering", "status": "idle", "reportsTo": "coo", "permissions": { "canWriteCode": true, "canPushBranches": true }, "adapterConfig": { "model": "deepseek/deepseek-v3.2", "promptFile": "agents/frontend.md" }, "budget": { "monthlyCentsLimit": 5000, "spentCents": 0, "totalTokens": 0 }, "stats": { "totalRuns": 0 } },
-    { "id": "qa", "name": "QA", "role": "QA Engineer", "department": "Quality", "status": "idle", "reportsTo": "coo", "permissions": { "canApproveCode": true }, "adapterConfig": { "model": "deepseek/deepseek-v3.2", "promptFile": "agents/qa.md" }, "budget": { "monthlyCentsLimit": 3000, "spentCents": 0, "totalTokens": 0 }, "stats": { "totalRuns": 0 } },
-    { "id": "compliance", "name": "Compliance", "role": "Compliance Specialist", "department": "Quality", "status": "idle", "reportsTo": "coo", "permissions": { "canApproveCompliance": true }, "adapterConfig": { "model": "deepseek/deepseek-v3.2", "promptFile": "agents/compliance.md" }, "budget": { "monthlyCentsLimit": 2000, "spentCents": 0, "totalTokens": 0 }, "stats": { "totalRuns": 0 } },
-    { "id": "security", "name": "Security", "role": "Security & DevOps", "department": "Quality", "status": "idle", "reportsTo": "coo", "permissions": { "canBlockDeploy": true }, "adapterConfig": { "model": "deepseek/deepseek-v3.2", "promptFile": "agents/security.md" }, "budget": { "monthlyCentsLimit": 2000, "spentCents": 0, "totalTokens": 0 }, "stats": { "totalRuns": 0 } },
-    { "id": "sdr", "name": "SDR", "role": "Sales Development Rep", "department": "Sales", "status": "idle", "reportsTo": "cro", "permissions": { "canDraftEmails": true, "canAccessCRM": true }, "adapterConfig": { "model": "deepseek/deepseek-v3.2", "promptFile": "agents/sdr.md" }, "budget": { "monthlyCentsLimit": 2000, "spentCents": 0, "totalTokens": 0 }, "stats": { "totalRuns": 0 } },
-    { "id": "marketing", "name": "Marketing", "role": "Content & Marketing", "department": "Marketing", "status": "idle", "reportsTo": "cro", "permissions": { "canPublishContent": true }, "adapterConfig": { "model": "deepseek/deepseek-v3.2", "promptFile": "agents/marketing.md" }, "budget": { "monthlyCentsLimit": 2000, "spentCents": 0, "totalTokens": 0 }, "stats": { "totalRuns": 0 } },
-    { "id": "cs", "name": "Customer Success", "role": "Customer Success", "department": "Support", "status": "idle", "reportsTo": "cro", "permissions": { "canAccessCRM": true }, "adapterConfig": { "model": "deepseek/deepseek-v3.2", "promptFile": "agents/cs.md" }, "budget": { "monthlyCentsLimit": 2000, "spentCents": 0, "totalTokens": 0 }, "stats": { "totalRuns": 0 } },
-    { "id": "finance-ops", "name": "Finance Ops", "role": "Finance Operations", "department": "Finance", "status": "idle", "reportsTo": "cfo", "permissions": { "canViewBudget": true }, "adapterConfig": { "model": "deepseek/deepseek-v3.2", "promptFile": "agents/finance-ops.md" }, "budget": { "monthlyCentsLimit": 1000, "spentCents": 0, "totalTokens": 0 }, "stats": { "totalRuns": 0 } },
-    { "id": "data", "name": "Data Analyst", "role": "Data & Analytics", "department": "Product", "status": "idle", "reportsTo": "pm", "permissions": { "canViewData": true }, "adapterConfig": { "model": "deepseek/deepseek-v3.2", "promptFile": "agents/data.md" }, "budget": { "monthlyCentsLimit": 1000, "spentCents": 0, "totalTokens": 0 }, "stats": { "totalRuns": 0 } }
+    {
+      "id": "ceo",
+      "name": "CEO",
+      "role": "Chief Executive Officer",
+      "department": "Leadership",
+      "status": "idle",
+      "reportsTo": null,
+      "permissions": {
+        "canCreateAgents": true,
+        "canSetAgenda": true
+      },
+      "adapterConfig": {
+        "model": "deepseek/deepseek-v3.2",
+        "promptFile": "agents/ceo.md"
+      },
+      "runtimeConfig": {
+        "heartbeat": {
+          "intervalRounds": 5
+        }
+      },
+      "budget": {
+        "monthlyCentsLimit": 5000,
+        "spentCents": 19,
+        "totalTokens": 3206
+      },
+      "stats": {
+        "totalRuns": 3
+      },
+      "lastActiveAt": "2026-03-29T15:54:23.196Z"
+    },
+    {
+      "id": "coo",
+      "name": "COO",
+      "role": "Chief Operating Officer",
+      "department": "Leadership",
+      "status": "idle",
+      "reportsTo": "ceo",
+      "permissions": {
+        "canTriggerAgents": true,
+        "canSendTelegram": true
+      },
+      "adapterConfig": {
+        "model": "deepseek/deepseek-v3.2",
+        "promptFile": "agents/coo.md"
+      },
+      "budget": {
+        "monthlyCentsLimit": 1000,
+        "spentCents": 0,
+        "totalTokens": 0
+      },
+      "stats": {
+        "totalRuns": 0
+      }
+    },
+    {
+      "id": "cfo",
+      "name": "CFO",
+      "role": "Chief Financial Officer",
+      "department": "Finance",
+      "status": "idle",
+      "reportsTo": "ceo",
+      "permissions": {
+        "canViewBudget": true
+      },
+      "adapterConfig": {
+        "model": "deepseek/deepseek-v3.2",
+        "promptFile": "agents/cfo.md"
+      },
+      "budget": {
+        "monthlyCentsLimit": 1000,
+        "spentCents": 0,
+        "totalTokens": 0
+      },
+      "stats": {
+        "totalRuns": 0
+      }
+    },
+    {
+      "id": "cro",
+      "name": "CRO",
+      "role": "Chief Revenue Officer",
+      "department": "Revenue",
+      "status": "idle",
+      "reportsTo": "ceo",
+      "permissions": {
+        "canViewCRM": true
+      },
+      "adapterConfig": {
+        "model": "deepseek/deepseek-v3.2",
+        "promptFile": "agents/cro.md"
+      },
+      "budget": {
+        "monthlyCentsLimit": 2000,
+        "spentCents": 0,
+        "totalTokens": 0
+      },
+      "stats": {
+        "totalRuns": 0
+      }
+    },
+    {
+      "id": "pm",
+      "name": "PM",
+      "role": "Product Manager",
+      "department": "Product",
+      "status": "idle",
+      "reportsTo": "coo",
+      "permissions": {
+        "canWriteBacklog": true
+      },
+      "adapterConfig": {
+        "model": "deepseek/deepseek-v3.2",
+        "promptFile": "agents/pm.md"
+      },
+      "budget": {
+        "monthlyCentsLimit": 3000,
+        "spentCents": 9,
+        "totalTokens": 1942
+      },
+      "stats": {
+        "totalRuns": 3
+      },
+      "lastActiveAt": "2026-03-29T15:54:26.726Z"
+    },
+    {
+      "id": "backend",
+      "name": "Backend",
+      "role": "Backend Engineer",
+      "department": "Engineering",
+      "status": "idle",
+      "reportsTo": "coo",
+      "permissions": {
+        "canWriteCode": true,
+        "canPushBranches": true
+      },
+      "adapterConfig": {
+        "model": "deepseek/deepseek-v3.2",
+        "promptFile": "agents/backend.md"
+      },
+      "budget": {
+        "monthlyCentsLimit": 5000,
+        "spentCents": 6,
+        "totalTokens": 1632
+      },
+      "stats": {
+        "totalRuns": 3
+      },
+      "lastActiveAt": "2026-03-29T15:54:25.986Z"
+    },
+    {
+      "id": "frontend",
+      "name": "Frontend",
+      "role": "Frontend Engineer",
+      "department": "Engineering",
+      "status": "idle",
+      "reportsTo": "coo",
+      "permissions": {
+        "canWriteCode": true,
+        "canPushBranches": true
+      },
+      "adapterConfig": {
+        "model": "deepseek/deepseek-v3.2",
+        "promptFile": "agents/frontend.md"
+      },
+      "budget": {
+        "monthlyCentsLimit": 5000,
+        "spentCents": 92,
+        "totalTokens": 8949
+      },
+      "stats": {
+        "totalRuns": 2
+      },
+      "lastActiveAt": "2026-03-29T15:55:06.883Z"
+    },
+    {
+      "id": "qa",
+      "name": "QA",
+      "role": "QA Engineer",
+      "department": "Quality",
+      "status": "idle",
+      "reportsTo": "coo",
+      "permissions": {
+        "canApproveCode": true
+      },
+      "adapterConfig": {
+        "model": "deepseek/deepseek-v3.2",
+        "promptFile": "agents/qa.md"
+      },
+      "budget": {
+        "monthlyCentsLimit": 3000,
+        "spentCents": 23,
+        "totalTokens": 3291
+      },
+      "stats": {
+        "totalRuns": 3
+      },
+      "lastActiveAt": "2026-03-29T15:54:34.459Z"
+    },
+    {
+      "id": "compliance",
+      "name": "Compliance",
+      "role": "Compliance Specialist",
+      "department": "Quality",
+      "status": "idle",
+      "reportsTo": "coo",
+      "permissions": {
+        "canApproveCompliance": true
+      },
+      "adapterConfig": {
+        "model": "deepseek/deepseek-v3.2",
+        "promptFile": "agents/compliance.md"
+      },
+      "budget": {
+        "monthlyCentsLimit": 2000,
+        "spentCents": 10,
+        "totalTokens": 1906
+      },
+      "stats": {
+        "totalRuns": 3
+      },
+      "lastActiveAt": "2026-03-29T15:54:29.088Z"
+    },
+    {
+      "id": "security",
+      "name": "Security",
+      "role": "Security & DevOps",
+      "department": "Quality",
+      "status": "idle",
+      "reportsTo": "coo",
+      "permissions": {
+        "canBlockDeploy": true
+      },
+      "adapterConfig": {
+        "model": "deepseek/deepseek-v3.2",
+        "promptFile": "agents/security.md"
+      },
+      "budget": {
+        "monthlyCentsLimit": 2000,
+        "spentCents": 55,
+        "totalTokens": 6790
+      },
+      "stats": {
+        "totalRuns": 3
+      },
+      "lastActiveAt": "2026-03-29T15:54:27.551Z"
+    },
+    {
+      "id": "sdr",
+      "name": "SDR",
+      "role": "Sales Development Rep",
+      "department": "Sales",
+      "status": "idle",
+      "reportsTo": "cro",
+      "permissions": {
+        "canDraftEmails": true,
+        "canAccessCRM": true
+      },
+      "adapterConfig": {
+        "model": "deepseek/deepseek-v3.2",
+        "promptFile": "agents/sdr.md"
+      },
+      "budget": {
+        "monthlyCentsLimit": 2000,
+        "spentCents": 35,
+        "totalTokens": 4912
+      },
+      "stats": {
+        "totalRuns": 3
+      },
+      "lastActiveAt": "2026-03-29T15:54:36.669Z"
+    },
+    {
+      "id": "marketing",
+      "name": "Marketing",
+      "role": "Content & Marketing",
+      "department": "Marketing",
+      "status": "idle",
+      "reportsTo": "cro",
+      "permissions": {
+        "canPublishContent": true
+      },
+      "adapterConfig": {
+        "model": "deepseek/deepseek-v3.2",
+        "promptFile": "agents/marketing.md"
+      },
+      "budget": {
+        "monthlyCentsLimit": 2000,
+        "spentCents": 105,
+        "totalTokens": 13196
+      },
+      "stats": {
+        "totalRuns": 3
+      },
+      "lastActiveAt": "2026-03-29T15:54:27.837Z"
+    },
+    {
+      "id": "cs",
+      "name": "Customer Success",
+      "role": "Customer Success",
+      "department": "Support",
+      "status": "idle",
+      "reportsTo": "cro",
+      "permissions": {
+        "canAccessCRM": true
+      },
+      "adapterConfig": {
+        "model": "deepseek/deepseek-v3.2",
+        "promptFile": "agents/cs.md"
+      },
+      "budget": {
+        "monthlyCentsLimit": 2000,
+        "spentCents": 90,
+        "totalTokens": 10897
+      },
+      "stats": {
+        "totalRuns": 3
+      },
+      "lastActiveAt": "2026-03-29T15:54:27.225Z"
+    },
+    {
+      "id": "finance-ops",
+      "name": "Finance Ops",
+      "role": "Finance Operations",
+      "department": "Finance",
+      "status": "idle",
+      "reportsTo": "cfo",
+      "permissions": {
+        "canViewBudget": true
+      },
+      "adapterConfig": {
+        "model": "deepseek/deepseek-v3.2",
+        "promptFile": "agents/finance-ops.md"
+      },
+      "budget": {
+        "monthlyCentsLimit": 1000,
+        "spentCents": 105,
+        "totalTokens": 13152
+      },
+      "stats": {
+        "totalRuns": 3
+      },
+      "lastActiveAt": "2026-03-29T15:54:26.800Z"
+    },
+    {
+      "id": "data",
+      "name": "Data Analyst",
+      "role": "Data & Analytics",
+      "department": "Product",
+      "status": "idle",
+      "reportsTo": "pm",
+      "permissions": {
+        "canViewData": true
+      },
+      "adapterConfig": {
+        "model": "deepseek/deepseek-v3.2",
+        "promptFile": "agents/data.md"
+      },
+      "budget": {
+        "monthlyCentsLimit": 1000,
+        "spentCents": 6,
+        "totalTokens": 886
+      },
+      "stats": {
+        "totalRuns": 2
+      },
+      "lastActiveAt": "2026-03-29T15:54:27.672Z"
+    }
   ],
   "pendingHires": [],
   "firedAgents": []

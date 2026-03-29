@@ -1,1 +1,22 @@
-[]
+[
+  {
+    "id": 1,
+    "company": "Vercel",
+    "website": "https://vercel.com",
+    "contact": "contact@vercel.com",
+    "status": "researching",
+    "lastContact": null,
+    "touchCount": 0,
+    "notes": "Frontend cloud platform for developers. Recent blog posts about Next.js and web performance."
+  },
+  {
+    "id": 2,
+    "company": "Netlify",
+    "website": "https://netlify.com",
+    "contact": "hello@netlify.com",
+    "status": "researching",
+    "lastContact": null,
+    "touchCount": 0,
+    "notes": "Web development platform with focus on Jamstack. Recent content about edge functions and composable web architecture."
+  }
+]
