@@ -6,9 +6,11 @@
     "type": "backend",
     "domain": "general",
     "priority": "high",
-    "status": "in-progress",
+    "status": "review",
     "assignee": "backend",
-    "branch": "backend/set-up-initial-test-suite-for-core-functionality"
+    "branch": "backend/set-up-initial-test-suite-for-core-functionality",
+    "cycles": 1,
+    "_reviewed": true
   },
   {
     "id": "TASK-002",
@@ -17,9 +19,11 @@
     "type": "backend",
     "domain": "general",
     "priority": "high",
-    "status": "in-progress",
+    "status": "review",
     "assignee": "security",
-    "branch": "security/security-audit-of-current-codebase"
+    "branch": "security/security-audit-of-current-codebase",
+    "cycles": 1,
+    "_reviewed": true
   },
   {
     "id": "TASK-003",
@@ -28,9 +32,11 @@
     "type": "frontend",
     "domain": "custom",
     "priority": "medium",
-    "status": "in-progress",
+    "status": "review",
     "assignee": "sdr",
-    "branch": null
+    "branch": null,
+    "cycles": 1,
+    "_reviewed": true
   },
   {
     "id": "TASK-004",
@@ -39,8 +45,8 @@
     "type": "frontend",
     "domain": "custom",
     "priority": "medium",
-    "status": "todo",
-    "assignee": null,
+    "status": "in-progress",
+    "assignee": "sdr",
     "branch": null
   },
   {
@@ -50,8 +56,8 @@
     "type": "backend",
     "domain": "general",
     "priority": "high",
-    "status": "todo",
-    "assignee": null,
-    "branch": null
+    "status": "in-progress",
+    "assignee": "backend",
+    "branch": "backend/create-backlog-management-system"
   }
 ]

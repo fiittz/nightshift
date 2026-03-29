@@ -283,6 +283,63 @@ const server = createServer(async (req, res) => {
       res.writeHead(200); res.end('{"ok":true}');
     }
 
+    // ─── Chat ───────────────────────────────────────
+    else if (req.url === '/api/chat' && req.method === 'POST') {
+      const body = await parseBody(req);
+      if (!body?.message) { res.writeHead(400); res.end('{"error":"message required"}'); return; }
+      const msg = body.message.trim();
+      const lower = msg.toLowerCase();
+
+      let reply;
+
+      // Status command
+      if (lower === 'status' || lower === 'update') {
+        let tasks, agents;
+        if (useSupabase) {
+          tasks = await db.getTasks(COMPANY_ID);
+          agents = await db.getAgents(COMPANY_ID);
+        } else {
+          tasks = readJSON('backlog.json') || [];
+          agents = (readJSON('company.json') || {}).agents || [];
+        }
+        const c = {}; tasks.forEach(t => { c[t.status] = (c[t.status] || 0) + 1; });
+        const spent = agents.reduce((s, a) => s + (a.budget_spent_cents ?? a.budget?.spentCents ?? 0), 0);
+        const running = agents.filter(a => a.status === 'running').length;
+        reply = `Pipeline: ${c['todo'] || 0} todo, ${c['in-progress'] || 0} building, ${c['review'] || 0} review, ${c['ready'] || 0} ready\n\nAgents: ${running} running / ${agents.length} total\nBudget: $${(spent / 100).toFixed(2)} spent`;
+      }
+      // Merge command
+      else if (lower.startsWith('merge ')) {
+        const id = msg.split(' ')[1]?.toUpperCase();
+        if (useSupabase) {
+          await db.updateTask(id, COMPANY_ID, { status: 'merged' });
+        } else {
+          const bl = readJSON('backlog.json') || [];
+          const t = bl.find(x => x.id === id);
+          if (t) { t.status = 'merged'; writeJSON('backlog.json', bl); }
+        }
+        reply = `${id} merged.`;
+      }
+      // Help
+      else if (lower === 'help') {
+        reply = `Commands:\n- status — pipeline report\n- merge TASK-XXX — merge a ready task\n- Any text — sets it as a goal for the PM\n\nYou can also use Telegram (@Balnce_COO_Bot) for the same commands on mobile.`;
+      }
+      // Anything else = goal
+      else {
+        // Save as a goal for next engine round
+        if (useSupabase) {
+          await db.log(COMPANY_ID, 'founder', `Goal: ${msg}`);
+        }
+        const goalsFile = join(PROJECT_ROOT, 'data', 'goals.json');
+        const goals = existsSync(goalsFile) ? JSON.parse(readFileSync(goalsFile, 'utf-8')) : [];
+        goals.push({ text: msg, timestamp: new Date().toISOString() });
+        writeFileSync(goalsFile, JSON.stringify(goals, null, 2));
+        reply = `Got it. PM will break "${msg.substring(0, 50)}" into tasks on the next round.`;
+      }
+
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ reply }));
+    }
+
     // ─── Pages ──────────────────────────────────────
     else if (req.url === '/setup' || req.url === '/onboarding') {
       res.writeHead(200, { 'Content-Type': 'text/html' });

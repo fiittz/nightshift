@@ -104,6 +104,25 @@
     .control-btn.danger-btn { background:rgba(239,68,68,0.1); border-color:rgba(239,68,68,0.3); color:var(--red); }
     .section-divider { height:1px; background:var(--border); margin:8px 12px; }
     ::-webkit-scrollbar { width:4px; } ::-webkit-scrollbar-track { background:transparent; } ::-webkit-scrollbar-thumb { background:#333; border-radius:2px; }
+
+    /* Chat panel */
+    .chat-panel { width:320px; background:var(--bg-sidebar); border-left:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; transition:width .2s; overflow:hidden; }
+    .chat-panel.collapsed { width:0; border-left:none; }
+    .chat-header { padding:14px 16px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+    .chat-header h3 { font-size:13px; font-weight:600; }
+    .chat-messages { flex:1; overflow-y:auto; padding:12px; display:flex; flex-direction:column; gap:8px; }
+    .chat-msg { max-width:90%; padding:10px 14px; border-radius:12px; font-size:13px; line-height:1.5; word-wrap:break-word; }
+    .chat-msg.user { align-self:flex-end; background:var(--bg-hover); border:1px solid var(--border-card); color:var(--fg); border-bottom-right-radius:4px; }
+    .chat-msg.coo { align-self:flex-start; background:#141414; border:1px solid #1a1a1a; color:var(--fg-dim); border-bottom-left-radius:4px; }
+    .chat-msg .msg-meta { font-size:10px; color:var(--fg-muted); margin-top:4px; }
+    .chat-input-wrap { padding:12px; border-top:1px solid var(--border); }
+    .chat-input { width:100%; background:var(--bg-hover); border:1px solid var(--border-card); border-radius:8px; padding:10px 14px; color:var(--fg); font-size:13px; font-family:inherit; resize:none; outline:none; }
+    .chat-input:focus { border-color:var(--fg-muted); }
+    .chat-input::placeholder { color:#444; }
+    .chat-typing { padding:4px 12px; font-size:11px; color:var(--fg-muted); font-style:italic; }
+    .chat-toggle { position:fixed; bottom:20px; right:20px; z-index:100; background:var(--bg-card); border:1px solid var(--border-card); border-radius:50%; width:48px; height:48px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:20px; color:var(--fg-dim); transition:all .2s; }
+    .chat-toggle:hover { border-color:var(--fg-muted); color:var(--fg); }
+    .chat-toggle.has-panel { display:none; }
   </style>
 </head>
 <body>
@@ -375,7 +394,32 @@
 
     <div class="content hidden" id="tab-settings"><div class="content-inner"><div class="card"><div class="card-header"><h2>Repositories</h2><button class="btn" onclick="document.getElementById('arf').style.display='block'">+ Add Repo</button></div><div class="card-body" id="s-repos"></div><div id="arf" style="display:none;padding:16px 20px;border-top:1px solid var(--border)"><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px"><input id="r-url" placeholder="https://github.com/user/repo.git" class="input"><input id="r-branch" placeholder="Branch (main)" class="input"></div><input id="r-desc" placeholder="Description" class="input" style="margin-bottom:10px"><div style="display:flex;gap:8px"><button class="btn" onclick="addRepo()">Save</button><button class="btn btn-outline" onclick="document.getElementById('arf').style.display='none'">Cancel</button></div></div></div><div class="card"><div class="card-header"><h2>Company</h2></div><div style="padding:16px 20px;display:grid;gap:14px"><label style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>Require approval for hires</span><input type="checkbox" id="s-approval" onchange="saveCo()"></label><label style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>Default model</span><select id="s-model" onchange="saveCo()" class="input" style="width:auto"><option value="deepseek/deepseek-v3.2">DeepSeek V3.2</option><option value="deepseek/deepseek-r1-0528">DeepSeek R1</option><option value="qwen/qwen3-235b-a22b-2507">Qwen 3 235B</option></select></label></div></div><div class="card"><div class="card-header"><h2>Agents</h2></div><div class="card-body" id="s-agents"></div></div><div class="card"><div class="card-header"><h2>Budget</h2></div><div id="s-budget"></div></div></div></div>
   </div>
+
+  <!-- Chat Panel -->
+  <div class="chat-panel" id="chat-panel">
+    <div class="chat-header">
+      <h3>COO</h3>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span style="font-size:10px;color:var(--fg-muted)" id="chat-source">Dashboard</span>
+        <button onclick="toggleChat()" style="background:none;border:none;color:var(--fg-muted);cursor:pointer;font-size:16px">&#10005;</button>
+      </div>
+    </div>
+    <div class="chat-messages" id="chat-messages">
+      <div class="chat-msg coo">
+        <div>Hi! I'm your COO. Tell me what you need — goals, status updates, approvals. I'll handle it.</div>
+        <div class="msg-meta">COO &middot; just now</div>
+      </div>
+    </div>
+    <div id="chat-typing" class="chat-typing" style="display:none">COO is thinking...</div>
+    <div class="chat-input-wrap">
+      <textarea class="chat-input" id="chat-input" placeholder="Type a message..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea>
+    </div>
+  </div>
 </div>
+
+<!-- Chat toggle button (visible when panel is closed) -->
+<div class="chat-toggle" id="chat-toggle" onclick="toggleChat()">&#128172;</div>
+
 <script>
 // AD is built dynamically from company.json
 let AD=[];
@@ -834,6 +878,46 @@ function rMon(){
       <span class="control-value">${r.timestamp?.substring(11,19)||''}</span>
     </div>`).join('') : '<div class="empty" style="color:var(--green)">No errors</div>';
 }
+// ─── Chat Panel ─────────────────────────────────
+
+let chatOpen = true;
+function toggleChat() {
+  chatOpen = !chatOpen;
+  document.getElementById('chat-panel').classList.toggle('collapsed', !chatOpen);
+  document.getElementById('chat-toggle').style.display = chatOpen ? 'none' : 'flex';
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+
+  // Add user message
+  const messages = document.getElementById('chat-messages');
+  messages.innerHTML += `<div class="chat-msg user"><div>${esc(msg)}</div><div class="msg-meta">You &middot; just now</div></div>`;
+  messages.scrollTop = messages.scrollHeight;
+
+  // Show typing
+  document.getElementById('chat-typing').style.display = 'block';
+
+  try {
+    const r = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: msg })
+    });
+    const data = await r.json();
+
+    document.getElementById('chat-typing').style.display = 'none';
+    messages.innerHTML += `<div class="chat-msg coo"><div>${esc(data.reply || 'No response')}</div><div class="msg-meta">COO &middot; just now</div></div>`;
+    messages.scrollTop = messages.scrollHeight;
+  } catch (e) {
+    document.getElementById('chat-typing').style.display = 'none';
+    messages.innerHTML += `<div class="chat-msg coo"><div>Error: ${esc(e.message)}</div><div class="msg-meta">System &middot; just now</div></div>`;
+  }
+}
+
 refresh();setInterval(refresh,3000);
 </script>
 </body>
