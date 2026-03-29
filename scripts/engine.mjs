@@ -188,7 +188,10 @@ async function runAgent(agentId, task, taskKey) {
   const knowledge = getRelevantKnowledge(task);
   const knowledgeContext = knowledge.length ? `\n\n## Relevant Knowledge\n${knowledge.map(d => `### ${d.file}\n${d.content}`).join('\n\n')}` : '';
 
-  const systemPrompt = `${instructions}\n\n## Current State\n### Backlog\n${backlog}\n### Prospects\n${prospects}${knowledgeContext}\n\n## Response Format\nRespond with:\n1. THOUGHT: What you're doing (1 sentence)\n2. COMMANDS: Shell commands in \`\`\`bash blocks\n3. FILES: Write files via <!-- write: filename --> before code blocks\n4. RESULT: One line summary of what you did`;
+  const agentWorkspace = join(WORKSPACE, agentId);
+  if (!existsSync(agentWorkspace)) mkdirSync(agentWorkspace, { recursive: true });
+
+  const systemPrompt = `${instructions}\n\n## Current State\n### Backlog\n${backlog}\n### Prospects\n${prospects}${knowledgeContext}\n\n## Your Workspace\nYour working directory is: ${agentWorkspace}\nAll commands run in this directory. All files you create go here unless writing to backlog.json or workspace/.\n\n## IMPORTANT RULES\n- Do NOT overwrite README.md, .gitignore, package.json, or any root config files\n- Write task output files to workspace/ directory\n- Write backlog changes to backlog.json only\n- Do NOT include bash comments (lines starting with #) — they break on Windows\n\n## Response Format\nRespond with:\n1. THOUGHT: What you're doing (1 sentence)\n2. COMMANDS: Shell commands in \`\`\`bash blocks (NO comment lines starting with #)\n3. FILES: Write files via <!-- write: filename --> before code blocks\n4. RESULT: One line summary of what you did`;
 
   const messages = [{ role: 'system', content: systemPrompt }, ...session, { role: 'user', content: task }];
 
@@ -200,35 +203,57 @@ async function runAgent(agentId, task, taskKey) {
     const usage = data.usage || {};
     const duration = Date.now() - startTime;
 
-    // Parse and execute commands
+    // Parse and execute commands — strip comments, run in agent workspace
     const cmdResults = [];
     const cmdRegex = /```(?:bash|sh)\n([\s\S]*?)```/g;
     let match;
     while ((match = cmdRegex.exec(response)) !== null) {
-      const cmd = match[1].trim();
-      logEvent('exec', agentId, { cmd: cmd.substring(0, 80) });
+      // Strip comment-only lines and blank lines (Windows can't handle #)
+      const rawCmd = match[1].trim();
+      const cleanCmd = rawCmd.split('\n')
+        .filter(line => line.trim() && !line.trim().startsWith('#'))
+        .join('\n')
+        .trim();
+      if (!cleanCmd) continue; // Skip empty command blocks
+
+      logEvent('exec', agentId, { cmd: cleanCmd.substring(0, 80) });
       try {
         const cwd = join(WORKSPACE, agentId);
         if (!existsSync(cwd)) mkdirSync(cwd, { recursive: true });
-        const output = execSync(cmd, { cwd, encoding: 'utf-8', timeout: 60000 });
-        cmdResults.push({ cmd: cmd.substring(0, 80), success: true, output: output.substring(0, 300) });
+        const output = execSync(cleanCmd, { cwd, encoding: 'utf-8', timeout: 60000, shell: true });
+        cmdResults.push({ cmd: cleanCmd.substring(0, 80), success: true, output: output.substring(0, 300) });
       } catch (e) {
-        cmdResults.push({ cmd: cmd.substring(0, 80), success: false, error: (e.stderr || e.message).substring(0, 200) });
+        cmdResults.push({ cmd: cleanCmd.substring(0, 80), success: false, error: (e.stderr || e.message).substring(0, 200) });
       }
     }
 
-    // Parse and write files
+    // Parse and write files — scoped to workspace, protected root files
+    const PROTECTED_FILES = ['README.md', '.gitignore', '.env', '.env.example', 'COMPANY.md', 'SPEC.md', 'company.json', 'connections.json', 'marketplace.json', 'schedules.json', 'dashboard/index.html', 'dashboard/server.mjs', 'scripts/engine.mjs', 'scripts/conductor.mjs'];
     const filesWritten = [];
     const fileRegex = /<!-- write: (.+?) -->\s*\n```[\w]*\s*\n([\s\S]*?)```/g;
     while ((match = fileRegex.exec(response)) !== null) {
-      let filename = match[1].trim().replace(/^\/home\/\w+\//, '').replace(/^\/workspace\//, '');
+      let filename = match[1].trim().replace(/^\/home\/\w+\//, '').replace(/^\/workspace\//, '').replace(/^\/c\/Users\/\w+\/nightshift\//, '');
+
+      // Only allow writes to: backlog.json, prospects.json, agenda.json, workspace/*, agents/*
+      const allowedPrefixes = ['backlog.json', 'prospects.json', 'agenda.json', 'workspace/', 'agents/', 'knowledge/', 'data/'];
+      const isAllowed = allowedPrefixes.some(p => filename === p || filename.startsWith(p));
+      const isProtected = PROTECTED_FILES.includes(filename);
+
+      if (isProtected) {
+        logEvent('file_blocked', agentId, { filename, reason: 'protected' });
+        continue;
+      }
+
+      // If not in allowed list, redirect to workspace/<agentId>/
+      const targetPath = isAllowed ? join(ROOT, filename) : join(WORKSPACE, agentId, filename);
+      const actualFilename = isAllowed ? filename : `workspace/${agentId}/${filename}`;
+
       const content = match[2];
-      const fullPath = join(ROOT, filename);
-      const dir = dirname(fullPath);
+      const dir = dirname(targetPath);
       if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
-      writeFileSync(fullPath, content, 'utf-8');
-      filesWritten.push(filename);
-      logEvent('file_written', agentId, { filename, bytes: content.length });
+      writeFileSync(targetPath, content, 'utf-8');
+      filesWritten.push(actualFilename);
+      logEvent('file_written', agentId, { filename: actualFilename, bytes: content.length });
     }
 
     // OBSERVATION: structured result

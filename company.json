@@ -39,13 +39,13 @@
       },
       "budget": {
         "monthlyCentsLimit": 5000,
-        "spentCents": 19,
-        "totalTokens": 3206
+        "spentCents": 25,
+        "totalTokens": 4177
       },
       "stats": {
-        "totalRuns": 3
+        "totalRuns": 4
       },
-      "lastActiveAt": "2026-03-29T15:54:23.196Z"
+      "lastActiveAt": "2026-03-29T16:54:30.991Z"
     },
     {
       "id": "coo",
@@ -133,13 +133,13 @@
       },
       "budget": {
         "monthlyCentsLimit": 3000,
-        "spentCents": 9,
-        "totalTokens": 1942
+        "spentCents": 158,
+        "totalTokens": 25873
       },
       "stats": {
-        "totalRuns": 3
+        "totalRuns": 7
       },
-      "lastActiveAt": "2026-03-29T15:54:26.726Z"
+      "lastActiveAt": "2026-03-29T16:59:32.027Z"
     },
     {
       "id": "backend",
@@ -158,13 +158,13 @@
       },
       "budget": {
         "monthlyCentsLimit": 5000,
-        "spentCents": 6,
-        "totalTokens": 1632
+        "spentCents": 71,
+        "totalTokens": 12673
       },
       "stats": {
-        "totalRuns": 3
+        "totalRuns": 6
       },
-      "lastActiveAt": "2026-03-29T15:54:25.986Z"
+      "lastActiveAt": "2026-03-29T16:58:42.539Z"
     },
     {
       "id": "frontend",
@@ -183,13 +183,13 @@
       },
       "budget": {
         "monthlyCentsLimit": 5000,
-        "spentCents": 92,
-        "totalTokens": 8949
+        "spentCents": 256,
+        "totalTokens": 31959
       },
       "stats": {
-        "totalRuns": 2
+        "totalRuns": 5
       },
-      "lastActiveAt": "2026-03-29T15:55:06.883Z"
+      "lastActiveAt": "2026-03-29T16:59:20.530Z"
     },
     {
       "id": "qa",
@@ -207,13 +207,13 @@
       },
       "budget": {
         "monthlyCentsLimit": 3000,
-        "spentCents": 23,
-        "totalTokens": 3291
+        "spentCents": 49,
+        "totalTokens": 10686
       },
       "stats": {
-        "totalRuns": 3
+        "totalRuns": 6
       },
-      "lastActiveAt": "2026-03-29T15:54:34.459Z"
+      "lastActiveAt": "2026-03-29T16:58:31.119Z"
     },
     {
       "id": "compliance",
@@ -231,13 +231,13 @@
       },
       "budget": {
         "monthlyCentsLimit": 2000,
-        "spentCents": 10,
-        "totalTokens": 1906
+        "spentCents": 79,
+        "totalTokens": 13712
       },
       "stats": {
-        "totalRuns": 3
+        "totalRuns": 6
       },
-      "lastActiveAt": "2026-03-29T15:54:29.088Z"
+      "lastActiveAt": "2026-03-29T16:59:59.994Z"
     },
     {
       "id": "security",
@@ -255,13 +255,13 @@
       },
       "budget": {
         "monthlyCentsLimit": 2000,
-        "spentCents": 55,
-        "totalTokens": 6790
+        "spentCents": 140,
+        "totalTokens": 19924
       },
       "stats": {
-        "totalRuns": 3
+        "totalRuns": 6
       },
-      "lastActiveAt": "2026-03-29T15:54:27.551Z"
+      "lastActiveAt": "2026-03-29T16:59:27.167Z"
     },
     {
       "id": "sdr",
@@ -280,13 +280,13 @@
       },
       "budget": {
         "monthlyCentsLimit": 2000,
-        "spentCents": 35,
-        "totalTokens": 4912
+        "spentCents": 87,
+        "totalTokens": 14848
       },
       "stats": {
-        "totalRuns": 3
+        "totalRuns": 6
       },
-      "lastActiveAt": "2026-03-29T15:54:36.669Z"
+      "lastActiveAt": "2026-03-29T16:58:54.798Z"
     },
     {
       "id": "marketing",
@@ -304,13 +304,13 @@
       },
       "budget": {
         "monthlyCentsLimit": 2000,
-        "spentCents": 105,
-        "totalTokens": 13196
+        "spentCents": 155,
+        "totalTokens": 24575
       },
       "stats": {
-        "totalRuns": 3
+        "totalRuns": 6
       },
-      "lastActiveAt": "2026-03-29T15:54:27.837Z"
+      "lastActiveAt": "2026-03-29T16:58:32.544Z"
     },
     {
       "id": "cs",
@@ -328,13 +328,13 @@
       },
       "budget": {
         "monthlyCentsLimit": 2000,
-        "spentCents": 90,
-        "totalTokens": 10897
+        "spentCents": 133,
+        "totalTokens": 21747
       },
       "stats": {
-        "totalRuns": 3
+        "totalRuns": 6
       },
-      "lastActiveAt": "2026-03-29T15:54:27.225Z"
+      "lastActiveAt": "2026-03-29T16:58:27.515Z"
     },
     {
       "id": "finance-ops",
@@ -352,13 +352,13 @@
       },
       "budget": {
         "monthlyCentsLimit": 1000,
-        "spentCents": 105,
-        "totalTokens": 13152
+        "spentCents": 269,
+        "totalTokens": 42018
       },
       "stats": {
-        "totalRuns": 3
+        "totalRuns": 6
       },
-      "lastActiveAt": "2026-03-29T15:54:26.800Z"
+      "lastActiveAt": "2026-03-29T16:59:08.414Z"
     },
     {
       "id": "data",
@@ -376,13 +376,13 @@
       },
       "budget": {
         "monthlyCentsLimit": 1000,
-        "spentCents": 6,
-        "totalTokens": 886
+        "spentCents": 120,
+        "totalTokens": 17914
       },
       "stats": {
-        "totalRuns": 2
+        "totalRuns": 4
       },
-      "lastActiveAt": "2026-03-29T15:54:27.672Z"
+      "lastActiveAt": "2026-03-29T16:59:35.418Z"
     }
   ],
   "pendingHires": [],
