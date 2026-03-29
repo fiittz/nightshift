@@ -173,8 +173,9 @@ const server = createServer(async (req, res) => {
     // ─── Schedules ──────────────────────────────────
     else if (req.url === '/api/schedules' && req.method === 'POST') {
       const body = await parseBody(req);
+      if (!body?.name) { res.writeHead(400); res.end('{"error":"name required"}'); return; }
       if (useSupabase) {
-        await db.createSchedule({ company_id: COMPANY_ID, name: body.name, agent_id: body.agent, cron: body.cron, task: body.task });
+        await db.createSchedule({ company_id: COMPANY_ID, name: body.name, agent_id: body.agent || 'ceo', cron: body.cron || '0 9 * * *', task: body.task || '' });
       } else {
         const schedules = readJSON('schedules.json') || [];
         schedules.push({ id: `sched-${Date.now()}`, name: body.name, agent: body.agent, cron: body.cron, task: body.task, enabled: true });
@@ -254,7 +255,29 @@ const server = createServer(async (req, res) => {
       const templates = readJSON('marketplace.json') || [];
       const template = templates.find(t => t.id === id);
       if (!template) { res.writeHead(404); res.end('{"error":"not found"}'); return; }
-      res.writeHead(200); res.end(JSON.stringify({ ok: true, agents: template.agents }));
+
+      // Actually create agents from template
+      const ROLE_MAP = { ceo:'Chief Executive Officer', coo:'Chief Operating Officer', cfo:'Chief Financial Officer', cro:'Chief Revenue Officer', pm:'Product Manager', backend:'Backend Engineer', frontend:'Frontend Engineer', qa:'QA Engineer', compliance:'Compliance Specialist', security:'Security & DevOps', sdr:'Sales Development Rep', marketing:'Content & Marketing', cs:'Customer Success', 'finance-ops':'Finance Operations', data:'Data & Analytics' };
+      const DEPT_MAP = { ceo:'Leadership', coo:'Leadership', cfo:'Finance', cro:'Revenue', pm:'Product', backend:'Engineering', frontend:'Engineering', qa:'Quality', compliance:'Quality', security:'Quality', sdr:'Sales', marketing:'Marketing', cs:'Support', 'finance-ops':'Finance', data:'Product' };
+
+      let created = 0;
+      for (const agentId of template.agents) {
+        if (useSupabase) {
+          const existing = await db.getAgent(agentId, COMPANY_ID);
+          if (!existing) {
+            await db.createAgent({ id: agentId, company_id: COMPANY_ID, name: ROLE_MAP[agentId]?.split(' ')[0] || agentId, role: ROLE_MAP[agentId] || agentId, department: DEPT_MAP[agentId] || 'Other', reports_to: agentId === 'ceo' ? null : 'coo' });
+            created++;
+          }
+        } else {
+          const reg = readJSON('company.json') || { agents: [] };
+          if (!reg.agents.find(a => a.id === agentId)) {
+            reg.agents.push({ id: agentId, name: ROLE_MAP[agentId]?.split(' ')[0] || agentId, role: ROLE_MAP[agentId] || agentId, department: DEPT_MAP[agentId] || 'Other', status: 'idle', reportsTo: agentId === 'ceo' ? null : 'coo', budget: { monthlyCentsLimit: 3000, spentCents: 0, totalTokens: 0 }, stats: { totalRuns: 0 } });
+            writeJSON('company.json', reg);
+            created++;
+          }
+        }
+      }
+      res.writeHead(200); res.end(JSON.stringify({ ok: true, created, total: template.agents.length }));
     }
 
     // ─── Onboarding ─────────────────────────────────

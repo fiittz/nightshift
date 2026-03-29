@@ -279,7 +279,22 @@ async function runAgent(agentId, task, taskKey) {
       if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
       writeFileSync(targetPath, content, 'utf-8');
       filesWritten.push(actualFilename);
-      logEvent('file_written', agentId, { filename: actualFilename, bytes: content.length });
+      await logEvent('file_written', agentId, { filename: actualFilename, bytes: content.length });
+
+      // Sync backlog.json to Supabase when PM writes it
+      if (useSupabase && actualFilename === 'backlog.json') {
+        try {
+          const tasks = JSON.parse(content);
+          if (Array.isArray(tasks)) {
+            for (const t of tasks) {
+              if (!t.id) continue;
+              t.company_id = COMPANY_ID;
+              try { await db.upsert('tasks', t); } catch {}
+            }
+            await logEvent('backlog_synced', agentId, { tasks: tasks.length });
+          }
+        } catch {}
+      }
     }
 
     // OBSERVATION: structured result
@@ -350,28 +365,37 @@ async function runAgent(agentId, task, taskKey) {
 
 // ─── PIPELINE LOGIC ─────────────────────────────────────
 
-function advancePipeline() {
-  const backlog = json('backlog.json') || [];
-  let changed = false;
+async function advancePipeline() {
+  let backlog;
+  if (useSupabase) {
+    backlog = await db.getTasks(COMPANY_ID);
+  } else {
+    backlog = json('backlog.json') || [];
+  }
 
-  // in-progress (1+ cycles) → review
   for (const t of backlog.filter(x => x.status === 'in-progress')) {
     t.cycles = (t.cycles || 0) + 1;
-    if (t.cycles >= 1) { t.status = 'review'; logEvent('pipeline', t.assignee, { taskId: t.id, from: 'in-progress', to: 'review' }); changed = true; }
+    if (t.cycles >= 1) {
+      t.status = 'review';
+      await logEvent('pipeline', t.assignee, { taskId: t.id, to: 'review' });
+      if (useSupabase) await db.updateTask(t.id, COMPANY_ID, { status: 'review', cycles: t.cycles });
+    }
   }
-  // review (reviewed) → approved
-  for (const t of backlog.filter(x => x.status === 'review' && x._reviewed)) { t.status = 'approved'; logEvent('pipeline', 'system', { taskId: t.id, to: 'approved' }); changed = true; }
+  for (const t of backlog.filter(x => x.status === 'review' && x._reviewed)) {
+    t.status = 'approved';
+    await logEvent('pipeline', 'system', { taskId: t.id, to: 'approved' });
+    if (useSupabase) await db.updateTask(t.id, COMPANY_ID, { status: 'approved' });
+  }
   for (const t of backlog.filter(x => x.status === 'review' && !x._reviewed)) { t._reviewed = true; }
-  // approved (scanned) → ready
   for (const t of backlog.filter(x => x.status === 'approved' && x._scanned)) {
     t.security_status = 'cleared'; t.status = 'ready';
-    logEvent('pipeline', 'system', { taskId: t.id, to: 'ready' });
-    changed = true;
+    await logEvent('pipeline', 'system', { taskId: t.id, to: 'ready' });
+    if (useSupabase) await db.updateTask(t.id, COMPANY_ID, { status: 'ready', security_status: 'cleared' });
   }
   for (const t of backlog.filter(x => x.status === 'approved' && !x._scanned)) { t._scanned = true; }
 
-  if (changed) save('backlog.json', backlog);
-  return json('backlog.json') || [];
+  if (!useSupabase) save('backlog.json', backlog);
+  return useSupabase ? await db.getTasks(COMPANY_ID) : json('backlog.json') || [];
 }
 
 function assignTasks(backlog) {
@@ -393,8 +417,9 @@ function assignTasks(backlog) {
     t.branch = isSales ? null : `${agent}/${(t.title || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '')}`;
     busy.add(agent);
     logEvent('assigned', 'coo', { taskId: t.id, agent });
+    if (useSupabase) { try { db.updateTask(t.id, COMPANY_ID, { status: 'in-progress', assignee: agent, branch: t.branch }); } catch {} }
   }
-  save('backlog.json', backlog);
+  if (!useSupabase) save('backlog.json', backlog);
 }
 
 function getAgentJob(agent, backlog) {
@@ -466,9 +491,9 @@ async function round(num) {
   }
 
   // Phase 2: Advance pipeline + assign tasks
-  backlog = advancePipeline();
+  backlog = await advancePipeline();
   assignTasks(backlog);
-  backlog = json('backlog.json') || [];
+  backlog = useSupabase ? await db.getTasks(COMPANY_ID) : json('backlog.json') || [];
 
   // Phase 3: Fire ALL working agents in parallel
   const workingAgents = (_agents || []).filter(a => {
