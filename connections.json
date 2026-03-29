@@ -1,6 +1,6 @@
 {
   "compute": {
-    "active": "oracle",
+    "active": "local",
     "providers": {
       "local": {
         "name": "Local Machine",
@@ -11,7 +11,7 @@
         "name": "Oracle Cloud",
         "status": "disconnected",
         "config": {
-          "host": "145.241.243.171",
+          "host": "test",
           "user": "ubuntu",
           "keyPath": "~/.ssh/oracle_opc"
         }
@@ -134,7 +134,7 @@
     "telegram": {
       "name": "Telegram",
       "icon": "msg",
-      "status": "disconnected",
+      "status": "connected",
       "config": {
         "botTokenEnvVar": "TELEGRAM_BOT_TOKEN",
         "chatIdEnvVar": "TELEGRAM_CHAT_ID"
