@@ -1,1 +1,2345 @@
-[]
+[
+  {
+    "id": "evt-1774804020519-cj5j",
+    "type": "engine_start",
+    "agentId": "system",
+    "data": {
+      "model": "deepseek/deepseek-v3.2",
+      "rounds": 3
+    },
+    "timestamp": "2026-03-29T17:07:00.519Z"
+  },
+  {
+    "id": "evt-1774804020688-8xvl",
+    "type": "round_start",
+    "agentId": "coo",
+    "data": {
+      "round": 1,
+      "maxRounds": 3
+    },
+    "timestamp": "2026-03-29T17:07:00.688Z"
+  },
+  {
+    "id": "evt-1774804020695-84wa",
+    "type": "action",
+    "agentId": "ceo",
+    "data": {
+      "task": "Set agenda. Backlog: 0 tasks. Budget: $15.42. Write agenda.json. No bash.",
+      "taskKey": "agenda"
+    },
+    "timestamp": "2026-03-29T17:07:00.695Z"
+  },
+  {
+    "id": "evt-1774804027601-tty8",
+    "type": "file_written",
+    "agentId": "ceo",
+    "data": {
+      "filename": "agenda.json",
+      "bytes": 1089
+    },
+    "timestamp": "2026-03-29T17:07:07.601Z"
+  },
+  {
+    "id": "evt-1774804027602-j7jg",
+    "type": "observation",
+    "agentId": "ceo",
+    "data": {
+      "tokens": 1115,
+      "cost": 6,
+      "files": 1,
+      "cmds": 0
+    },
+    "timestamp": "2026-03-29T17:07:07.602Z"
+  },
+  {
+    "id": "evt-1774804027605-se9h",
+    "type": "action",
+    "agentId": "pm",
+    "data": {
+      "task": "CEO agenda:\n- [high] Set up basic test suite for core functionality\n- [medium] Research and contact ",
+      "taskKey": "agenda"
+    },
+    "timestamp": "2026-03-29T17:07:07.605Z"
+  },
+  {
+    "id": "evt-1774804042135-ti9m",
+    "type": "exec",
+    "agentId": "pm",
+    "data": {
+      "cmd": "cat backlog.json"
+    },
+    "timestamp": "2026-03-29T17:07:22.135Z"
+  },
+  {
+    "id": "evt-1774804042170-dmkb",
+    "type": "file_written",
+    "agentId": "pm",
+    "data": {
+      "filename": "backlog.json",
+      "bytes": 2227
+    },
+    "timestamp": "2026-03-29T17:07:22.170Z"
+  },
+  {
+    "id": "evt-1774804042171-4ntq",
+    "type": "observation",
+    "agentId": "pm",
+    "data": {
+      "tokens": 1324,
+      "cost": 9,
+      "files": 1,
+      "cmds": 1
+    },
+    "timestamp": "2026-03-29T17:07:22.171Z"
+  },
+  {
+    "id": "evt-1774804042175-e1rr",
+    "type": "assigned",
+    "agentId": "coo",
+    "data": {
+      "taskId": "TASK-001",
+      "agent": "backend"
+    },
+    "timestamp": "2026-03-29T17:07:22.175Z"
+  },
+  {
+    "id": "evt-1774804042175-613t",
+    "type": "assigned",
+    "agentId": "coo",
+    "data": {
+      "taskId": "TASK-002",
+      "agent": "sdr"
+    },
+    "timestamp": "2026-03-29T17:07:22.175Z"
+  },
+  {
+    "id": "evt-1774804042176-kph4",
+    "type": "assigned",
+    "agentId": "coo",
+    "data": {
+      "taskId": "TASK-004",
+      "agent": "security"
+    },
+    "timestamp": "2026-03-29T17:07:22.176Z"
+  },
+  {
+    "id": "evt-1774804042177-ru4o",
+    "type": "action",
+    "agentId": "pm",
+    "data": {
+      "task": "Review backlog (5 tasks). Scan for gaps. Write new tasks.",
+      "taskKey": "maint"
+    },
+    "timestamp": "2026-03-29T17:07:22.177Z"
+  },
+  {
+    "id": "evt-1774804042181-emll",
+    "type": "action",
+    "agentId": "backend",
+    "data": {
+      "task": "Work on TASK-001: \"Set up basic test suite for core functionality\". Set up a basic test framework (e",
+      "taskKey": "TASK-001"
+    },
+    "timestamp": "2026-03-29T17:07:22.181Z"
+  },
+  {
+    "id": "evt-1774804042184-c2pw",
+    "type": "action",
+    "agentId": "frontend",
+    "data": {
+      "task": "Scan frontend for issues. Fix on frontend/maintenance.",
+      "taskKey": "maint"
+    },
+    "timestamp": "2026-03-29T17:07:22.184Z"
+  },
+  {
+    "id": "evt-1774804042188-1kli",
+    "type": "action",
+    "agentId": "qa",
+    "data": {
+      "task": "Run full test suite. Report failures.",
+      "taskKey": "maint"
+    },
+    "timestamp": "2026-03-29T17:07:22.188Z"
+  },
+  {
+    "id": "evt-1774804042191-6989",
+    "type": "action",
+    "agentId": "compliance",
+    "data": {
+      "task": "Audit domain logic for correctness.",
+      "taskKey": "maint"
+    },
+    "timestamp": "2026-03-29T17:07:22.191Z"
+  },
+  {
+    "id": "evt-1774804042194-lgar",
+    "type": "action",
+    "agentId": "security",
+    "data": {
+      "task": "Work on TASK-004: \"Audit codebase for security vulnerabilities\". Scan codebase for common security i",
+      "taskKey": "TASK-004"
+    },
+    "timestamp": "2026-03-29T17:07:22.195Z"
+  },
+  {
+    "id": "evt-1774804042198-p25f",
+    "type": "action",
+    "agentId": "sdr",
+    "data": {
+      "task": "Work on TASK-002: \"Research Vercel prospect\". Research Vercel company, their needs, and prepare init",
+      "taskKey": "TASK-002"
+    },
+    "timestamp": "2026-03-29T17:07:22.198Z"
+  },
+  {
+    "id": "evt-1774804042201-kzvm",
+    "type": "action",
+    "agentId": "marketing",
+    "data": {
+      "task": "Create content: blog post, social media, or case study.",
+      "taskKey": "maint"
+    },
+    "timestamp": "2026-03-29T17:07:22.201Z"
+  },
+  {
+    "id": "evt-1774804042204-tx2k",
+    "type": "action",
+    "agentId": "cs",
+    "data": {
+      "task": "Check customer health. Draft onboarding guides.",
+      "taskKey": "maint"
+    },
+    "timestamp": "2026-03-29T17:07:22.204Z"
+  },
+  {
+    "id": "evt-1774804042207-io6m",
+    "type": "action",
+    "agentId": "finance-ops",
+    "data": {
+      "task": "Review budget. Track expenses. Generate report.",
+      "taskKey": "maint"
+    },
+    "timestamp": "2026-03-29T17:07:22.207Z"
+  },
+  {
+    "id": "evt-1774804042210-zm2u",
+    "type": "action",
+    "agentId": "data",
+    "data": {
+      "task": "Analyze usage metrics. Build dashboard insights.",
+      "taskKey": "maint"
+    },
+    "timestamp": "2026-03-29T17:07:22.210Z"
+  },
+  {
+    "id": "evt-1774804044701-58y9",
+    "type": "exec",
+    "agentId": "qa",
+    "data": {
+      "cmd": "git checkout main\ngit pull origin main\nnpm test"
+    },
+    "timestamp": "2026-03-29T17:07:24.701Z"
+  },
+  {
+    "id": "evt-1774804044752-ikrz",
+    "type": "observation",
+    "agentId": "qa",
+    "data": {
+      "tokens": 1234,
+      "cost": 4,
+      "files": 0,
+      "cmds": 1
+    },
+    "timestamp": "2026-03-29T17:07:24.752Z"
+  },
+  {
+    "id": "evt-1774804047859-h5l0",
+    "type": "exec",
+    "agentId": "backend",
+    "data": {
+      "cmd": "git checkout -b backend/set-up-basic-test-suite-for-core-functionality"
+    },
+    "timestamp": "2026-03-29T17:07:27.859Z"
+  },
+  {
+    "id": "evt-1774804047907-xr4d",
+    "type": "exec",
+    "agentId": "backend",
+    "data": {
+      "cmd": "ls -la"
+    },
+    "timestamp": "2026-03-29T17:07:27.907Z"
+  },
+  {
+    "id": "evt-1774804047946-313l",
+    "type": "observation",
+    "agentId": "backend",
+    "data": {
+      "tokens": 1350,
+      "cost": 4,
+      "files": 0,
+      "cmds": 2
+    },
+    "timestamp": "2026-03-29T17:07:27.946Z"
+  },
+  {
+    "id": "evt-1774804051253-p198",
+    "type": "exec",
+    "agentId": "frontend",
+    "data": {
+      "cmd": "git checkout main\ngit pull origin main\ngit checkout -b frontend/maintenance"
+    },
+    "timestamp": "2026-03-29T17:07:31.253Z"
+  },
+  {
+    "id": "evt-1774804051302-y8dk",
+    "type": "exec",
+    "agentId": "frontend",
+    "data": {
+      "cmd": "find . -name \"*.html\" -o -name \"*.js\" -o -name \"*.jsx\" -o -name \"*.css\" | head -"
+    },
+    "timestamp": "2026-03-29T17:07:31.302Z"
+  },
+  {
+    "id": "evt-1774804051358-n1xr",
+    "type": "observation",
+    "agentId": "frontend",
+    "data": {
+      "tokens": 1733,
+      "cost": 9,
+      "files": 0,
+      "cmds": 2
+    },
+    "timestamp": "2026-03-29T17:07:31.358Z"
+  },
+  {
+    "id": "evt-1774804055123-6gom",
+    "type": "exec",
+    "agentId": "compliance",
+    "data": {
+      "cmd": "find .. -type f -name \"*.js\" -o -name \"*.ts\" -o -name \"*.json\" | grep -v node_mo"
+    },
+    "timestamp": "2026-03-29T17:07:35.123Z"
+  },
+  {
+    "id": "evt-1774804055187-gpj3",
+    "type": "exec",
+    "agentId": "compliance",
+    "data": {
+      "cmd": "ls -la ../"
+    },
+    "timestamp": "2026-03-29T17:07:35.187Z"
+  },
+  {
+    "id": "evt-1774804055267-dtxu",
+    "type": "exec",
+    "agentId": "compliance",
+    "data": {
+      "cmd": "find .. -type f -name \"*.js\" -o -name \"*.ts\" | grep -v node_modules | grep -v \"."
+    },
+    "timestamp": "2026-03-29T17:07:35.267Z"
+  },
+  {
+    "id": "evt-1774804055299-dqbj",
+    "type": "exec",
+    "agentId": "compliance",
+    "data": {
+      "cmd": "cat ../package.json"
+    },
+    "timestamp": "2026-03-29T17:07:35.299Z"
+  },
+  {
+    "id": "evt-1774804055334-z81c",
+    "type": "exec",
+    "agentId": "compliance",
+    "data": {
+      "cmd": "if [ -f \"../server.js\" ]; then cat ../server.js; elif [ -f \"../index.js\" ]; then"
+    },
+    "timestamp": "2026-03-29T17:07:35.334Z"
+  },
+  {
+    "id": "evt-1774804055353-p5bn",
+    "type": "observation",
+    "agentId": "compliance",
+    "data": {
+      "tokens": 1858,
+      "cost": 11,
+      "files": 0,
+      "cmds": 5
+    },
+    "timestamp": "2026-03-29T17:07:35.353Z"
+  },
+  {
+    "id": "evt-1774804063089-rufj",
+    "type": "exec",
+    "agentId": "data",
+    "data": {
+      "cmd": "ls -la"
+    },
+    "timestamp": "2026-03-29T17:07:43.089Z"
+  },
+  {
+    "id": "evt-1774804063124-fssc",
+    "type": "exec",
+    "agentId": "data",
+    "data": {
+      "cmd": "find . -name \"*.json\" -o -name \"*.csv\" -o -name \"*.log\" | head -20"
+    },
+    "timestamp": "2026-03-29T17:07:43.124Z"
+  },
+  {
+    "id": "evt-1774804063181-6gp6",
+    "type": "exec",
+    "agentId": "data",
+    "data": {
+      "cmd": "mkdir -p workspace/dashboard"
+    },
+    "timestamp": "2026-03-29T17:07:43.181Z"
+  },
+  {
+    "id": "evt-1774804063198-1axz",
+    "type": "exec",
+    "agentId": "data",
+    "data": {
+      "cmd": "find . -type f \\( -name \"*.json\" -o -name \"*.csv\" -o -name \"*.log\" \\) -exec ls -"
+    },
+    "timestamp": "2026-03-29T17:07:43.198Z"
+  },
+  {
+    "id": "evt-1774804063258-yp99",
+    "type": "observation",
+    "agentId": "data",
+    "data": {
+      "tokens": 2546,
+      "cost": 20,
+      "files": 0,
+      "cmds": 4
+    },
+    "timestamp": "2026-03-29T17:07:43.258Z"
+  },
+  {
+    "id": "evt-1774804068590-0xdo",
+    "type": "exec",
+    "agentId": "security",
+    "data": {
+      "cmd": "cd C:\\Users\\onejf\\nightshift"
+    },
+    "timestamp": "2026-03-29T17:07:48.590Z"
+  },
+  {
+    "id": "evt-1774804068606-ouf5",
+    "type": "exec",
+    "agentId": "security",
+    "data": {
+      "cmd": "find . -name \"package.json\" -type f"
+    },
+    "timestamp": "2026-03-29T17:07:48.606Z"
+  },
+  {
+    "id": "evt-1774804068661-o4jy",
+    "type": "exec",
+    "agentId": "security",
+    "data": {
+      "cmd": "find . -name \"*.env*\" -type f"
+    },
+    "timestamp": "2026-03-29T17:07:48.661Z"
+  },
+  {
+    "id": "evt-1774804068715-l2s1",
+    "type": "exec",
+    "agentId": "security",
+    "data": {
+      "cmd": "find . -name \"*.json\" -type f | head -20"
+    },
+    "timestamp": "2026-03-29T17:07:48.715Z"
+  },
+  {
+    "id": "evt-1774804068770-ruhx",
+    "type": "exec",
+    "agentId": "security",
+    "data": {
+      "cmd": "find . -name \"*.js\" -type f | head -20"
+    },
+    "timestamp": "2026-03-29T17:07:48.770Z"
+  },
+  {
+    "id": "evt-1774804068823-kgtz",
+    "type": "exec",
+    "agentId": "security",
+    "data": {
+      "cmd": "find . -name \"*.ts\" -type f | head -20"
+    },
+    "timestamp": "2026-03-29T17:07:48.823Z"
+  },
+  {
+    "id": "evt-1774804068875-vaio",
+    "type": "exec",
+    "agentId": "security",
+    "data": {
+      "cmd": "find . -name \"*.py\" -type f | head -20"
+    },
+    "timestamp": "2026-03-29T17:07:48.875Z"
+  },
+  {
+    "id": "evt-1774804068930-27x9",
+    "type": "exec",
+    "agentId": "security",
+    "data": {
+      "cmd": "find . -name \"*.md\" -type f | head -10"
+    },
+    "timestamp": "2026-03-29T17:07:48.930Z"
+  },
+  {
+    "id": "evt-1774804068986-crrc",
+    "type": "exec",
+    "agentId": "security",
+    "data": {
+      "cmd": "ls -la"
+    },
+    "timestamp": "2026-03-29T17:07:48.986Z"
+  },
+  {
+    "id": "evt-1774804069017-1kzk",
+    "type": "exec",
+    "agentId": "security",
+    "data": {
+      "cmd": "find . -type f -name \"*.js\" -o -name \"*.ts\" -o -name \"*.py\" -o -name \"*.json\" -o"
+    },
+    "timestamp": "2026-03-29T17:07:49.017Z"
+  },
+  {
+    "id": "evt-1774804069075-9vyj",
+    "type": "exec",
+    "agentId": "security",
+    "data": {
+      "cmd": "cd C:\\Users\\onejf\\nightshift\\workspace\\security"
+    },
+    "timestamp": "2026-03-29T17:07:49.075Z"
+  },
+  {
+    "id": "evt-1774804069090-8mq3",
+    "type": "observation",
+    "agentId": "security",
+    "data": {
+      "tokens": 3055,
+      "cost": 23,
+      "files": 0,
+      "cmds": 11
+    },
+    "timestamp": "2026-03-29T17:07:49.090Z"
+  },
+  {
+    "id": "evt-1774804069345-5gj7",
+    "type": "exec",
+    "agentId": "pm",
+    "data": {
+      "cmd": "find . -type f -name \"*.js\" -o -name \"*.ts\" -o -name \"*.json\" | grep -v node_mod"
+    },
+    "timestamp": "2026-03-29T17:07:49.345Z"
+  },
+  {
+    "id": "evt-1774804069402-sp4q",
+    "type": "exec",
+    "agentId": "pm",
+    "data": {
+      "cmd": "ls -la"
+    },
+    "timestamp": "2026-03-29T17:07:49.402Z"
+  },
+  {
+    "id": "evt-1774804069430-gsc5",
+    "type": "exec",
+    "agentId": "pm",
+    "data": {
+      "cmd": "cat package.json 2>/dev/null || echo \"No package.json found\""
+    },
+    "timestamp": "2026-03-29T17:07:49.430Z"
+  },
+  {
+    "id": "evt-1774804069445-ytqo",
+    "type": "observation",
+    "agentId": "pm",
+    "data": {
+      "tokens": 2766,
+      "cost": 20,
+      "files": 0,
+      "cmds": 3
+    },
+    "timestamp": "2026-03-29T17:07:49.445Z"
+  },
+  {
+    "id": "evt-1774804076935-nwdq",
+    "type": "exec",
+    "agentId": "cs",
+    "data": {
+      "cmd": "ls -la"
+    },
+    "timestamp": "2026-03-29T17:07:56.935Z"
+  },
+  {
+    "id": "evt-1774804076973-0ikm",
+    "type": "exec",
+    "agentId": "cs",
+    "data": {
+      "cmd": "find . -name \"*.json\" -type f | grep -E \"(customer|prospect)\" | head -10"
+    },
+    "timestamp": "2026-03-29T17:07:56.973Z"
+  },
+  {
+    "id": "evt-1774804077034-b38w",
+    "type": "exec",
+    "agentId": "cs",
+    "data": {
+      "cmd": "find . -name \"*.md\" -type f | head -10"
+    },
+    "timestamp": "2026-03-29T17:07:57.034Z"
+  },
+  {
+    "id": "evt-1774804077087-1kz6",
+    "type": "exec",
+    "agentId": "cs",
+    "data": {
+      "cmd": "npm install @ourplatform/sdk\n   yarn add @ourplatform/sdk"
+    },
+    "timestamp": "2026-03-29T17:07:57.087Z"
+  },
+  {
+    "id": "evt-1774804078336-g25z",
+    "type": "exec",
+    "agentId": "cs",
+    "data": {
+      "cmd": "npm install @ourplatform/sdk"
+    },
+    "timestamp": "2026-03-29T17:07:58.336Z"
+  },
+  {
+    "id": "evt-1774804079306-etu8",
+    "type": "observation",
+    "agentId": "cs",
+    "data": {
+      "tokens": 2685,
+      "cost": 21,
+      "files": 0,
+      "cmds": 5
+    },
+    "timestamp": "2026-03-29T17:07:59.306Z"
+  },
+  {
+    "id": "evt-1774804079311-c7dw",
+    "type": "exec",
+    "agentId": "sdr",
+    "data": {
+      "cmd": "cd C:\\Users\\onejf\\nightshift\\workspace\\sdr"
+    },
+    "timestamp": "2026-03-29T17:07:59.311Z"
+  },
+  {
+    "id": "evt-1774804079328-28w8",
+    "type": "observation",
+    "agentId": "sdr",
+    "data": {
+      "tokens": 2837,
+      "cost": 21,
+      "files": 0,
+      "cmds": 1
+    },
+    "timestamp": "2026-03-29T17:07:59.328Z"
+  },
+  {
+    "id": "evt-1774804079331-syhu",
+    "type": "exec",
+    "agentId": "marketing",
+    "data": {
+      "cmd": "mkdir -p workspace/content"
+    },
+    "timestamp": "2026-03-29T17:07:59.331Z"
+  },
+  {
+    "id": "evt-1774804079346-mqxw",
+    "type": "observation",
+    "agentId": "marketing",
+    "data": {
+      "tokens": 2617,
+      "cost": 20,
+      "files": 0,
+      "cmds": 1
+    },
+    "timestamp": "2026-03-29T17:07:59.346Z"
+  },
+  {
+    "id": "evt-1774804080130-cv4p",
+    "type": "exec",
+    "agentId": "finance-ops",
+    "data": {
+      "cmd": "mkdir -p workspace"
+    },
+    "timestamp": "2026-03-29T17:08:00.130Z"
+  },
+  {
+    "id": "evt-1774804080146-547m",
+    "type": "exec",
+    "agentId": "finance-ops",
+    "data": {
+      "cmd": "python budget_tracker.py"
+    },
+    "timestamp": "2026-03-29T17:08:00.146Z"
+  },
+  {
+    "id": "evt-1774804080247-gubj",
+    "type": "exec",
+    "agentId": "finance-ops",
+    "data": {
+      "cmd": "python example_usage.py"
+    },
+    "timestamp": "2026-03-29T17:08:00.247Z"
+  },
+  {
+    "id": "evt-1774804080291-n4x8",
+    "type": "exec",
+    "agentId": "finance-ops",
+    "data": {
+      "cmd": "ls -la workspace/"
+    },
+    "timestamp": "2026-03-29T17:08:00.291Z"
+  },
+  {
+    "id": "evt-1774804080325-3iqj",
+    "type": "file_written",
+    "agentId": "finance-ops",
+    "data": {
+      "filename": "workspace/budget_tracker.py",
+      "bytes": 8499
+    },
+    "timestamp": "2026-03-29T17:08:00.325Z"
+  },
+  {
+    "id": "evt-1774804080326-wegr",
+    "type": "file_written",
+    "agentId": "finance-ops",
+    "data": {
+      "filename": "workspace/example_usage.py",
+      "bytes": 1594
+    },
+    "timestamp": "2026-03-29T17:08:00.326Z"
+  },
+  {
+    "id": "evt-1774804080327-dehv",
+    "type": "file_written",
+    "agentId": "finance-ops",
+    "data": {
+      "filename": "workspace/requirements.txt",
+      "bytes": 97
+    },
+    "timestamp": "2026-03-29T17:08:00.327Z"
+  },
+  {
+    "id": "evt-1774804080328-40qy",
+    "type": "file_written",
+    "agentId": "finance-ops",
+    "data": {
+      "filename": "workspace/README.md",
+      "bytes": 753
+    },
+    "timestamp": "2026-03-29T17:08:00.328Z"
+  },
+  {
+    "id": "evt-1774804080329-cggs",
+    "type": "observation",
+    "agentId": "finance-ops",
+    "data": {
+      "tokens": 3943,
+      "cost": 35,
+      "files": 4,
+      "cmds": 4
+    },
+    "timestamp": "2026-03-29T17:08:00.329Z"
+  },
+  {
+    "id": "evt-1774804080332-9zat",
+    "type": "round_end",
+    "agentId": "coo",
+    "data": {
+      "round": 1,
+      "agentsFired": 11
+    },
+    "timestamp": "2026-03-29T17:08:00.332Z"
+  },
+  {
+    "id": "evt-1774804083535-dxm6",
+    "type": "round_start",
+    "agentId": "coo",
+    "data": {
+      "round": 2,
+      "maxRounds": 3
+    },
+    "timestamp": "2026-03-29T17:08:03.535Z"
+  },
+  {
+    "id": "evt-1774804083536-bey3",
+    "type": "pipeline",
+    "agentId": "backend",
+    "data": {
+      "taskId": "TASK-001",
+      "from": "in-progress",
+      "to": "review"
+    },
+    "timestamp": "2026-03-29T17:08:03.536Z"
+  },
+  {
+    "id": "evt-1774804083537-jpzs",
+    "type": "pipeline",
+    "agentId": "sdr",
+    "data": {
+      "taskId": "TASK-002",
+      "from": "in-progress",
+      "to": "review"
+    },
+    "timestamp": "2026-03-29T17:08:03.537Z"
+  },
+  {
+    "id": "evt-1774804083538-jcix",
+    "type": "pipeline",
+    "agentId": "security",
+    "data": {
+      "taskId": "TASK-004",
+      "from": "in-progress",
+      "to": "review"
+    },
+    "timestamp": "2026-03-29T17:08:03.538Z"
+  },
+  {
+    "id": "evt-1774804083539-llaj",
+    "type": "assigned",
+    "agentId": "coo",
+    "data": {
+      "taskId": "TASK-003",
+      "agent": "sdr"
+    },
+    "timestamp": "2026-03-29T17:08:03.539Z"
+  },
+  {
+    "id": "evt-1774804083540-00z0",
+    "type": "assigned",
+    "agentId": "coo",
+    "data": {
+      "taskId": "TASK-005",
+      "agent": "backend"
+    },
+    "timestamp": "2026-03-29T17:08:03.540Z"
+  },
+  {
+    "id": "evt-1774804083541-xczp",
+    "type": "action",
+    "agentId": "pm",
+    "data": {
+      "task": "Review backlog (5 tasks). Scan for gaps. Write new tasks.",
+      "taskKey": "maint"
+    },
+    "timestamp": "2026-03-29T17:08:03.541Z"
+  },
+  {
+    "id": "evt-1774804083545-6p6m",
+    "type": "action",
+    "agentId": "backend",
+    "data": {
+      "task": "Work on TASK-005: \"Review existing code for bugs or tech debt\". Review current codebase for bugs, an",
+      "taskKey": "TASK-005"
+    },
+    "timestamp": "2026-03-29T17:08:03.545Z"
+  },
+  {
+    "id": "evt-1774804083548-acu5",
+    "type": "action",
+    "agentId": "frontend",
+    "data": {
+      "task": "Scan frontend for issues. Fix on frontend/maintenance.",
+      "taskKey": "maint"
+    },
+    "timestamp": "2026-03-29T17:08:03.548Z"
+  },
+  {
+    "id": "evt-1774804083551-vui8",
+    "type": "action",
+    "agentId": "qa",
+    "data": {
+      "task": "Review TASK-001: \"Set up basic test suite for core functionality\" on backend/set-up-basic-test-suite",
+      "taskKey": "TASK-001"
+    },
+    "timestamp": "2026-03-29T17:08:03.551Z"
+  },
+  {
+    "id": "evt-1774804083556-mhmt",
+    "type": "action",
+    "agentId": "compliance",
+    "data": {
+      "task": "Audit domain logic for correctness.",
+      "taskKey": "maint"
+    },
+    "timestamp": "2026-03-29T17:08:03.556Z"
+  },
+  {
+    "id": "evt-1774804083560-gro9",
+    "type": "action",
+    "agentId": "security",
+    "data": {
+      "task": "Full security audit: secrets, deps, lint.",
+      "taskKey": "maint"
+    },
+    "timestamp": "2026-03-29T17:08:03.560Z"
+  },
+  {
+    "id": "evt-1774804083563-gmc9",
+    "type": "action",
+    "agentId": "sdr",
+    "data": {
+      "task": "Work on TASK-003: \"Research Netlify prospect\". Research Netlify company, their needs, and prepare in",
+      "taskKey": "TASK-003"
+    },
+    "timestamp": "2026-03-29T17:08:03.563Z"
+  },
+  {
+    "id": "evt-1774804083566-zeii",
+    "type": "action",
+    "agentId": "marketing",
+    "data": {
+      "task": "Create content: blog post, social media, or case study.",
+      "taskKey": "maint"
+    },
+    "timestamp": "2026-03-29T17:08:03.566Z"
+  },
+  {
+    "id": "evt-1774804083569-j54q",
+    "type": "action",
+    "agentId": "cs",
+    "data": {
+      "task": "Check customer health. Draft onboarding guides.",
+      "taskKey": "maint"
+    },
+    "timestamp": "2026-03-29T17:08:03.569Z"
+  },
+  {
+    "id": "evt-1774804083572-wefj",
+    "type": "action",
+    "agentId": "finance-ops",
+    "data": {
+      "task": "Review budget. Track expenses. Generate report.",
+      "taskKey": "maint"
+    },
+    "timestamp": "2026-03-29T17:08:03.573Z"
+  },
+  {
+    "id": "evt-1774804083575-lwa5",
+    "type": "action",
+    "agentId": "data",
+    "data": {
+      "task": "Analyze usage metrics. Build dashboard insights.",
+      "taskKey": "maint"
+    },
+    "timestamp": "2026-03-29T17:08:03.575Z"
+  },
+  {
+    "id": "evt-1774804086637-yr7c",
+    "type": "exec",
+    "agentId": "qa",
+    "data": {
+      "cmd": "git fetch origin backend/set-up-basic-test-suite-for-core-functionality\ngit chec"
+    },
+    "timestamp": "2026-03-29T17:08:06.637Z"
+  },
+  {
+    "id": "evt-1774804086963-2ebe",
+    "type": "observation",
+    "agentId": "qa",
+    "data": {
+      "tokens": 1355,
+      "cost": 4,
+      "files": 0,
+      "cmds": 1
+    },
+    "timestamp": "2026-03-29T17:08:06.963Z"
+  },
+  {
+    "id": "evt-1774804088598-ps2q",
+    "type": "exec",
+    "agentId": "frontend",
+    "data": {
+      "cmd": "ls -la"
+    },
+    "timestamp": "2026-03-29T17:08:08.598Z"
+  },
+  {
+    "id": "evt-1774804088631-owgm",
+    "type": "exec",
+    "agentId": "frontend",
+    "data": {
+      "cmd": "find . -name \"*.html\" -type f"
+    },
+    "timestamp": "2026-03-29T17:08:08.631Z"
+  },
+  {
+    "id": "evt-1774804088687-3weu",
+    "type": "exec",
+    "agentId": "frontend",
+    "data": {
+      "cmd": "find . -name \"*.js\" -o -name \"*.jsx\" -o -name \"*.ts\" -o -name \"*.tsx\" | head -20"
+    },
+    "timestamp": "2026-03-29T17:08:08.687Z"
+  },
+  {
+    "id": "evt-1774804088743-4add",
+    "type": "exec",
+    "agentId": "frontend",
+    "data": {
+      "cmd": "find . -name \"*.css\" -o -name \"*.scss\" -o -name \"*.sass\" | head -20"
+    },
+    "timestamp": "2026-03-29T17:08:08.743Z"
+  },
+  {
+    "id": "evt-1774804088801-8j4d",
+    "type": "exec",
+    "agentId": "frontend",
+    "data": {
+      "cmd": "ls -la public/ 2>/dev/null || echo \"No public directory\""
+    },
+    "timestamp": "2026-03-29T17:08:08.801Z"
+  },
+  {
+    "id": "evt-1774804088817-i5jl",
+    "type": "exec",
+    "agentId": "frontend",
+    "data": {
+      "cmd": "ls -la src/ 2>/dev/null || echo \"No src directory\""
+    },
+    "timestamp": "2026-03-29T17:08:08.817Z"
+  },
+  {
+    "id": "evt-1774804088833-c4tp",
+    "type": "observation",
+    "agentId": "frontend",
+    "data": {
+      "tokens": 2043,
+      "cost": 7,
+      "files": 0,
+      "cmds": 6
+    },
+    "timestamp": "2026-03-29T17:08:08.833Z"
+  },
+  {
+    "id": "evt-1774804093246-0l2t",
+    "type": "exec",
+    "agentId": "sdr",
+    "data": {
+      "cmd": "cd C:\\Users\\onejf\\nightshift\\workspace\\sdr\ncurl -s \"https://www.netlify.com\" | h"
+    },
+    "timestamp": "2026-03-29T17:08:13.246Z"
+  },
+  {
+    "id": "evt-1774804093272-nntl",
+    "type": "file_written",
+    "agentId": "sdr",
+    "data": {
+      "filename": "workspace/netlify_research.md",
+      "bytes": 1152
+    },
+    "timestamp": "2026-03-29T17:08:13.272Z"
+  },
+  {
+    "id": "evt-1774804093273-wovp",
+    "type": "file_written",
+    "agentId": "sdr",
+    "data": {
+      "filename": "workspace/netlify_outreach_draft.md",
+      "bytes": 804
+    },
+    "timestamp": "2026-03-29T17:08:13.273Z"
+  },
+  {
+    "id": "evt-1774804093274-lx2a",
+    "type": "observation",
+    "agentId": "sdr",
+    "data": {
+      "tokens": 1859,
+      "cost": 10,
+      "files": 2,
+      "cmds": 1
+    },
+    "timestamp": "2026-03-29T17:08:13.274Z"
+  },
+  {
+    "id": "evt-1774804105750-jlpf",
+    "type": "exec",
+    "agentId": "compliance",
+    "data": {
+      "cmd": "find .. -type f \\( -name \"*.js\" -o -name \"*.ts\" -o -name \"*.json\" \\) ! -path \"*/"
+    },
+    "timestamp": "2026-03-29T17:08:25.750Z"
+  },
+  {
+    "id": "evt-1774804105810-qwik",
+    "type": "exec",
+    "agentId": "compliance",
+    "data": {
+      "cmd": "ls -la ../src 2>/dev/null || echo \"No src directory found\""
+    },
+    "timestamp": "2026-03-29T17:08:25.810Z"
+  },
+  {
+    "id": "evt-1774804105826-227a",
+    "type": "exec",
+    "agentId": "compliance",
+    "data": {
+      "cmd": "ls -la ../routes 2>/dev/null || echo \"No routes directory found\""
+    },
+    "timestamp": "2026-03-29T17:08:25.826Z"
+  },
+  {
+    "id": "evt-1774804105843-xgti",
+    "type": "exec",
+    "agentId": "compliance",
+    "data": {
+      "cmd": "ls -la ../controllers 2>/dev/null || echo \"No controllers directory found\""
+    },
+    "timestamp": "2026-03-29T17:08:25.843Z"
+  },
+  {
+    "id": "evt-1774804105858-davf",
+    "type": "exec",
+    "agentId": "compliance",
+    "data": {
+      "cmd": "if [ -f \"../server.js\" ]; then \n    echo \"=== server.js ===\"\n    cat ../server.j"
+    },
+    "timestamp": "2026-03-29T17:08:25.858Z"
+  },
+  {
+    "id": "evt-1774804105873-hddu",
+    "type": "exec",
+    "agentId": "compliance",
+    "data": {
+      "cmd": "find .. -type f -name \"*.js\" ! -path \"*/node_modules/*\" ! -path \"*/.git/*\" -exec"
+    },
+    "timestamp": "2026-03-29T17:08:25.873Z"
+  },
+  {
+    "id": "evt-1774804105889-i1u7",
+    "type": "exec",
+    "agentId": "compliance",
+    "data": {
+      "cmd": "for file in $(find .. -type f -name \"*.js\" ! -path \"*/node_modules/*\" ! -path \"*"
+    },
+    "timestamp": "2026-03-29T17:08:25.889Z"
+  },
+  {
+    "id": "evt-1774804105905-w135",
+    "type": "exec",
+    "agentId": "compliance",
+    "data": {
+      "cmd": "if [ -f \"../routes/prospects.js\" ]; then cat ../routes/prospects.js; fi"
+    },
+    "timestamp": "2026-03-29T17:08:25.905Z"
+  },
+  {
+    "id": "evt-1774804105920-h7xx",
+    "type": "exec",
+    "agentId": "compliance",
+    "data": {
+      "cmd": "if [ -f \"../routes/tasks.js\" ]; then cat ../routes/tasks.js; fi"
+    },
+    "timestamp": "2026-03-29T17:08:25.920Z"
+  },
+  {
+    "id": "evt-1774804105935-mbgx",
+    "type": "observation",
+    "agentId": "compliance",
+    "data": {
+      "tokens": 3333,
+      "cost": 21,
+      "files": 0,
+      "cmds": 9
+    },
+    "timestamp": "2026-03-29T17:08:25.935Z"
+  },
+  {
+    "id": "evt-1774804111574-9ptv",
+    "type": "exec",
+    "agentId": "security",
+    "data": {
+      "cmd": "cd C:\\Users\\onejf\\nightshift\nfind . -type f -name \"*.env*\" -o -name \"*.config*\" "
+    },
+    "timestamp": "2026-03-29T17:08:31.574Z"
+  },
+  {
+    "id": "evt-1774804111593-btqt",
+    "type": "exec",
+    "agentId": "security",
+    "data": {
+      "cmd": "cd C:\\Users\\onejf\\nightshift\ngrep -r \"password\\|secret\\|key\\|token\\|api_key\\|api"
+    },
+    "timestamp": "2026-03-29T17:08:31.593Z"
+  },
+  {
+    "id": "evt-1774804111608-3t2u",
+    "type": "exec",
+    "agentId": "security",
+    "data": {
+      "cmd": "cd C:\\Users\\onejf\\nightshift\nif [ -f \"package.json\" ]; then npm audit; fi"
+    },
+    "timestamp": "2026-03-29T17:08:31.608Z"
+  },
+  {
+    "id": "evt-1774804111623-ot0o",
+    "type": "exec",
+    "agentId": "security",
+    "data": {
+      "cmd": "cd C:\\Users\\onejf\\nightshift\nif [ -f \"package.json\" ]; then npm list --depth=0; "
+    },
+    "timestamp": "2026-03-29T17:08:31.623Z"
+  },
+  {
+    "id": "evt-1774804111638-q9dm",
+    "type": "exec",
+    "agentId": "security",
+    "data": {
+      "cmd": "cd C:\\Users\\onejf\\nightshift\ngrep -r \"console\\.log\\|debugger\\|TODO\\|FIXME\" --inc"
+    },
+    "timestamp": "2026-03-29T17:08:31.638Z"
+  },
+  {
+    "id": "evt-1774804111653-7arq",
+    "type": "exec",
+    "agentId": "security",
+    "data": {
+      "cmd": "cd C:\\Users\\onejf\\nightshift\nif [ -f \"package.json\" ]; then npm run build 2>&1 |"
+    },
+    "timestamp": "2026-03-29T17:08:31.653Z"
+  },
+  {
+    "id": "evt-1774804111669-b4li",
+    "type": "exec",
+    "agentId": "security",
+    "data": {
+      "cmd": "cd C:\\Users\\onejf\\nightshift\nls -la"
+    },
+    "timestamp": "2026-03-29T17:08:31.669Z"
+  },
+  {
+    "id": "evt-1774804111684-fidi",
+    "type": "observation",
+    "agentId": "security",
+    "data": {
+      "tokens": 1997,
+      "cost": 12,
+      "files": 0,
+      "cmds": 7
+    },
+    "timestamp": "2026-03-29T17:08:31.684Z"
+  },
+  {
+    "id": "evt-1774804112291-sxcr",
+    "type": "exec",
+    "agentId": "cs",
+    "data": {
+      "cmd": "ls -la"
+    },
+    "timestamp": "2026-03-29T17:08:32.291Z"
+  },
+  {
+    "id": "evt-1774804112322-jso9",
+    "type": "exec",
+    "agentId": "cs",
+    "data": {
+      "cmd": "find . -name \"*.json\" -type f | grep -E \"(customer|prospect)\" | head -10"
+    },
+    "timestamp": "2026-03-29T17:08:32.323Z"
+  },
+  {
+    "id": "evt-1774804112372-e8ux",
+    "type": "exec",
+    "agentId": "cs",
+    "data": {
+      "cmd": "find . -name \"*.md\" -type f | head -10"
+    },
+    "timestamp": "2026-03-29T17:08:32.372Z"
+  },
+  {
+    "id": "evt-1774804112421-xyye",
+    "type": "observation",
+    "agentId": "cs",
+    "data": {
+      "tokens": 3936,
+      "cost": 20,
+      "files": 0,
+      "cmds": 3
+    },
+    "timestamp": "2026-03-29T17:08:32.421Z"
+  },
+  {
+    "id": "evt-1774804113209-3353",
+    "type": "exec",
+    "agentId": "pm",
+    "data": {
+      "cmd": "cat backlog.json | jq 'length' 2>/dev/null || echo \"Checking backlog count...\""
+    },
+    "timestamp": "2026-03-29T17:08:33.209Z"
+  },
+  {
+    "id": "evt-1774804113234-utg3",
+    "type": "exec",
+    "agentId": "pm",
+    "data": {
+      "cmd": "ls -la workspace/"
+    },
+    "timestamp": "2026-03-29T17:08:33.234Z"
+  },
+  {
+    "id": "evt-1774804113259-urgf",
+    "type": "exec",
+    "agentId": "pm",
+    "data": {
+      "cmd": "find . -type f -name \"*.js\" -o -name \"*.ts\" -o -name \"*.json\" -o -name \"*.md\" | "
+    },
+    "timestamp": "2026-03-29T17:08:33.259Z"
+  },
+  {
+    "id": "evt-1774804113315-qngr",
+    "type": "observation",
+    "agentId": "pm",
+    "data": {
+      "tokens": 4419,
+      "cost": 25,
+      "files": 0,
+      "cmds": 3
+    },
+    "timestamp": "2026-03-29T17:08:33.316Z"
+  },
+  {
+    "id": "evt-1774804119275-0g23",
+    "type": "exec",
+    "agentId": "finance-ops",
+    "data": {
+      "cmd": "cd workspace\npython budget_tracker.py"
+    },
+    "timestamp": "2026-03-29T17:08:39.275Z"
+  },
+  {
+    "id": "evt-1774804119292-51ch",
+    "type": "exec",
+    "agentId": "finance-ops",
+    "data": {
+      "cmd": "cd workspace\npython test_budget.py"
+    },
+    "timestamp": "2026-03-29T17:08:39.292Z"
+  },
+  {
+    "id": "evt-1774804119307-x183",
+    "type": "exec",
+    "agentId": "finance-ops",
+    "data": {
+      "cmd": "cd workspace\npython cli.py help"
+    },
+    "timestamp": "2026-03-29T17:08:39.307Z"
+  },
+  {
+    "id": "evt-1774804119324-yjfx",
+    "type": "exec",
+    "agentId": "finance-ops",
+    "data": {
+      "cmd": "cd workspace\npython cli.py set-budget 3000\npython cli.py add-expense 75.25 \"Rest"
+    },
+    "timestamp": "2026-03-29T17:08:39.324Z"
+  },
+  {
+    "id": "evt-1774804119340-xtgz",
+    "type": "file_written",
+    "agentId": "finance-ops",
+    "data": {
+      "filename": "workspace/test_budget.py",
+      "bytes": 1954
+    },
+    "timestamp": "2026-03-29T17:08:39.340Z"
+  },
+  {
+    "id": "evt-1774804119341-ss82",
+    "type": "file_written",
+    "agentId": "finance-ops",
+    "data": {
+      "filename": "workspace/cli.py",
+      "bytes": 2962
+    },
+    "timestamp": "2026-03-29T17:08:39.341Z"
+  },
+  {
+    "id": "evt-1774804119342-aci5",
+    "type": "observation",
+    "agentId": "finance-ops",
+    "data": {
+      "tokens": 5432,
+      "cost": 26,
+      "files": 2,
+      "cmds": 4
+    },
+    "timestamp": "2026-03-29T17:08:39.342Z"
+  },
+  {
+    "id": "evt-1774804132763-oodb",
+    "type": "exec",
+    "agentId": "marketing",
+    "data": {
+      "cmd": "mkdir -p workspace/case-studies"
+    },
+    "timestamp": "2026-03-29T17:08:52.763Z"
+  },
+  {
+    "id": "evt-1774804132781-uzi7",
+    "type": "observation",
+    "agentId": "marketing",
+    "data": {
+      "tokens": 5029,
+      "cost": 33,
+      "files": 0,
+      "cmds": 1
+    },
+    "timestamp": "2026-03-29T17:08:52.781Z"
+  },
+  {
+    "id": "evt-1774804136408-sy7n",
+    "type": "exec",
+    "agentId": "backend",
+    "data": {
+      "cmd": "git checkout backend/review-existing-code-for-bugs-or-tech-debt"
+    },
+    "timestamp": "2026-03-29T17:08:56.408Z"
+  },
+  {
+    "id": "evt-1774804136447-gf13",
+    "type": "exec",
+    "agentId": "backend",
+    "data": {
+      "cmd": "find . -name \"*.js\" -o -name \"*.ts\" -o -name \"*.jsx\" -o -name \"*.tsx\" | grep -v "
+    },
+    "timestamp": "2026-03-29T17:08:56.447Z"
+  },
+  {
+    "id": "evt-1774804136506-ytnt",
+    "type": "exec",
+    "agentId": "backend",
+    "data": {
+      "cmd": "ls -la"
+    },
+    "timestamp": "2026-03-29T17:08:56.506Z"
+  },
+  {
+    "id": "evt-1774804136535-9zip",
+    "type": "exec",
+    "agentId": "backend",
+    "data": {
+      "cmd": "find . -name \"*.json\" -o -name \"*.md\" -o -name \"*.yml\" -o -name \"*.yaml\" | grep "
+    },
+    "timestamp": "2026-03-29T17:08:56.535Z"
+  },
+  {
+    "id": "evt-1774804136591-6qw5",
+    "type": "exec",
+    "agentId": "backend",
+    "data": {
+      "cmd": "if [ -f \"package.json\" ]; then cat package.json; fi"
+    },
+    "timestamp": "2026-03-29T17:08:56.591Z"
+  },
+  {
+    "id": "evt-1774804136606-vcia",
+    "type": "exec",
+    "agentId": "backend",
+    "data": {
+      "cmd": "if [ -f \"index.js\" ]; then cat index.js; fi"
+    },
+    "timestamp": "2026-03-29T17:08:56.606Z"
+  },
+  {
+    "id": "evt-1774804136622-hmyz",
+    "type": "exec",
+    "agentId": "backend",
+    "data": {
+      "cmd": "if [ -f \"server.js\" ]; then cat server.js; fi"
+    },
+    "timestamp": "2026-03-29T17:08:56.622Z"
+  },
+  {
+    "id": "evt-1774804136638-a60s",
+    "type": "exec",
+    "agentId": "backend",
+    "data": {
+      "cmd": "if [ -f \"app.js\" ]; then cat app.js; fi"
+    },
+    "timestamp": "2026-03-29T17:08:56.638Z"
+  },
+  {
+    "id": "evt-1774804136653-z1wq",
+    "type": "exec",
+    "agentId": "backend",
+    "data": {
+      "cmd": "if [ -d \"src\" ]; then find src -name \"*.js\" -o -name \"*.ts\" | head -10; fi"
+    },
+    "timestamp": "2026-03-29T17:08:56.653Z"
+  },
+  {
+    "id": "evt-1774804136669-swml",
+    "type": "exec",
+    "agentId": "backend",
+    "data": {
+      "cmd": "if [ -d \"src\" ]; then find src -name \"*.js\" -o -name \"*.ts\" -exec wc -l {} \\; | "
+    },
+    "timestamp": "2026-03-29T17:08:56.669Z"
+  },
+  {
+    "id": "evt-1774804136683-d5rh",
+    "type": "exec",
+    "agentId": "backend",
+    "data": {
+      "cmd": "if [ -d \"src\" ]; then find src -name \"*.js\" -o -name \"*.ts\" | xargs grep -l \"con"
+    },
+    "timestamp": "2026-03-29T17:08:56.683Z"
+  },
+  {
+    "id": "evt-1774804136700-uiur",
+    "type": "exec",
+    "agentId": "backend",
+    "data": {
+      "cmd": "if [ -d \"src\" ]; then find src -name \"*.js\" -o -name \"*.ts\" | xargs grep -l \"TOD"
+    },
+    "timestamp": "2026-03-29T17:08:56.700Z"
+  },
+  {
+    "id": "evt-1774804136716-717g",
+    "type": "exec",
+    "agentId": "backend",
+    "data": {
+      "cmd": "if [ -d \"src\" ]; then find src -name \"*.js\" -o -name \"*.ts\" | xargs grep -n \"TOD"
+    },
+    "timestamp": "2026-03-29T17:08:56.717Z"
+  },
+  {
+    "id": "evt-1774804136732-ehhv",
+    "type": "exec",
+    "agentId": "backend",
+    "data": {
+      "cmd": "if [ -d \"src\" ]; then find src -name \"*.js\" -o -name \"*.ts\" | xargs grep -n \"cat"
+    },
+    "timestamp": "2026-03-29T17:08:56.732Z"
+  },
+  {
+    "id": "evt-1774804136747-8l8o",
+    "type": "exec",
+    "agentId": "backend",
+    "data": {
+      "cmd": "if [ -d \"src\" ]; then find src -name \"*.js\" -o -name \"*.ts\" | xargs grep -n \"thr"
+    },
+    "timestamp": "2026-03-29T17:08:56.747Z"
+  },
+  {
+    "id": "evt-1774804136761-i001",
+    "type": "exec",
+    "agentId": "backend",
+    "data": {
+      "cmd": "if [ -d \"src\" ]; then find src -name \"*.js\" -o -name \"*.ts\" | xargs grep -n \"req"
+    },
+    "timestamp": "2026-03-29T17:08:56.761Z"
+  },
+  {
+    "id": "evt-1774804136777-zgqp",
+    "type": "exec",
+    "agentId": "backend",
+    "data": {
+      "cmd": "if [ -f \"package.json\" ]; then npm audit --audit-level=moderate 2>/dev/null || e"
+    },
+    "timestamp": "2026-03-29T17:08:56.777Z"
+  },
+  {
+    "id": "evt-1774804136792-afbe",
+    "type": "exec",
+    "agentId": "backend",
+    "data": {
+      "cmd": "if [ -f \"package.json\" ]; then npm outdated 2>/dev/null || echo \"npm outdated no"
+    },
+    "timestamp": "2026-03-29T17:08:56.792Z"
+  },
+  {
+    "id": "evt-1774804136810-5goy",
+    "type": "exec",
+    "agentId": "backend",
+    "data": {
+      "cmd": "if [ -f \"package.json\" ]; then npm list --depth=0 2>/dev/null | head -20; fi"
+    },
+    "timestamp": "2026-03-29T17:08:56.810Z"
+  },
+  {
+    "id": "evt-1774804136827-mdbw",
+    "type": "exec",
+    "agentId": "backend",
+    "data": {
+      "cmd": "git add workspace/code-review-report.md workspace/test-coverage-plan.md"
+    },
+    "timestamp": "2026-03-29T17:08:56.827Z"
+  },
+  {
+    "id": "evt-1774804136866-b1np",
+    "type": "exec",
+    "agentId": "backend",
+    "data": {
+      "cmd": "git commit -m \"TASK-005: Complete code review with findings report and test cove"
+    },
+    "timestamp": "2026-03-29T17:08:56.866Z"
+  },
+  {
+    "id": "evt-1774804136915-bomk",
+    "type": "exec",
+    "agentId": "backend",
+    "data": {
+      "cmd": "git push origin backend/review-existing-code-for-bugs-or-tech-debt"
+    },
+    "timestamp": "2026-03-29T17:08:56.915Z"
+  },
+  {
+    "id": "evt-1774804136995-wxcd",
+    "type": "observation",
+    "agentId": "backend",
+    "data": {
+      "tokens": 4313,
+      "cost": 37,
+      "files": 0,
+      "cmds": 22
+    },
+    "timestamp": "2026-03-29T17:08:56.995Z"
+  },
+  {
+    "id": "evt-1774804137388-upjw",
+    "type": "exec",
+    "agentId": "data",
+    "data": {
+      "cmd": "find . -type f \\( -name \"*.json\" -o -name \"*.csv\" -o -name \"*.txt\" -o -name \"*.l"
+    },
+    "timestamp": "2026-03-29T17:08:57.388Z"
+  },
+  {
+    "id": "evt-1774804137406-ftjh",
+    "type": "exec",
+    "agentId": "data",
+    "data": {
+      "cmd": "ls -la workspace/"
+    },
+    "timestamp": "2026-03-29T17:08:57.406Z"
+  },
+  {
+    "id": "evt-1774804137434-u1ya",
+    "type": "exec",
+    "agentId": "data",
+    "data": {
+      "cmd": "mkdir -p workspace/data"
+    },
+    "timestamp": "2026-03-29T17:08:57.434Z"
+  },
+  {
+    "id": "evt-1774804137451-y3ji",
+    "type": "observation",
+    "agentId": "data",
+    "data": {
+      "tokens": 6709,
+      "cost": 52,
+      "files": 0,
+      "cmds": 3
+    },
+    "timestamp": "2026-03-29T17:08:57.451Z"
+  },
+  {
+    "id": "evt-1774804137455-afcu",
+    "type": "round_end",
+    "agentId": "coo",
+    "data": {
+      "round": 2,
+      "agentsFired": 11
+    },
+    "timestamp": "2026-03-29T17:08:57.455Z"
+  },
+  {
+    "id": "evt-1774804140649-1900",
+    "type": "round_start",
+    "agentId": "coo",
+    "data": {
+      "round": 3,
+      "maxRounds": 3
+    },
+    "timestamp": "2026-03-29T17:09:00.649Z"
+  },
+  {
+    "id": "evt-1774804140651-cz1k",
+    "type": "pipeline",
+    "agentId": "sdr",
+    "data": {
+      "taskId": "TASK-003",
+      "from": "in-progress",
+      "to": "review"
+    },
+    "timestamp": "2026-03-29T17:09:00.651Z"
+  },
+  {
+    "id": "evt-1774804140652-4161",
+    "type": "pipeline",
+    "agentId": "backend",
+    "data": {
+      "taskId": "TASK-005",
+      "from": "in-progress",
+      "to": "review"
+    },
+    "timestamp": "2026-03-29T17:09:00.652Z"
+  },
+  {
+    "id": "evt-1774804140653-6pdp",
+    "type": "pipeline",
+    "agentId": "system",
+    "data": {
+      "taskId": "TASK-001",
+      "to": "approved"
+    },
+    "timestamp": "2026-03-29T17:09:00.653Z"
+  },
+  {
+    "id": "evt-1774804140654-lfxo",
+    "type": "pipeline",
+    "agentId": "system",
+    "data": {
+      "taskId": "TASK-002",
+      "to": "approved"
+    },
+    "timestamp": "2026-03-29T17:09:00.654Z"
+  },
+  {
+    "id": "evt-1774804140655-6riw",
+    "type": "pipeline",
+    "agentId": "system",
+    "data": {
+      "taskId": "TASK-004",
+      "to": "approved"
+    },
+    "timestamp": "2026-03-29T17:09:00.655Z"
+  },
+  {
+    "id": "evt-1774804140658-u33g",
+    "type": "action",
+    "agentId": "pm",
+    "data": {
+      "task": "Review backlog (5 tasks). Scan for gaps. Write new tasks.",
+      "taskKey": "maint"
+    },
+    "timestamp": "2026-03-29T17:09:00.658Z"
+  },
+  {
+    "id": "evt-1774804140662-kkjq",
+    "type": "action",
+    "agentId": "backend",
+    "data": {
+      "task": "Scan backend for bugs, untested code. Fix on backend/maintenance.",
+      "taskKey": "maint"
+    },
+    "timestamp": "2026-03-29T17:09:00.662Z"
+  },
+  {
+    "id": "evt-1774804140665-mifv",
+    "type": "action",
+    "agentId": "frontend",
+    "data": {
+      "task": "Scan frontend for issues. Fix on frontend/maintenance.",
+      "taskKey": "maint"
+    },
+    "timestamp": "2026-03-29T17:09:00.665Z"
+  },
+  {
+    "id": "evt-1774804140668-7w83",
+    "type": "action",
+    "agentId": "qa",
+    "data": {
+      "task": "Review TASK-003: \"Research Netlify prospect\" on null. Code quality, tests, impact.",
+      "taskKey": "TASK-003"
+    },
+    "timestamp": "2026-03-29T17:09:00.668Z"
+  },
+  {
+    "id": "evt-1774804140672-nszn",
+    "type": "action",
+    "agentId": "compliance",
+    "data": {
+      "task": "Audit domain logic for correctness.",
+      "taskKey": "maint"
+    },
+    "timestamp": "2026-03-29T17:09:00.672Z"
+  },
+  {
+    "id": "evt-1774804140676-1l46",
+    "type": "action",
+    "agentId": "security",
+    "data": {
+      "task": "Full security audit: secrets, deps, lint.",
+      "taskKey": "maint"
+    },
+    "timestamp": "2026-03-29T17:09:00.676Z"
+  },
+  {
+    "id": "evt-1774804140679-o3sk",
+    "type": "action",
+    "agentId": "sdr",
+    "data": {
+      "task": "Research next prospect. Draft outreach.",
+      "taskKey": "sales"
+    },
+    "timestamp": "2026-03-29T17:09:00.679Z"
+  },
+  {
+    "id": "evt-1774804140682-ny08",
+    "type": "action",
+    "agentId": "marketing",
+    "data": {
+      "task": "Create content: blog post, social media, or case study.",
+      "taskKey": "maint"
+    },
+    "timestamp": "2026-03-29T17:09:00.682Z"
+  },
+  {
+    "id": "evt-1774804140685-bf7s",
+    "type": "action",
+    "agentId": "cs",
+    "data": {
+      "task": "Check customer health. Draft onboarding guides.",
+      "taskKey": "maint"
+    },
+    "timestamp": "2026-03-29T17:09:00.685Z"
+  },
+  {
+    "id": "evt-1774804140689-v3ge",
+    "type": "action",
+    "agentId": "finance-ops",
+    "data": {
+      "task": "Review budget. Track expenses. Generate report.",
+      "taskKey": "maint"
+    },
+    "timestamp": "2026-03-29T17:09:00.689Z"
+  },
+  {
+    "id": "evt-1774804140693-u1fj",
+    "type": "action",
+    "agentId": "data",
+    "data": {
+      "task": "Analyze usage metrics. Build dashboard insights.",
+      "taskKey": "maint"
+    },
+    "timestamp": "2026-03-29T17:09:00.693Z"
+  },
+  {
+    "id": "evt-1774804146112-lvus",
+    "type": "exec",
+    "agentId": "qa",
+    "data": {
+      "cmd": "cd C:\\Users\\onejf\\nightshift\\workspace\\qa\ngit status"
+    },
+    "timestamp": "2026-03-29T17:09:06.112Z"
+  },
+  {
+    "id": "evt-1774804146129-01jg",
+    "type": "file_written",
+    "agentId": "qa",
+    "data": {
+      "filename": "workspace/task-003-review.md",
+      "bytes": 837
+    },
+    "timestamp": "2026-03-29T17:09:06.129Z"
+  },
+  {
+    "id": "evt-1774804146130-gkkg",
+    "type": "observation",
+    "agentId": "qa",
+    "data": {
+      "tokens": 1602,
+      "cost": 7,
+      "files": 1,
+      "cmds": 1
+    },
+    "timestamp": "2026-03-29T17:09:06.130Z"
+  },
+  {
+    "id": "evt-1774804146681-dwmh",
+    "type": "exec",
+    "agentId": "frontend",
+    "data": {
+      "cmd": "pwd\nls -la"
+    },
+    "timestamp": "2026-03-29T17:09:06.681Z"
+  },
+  {
+    "id": "evt-1774804146749-kbf8",
+    "type": "exec",
+    "agentId": "frontend",
+    "data": {
+      "cmd": "ls -la package.json 2>/dev/null || echo \"No package.json found\""
+    },
+    "timestamp": "2026-03-29T17:09:06.749Z"
+  },
+  {
+    "id": "evt-1774804146764-wjr8",
+    "type": "exec",
+    "agentId": "frontend",
+    "data": {
+      "cmd": "find . -type f \\( -name \"*.html\" -o -name \"*.js\" -o -name \"*.jsx\" -o -name \"*.cs"
+    },
+    "timestamp": "2026-03-29T17:09:06.764Z"
+  },
+  {
+    "id": "evt-1774804146779-74k0",
+    "type": "exec",
+    "agentId": "frontend",
+    "data": {
+      "cmd": "ls -d */ 2>/dev/null"
+    },
+    "timestamp": "2026-03-29T17:09:06.779Z"
+  },
+  {
+    "id": "evt-1774804146794-la25",
+    "type": "observation",
+    "agentId": "frontend",
+    "data": {
+      "tokens": 2311,
+      "cost": 8,
+      "files": 0,
+      "cmds": 4
+    },
+    "timestamp": "2026-03-29T17:09:06.794Z"
+  },
+  {
+    "id": "evt-1774804155648-y0k0",
+    "type": "exec",
+    "agentId": "sdr",
+    "data": {
+      "cmd": "cd C:\\Users\\onejf\\nightshift\\workspace\\sdr"
+    },
+    "timestamp": "2026-03-29T17:09:15.648Z"
+  },
+  {
+    "id": "evt-1774804155661-18hm",
+    "type": "file_written",
+    "agentId": "sdr",
+    "data": {
+      "filename": "workspace/vercel_research.md",
+      "bytes": 1281
+    },
+    "timestamp": "2026-03-29T17:09:15.661Z"
+  },
+  {
+    "id": "evt-1774804155662-vohz",
+    "type": "file_written",
+    "agentId": "sdr",
+    "data": {
+      "filename": "workspace/vercel_outreach_draft.md",
+      "bytes": 985
+    },
+    "timestamp": "2026-03-29T17:09:15.662Z"
+  },
+  {
+    "id": "evt-1774804155664-h1ed",
+    "type": "observation",
+    "agentId": "sdr",
+    "data": {
+      "tokens": 1869,
+      "cost": 10,
+      "files": 2,
+      "cmds": 1
+    },
+    "timestamp": "2026-03-29T17:09:15.664Z"
+  },
+  {
+    "id": "evt-1774804159504-33no",
+    "type": "exec",
+    "agentId": "security",
+    "data": {
+      "cmd": "cd C:\\Users\\onejf\\nightshift\nfind . -type f \\( -name \"*.env*\" -o -name \"*.config"
+    },
+    "timestamp": "2026-03-29T17:09:19.504Z"
+  },
+  {
+    "id": "evt-1774804159520-dwa6",
+    "type": "exec",
+    "agentId": "security",
+    "data": {
+      "cmd": "cd C:\\Users\\onejf\\nightshift\ngrep -r -i \"password\\|secret\\|key\\|token\\|api_key\\|"
+    },
+    "timestamp": "2026-03-29T17:09:19.520Z"
+  },
+  {
+    "id": "evt-1774804159537-37o4",
+    "type": "exec",
+    "agentId": "security",
+    "data": {
+      "cmd": "cd C:\\Users\\onejf\\nightshift\nif [ -f \"package.json\" ]; then npm audit; else echo"
+    },
+    "timestamp": "2026-03-29T17:09:19.537Z"
+  },
+  {
+    "id": "evt-1774804159552-1jm1",
+    "type": "exec",
+    "agentId": "security",
+    "data": {
+      "cmd": "cd C:\\Users\\onejf\\nightshift\nfind . -name \"package.json\" -type f 2>/dev/null"
+    },
+    "timestamp": "2026-03-29T17:09:19.552Z"
+  },
+  {
+    "id": "evt-1774804159567-pq1u",
+    "type": "exec",
+    "agentId": "security",
+    "data": {
+      "cmd": "cd C:\\Users\\onejf\\nightshift\ngrep -r \"console\\.log\\|debugger\\|TODO\\|FIXME\\|@ts-i"
+    },
+    "timestamp": "2026-03-29T17:09:19.567Z"
+  },
+  {
+    "id": "evt-1774804159583-q15d",
+    "type": "exec",
+    "agentId": "security",
+    "data": {
+      "cmd": "cd C:\\Users\\onejf\\nightshift\nls -la"
+    },
+    "timestamp": "2026-03-29T17:09:19.583Z"
+  },
+  {
+    "id": "evt-1774804159595-2ql4",
+    "type": "exec",
+    "agentId": "security",
+    "data": {
+      "cmd": "cd C:\\Users\\onejf\\nightshift\nfind . -type f -name \"*.js\" -o -name \"*.ts\" 2>/dev/"
+    },
+    "timestamp": "2026-03-29T17:09:19.595Z"
+  },
+  {
+    "id": "evt-1774804159611-05ez",
+    "type": "observation",
+    "agentId": "security",
+    "data": {
+      "tokens": 3018,
+      "cost": 16,
+      "files": 0,
+      "cmds": 7
+    },
+    "timestamp": "2026-03-29T17:09:19.611Z"
+  },
+  {
+    "id": "evt-1774804162967-0zgw",
+    "type": "exec",
+    "agentId": "cs",
+    "data": {
+      "cmd": "ls -la"
+    },
+    "timestamp": "2026-03-29T17:09:22.967Z"
+  },
+  {
+    "id": "evt-1774804162997-cbof",
+    "type": "exec",
+    "agentId": "cs",
+    "data": {
+      "cmd": "find . -name \"*.json\" -type f | grep -E \"(customer|prospect)\" | head -10"
+    },
+    "timestamp": "2026-03-29T17:09:22.997Z"
+  },
+  {
+    "id": "evt-1774804163044-vo7m",
+    "type": "exec",
+    "agentId": "cs",
+    "data": {
+      "cmd": "find . -name \"*.md\" -type f | head -10"
+    },
+    "timestamp": "2026-03-29T17:09:23.044Z"
+  },
+  {
+    "id": "evt-1774804163090-uy54",
+    "type": "observation",
+    "agentId": "cs",
+    "data": {
+      "tokens": 5177,
+      "cost": 24,
+      "files": 0,
+      "cmds": 3
+    },
+    "timestamp": "2026-03-29T17:09:23.090Z"
+  },
+  {
+    "id": "evt-1774804168183-eiee",
+    "type": "exec",
+    "agentId": "compliance",
+    "data": {
+      "cmd": "ls -la ../*.js 2>/dev/null || echo \"No JS files in root\""
+    },
+    "timestamp": "2026-03-29T17:09:28.183Z"
+  },
+  {
+    "id": "evt-1774804168203-f2re",
+    "type": "exec",
+    "agentId": "compliance",
+    "data": {
+      "cmd": "find .. -name \"*.js\" ! -path \"*/node_modules/*\" ! -path \"*/.git/*\" -exec grep -l"
+    },
+    "timestamp": "2026-03-29T17:09:28.203Z"
+  },
+  {
+    "id": "evt-1774804168218-2azq",
+    "type": "exec",
+    "agentId": "compliance",
+    "data": {
+      "cmd": "if [ -f \"../routes/prospects.js\" ]; then cat ../routes/prospects.js; else echo \""
+    },
+    "timestamp": "2026-03-29T17:09:28.218Z"
+  },
+  {
+    "id": "evt-1774804168233-ew55",
+    "type": "exec",
+    "agentId": "compliance",
+    "data": {
+      "cmd": "if [ -f \"../routes/tasks.js\" ]; then cat ../routes/tasks.js; else echo \"No tasks"
+    },
+    "timestamp": "2026-03-29T17:09:28.233Z"
+  },
+  {
+    "id": "evt-1774804168248-59c6",
+    "type": "exec",
+    "agentId": "compliance",
+    "data": {
+      "cmd": "if [ -f \"../models/prospect.js\" ]; then cat ../models/prospect.js; else echo \"No"
+    },
+    "timestamp": "2026-03-29T17:09:28.248Z"
+  },
+  {
+    "id": "evt-1774804168263-hex8",
+    "type": "exec",
+    "agentId": "compliance",
+    "data": {
+      "cmd": "if [ -f \"../models/task.js\" ]; then cat ../models/task.js; else echo \"No task mo"
+    },
+    "timestamp": "2026-03-29T17:09:28.263Z"
+  },
+  {
+    "id": "evt-1774804168277-j49m",
+    "type": "exec",
+    "agentId": "compliance",
+    "data": {
+      "cmd": "find .. -name \"*.js\" ! -path \"*/node_modules/*\" ! -path \"*/.git/*\" -exec grep -n"
+    },
+    "timestamp": "2026-03-29T17:09:28.277Z"
+  },
+  {
+    "id": "evt-1774804168293-doyn",
+    "type": "observation",
+    "agentId": "compliance",
+    "data": {
+      "tokens": 4424,
+      "cost": 21,
+      "files": 0,
+      "cmds": 7
+    },
+    "timestamp": "2026-03-29T17:09:28.293Z"
+  },
+  {
+    "id": "evt-1774804169125-ocum",
+    "type": "exec",
+    "agentId": "pm",
+    "data": {
+      "cmd": "cat backlog.json | jq '. | length'"
+    },
+    "timestamp": "2026-03-29T17:09:29.125Z"
+  },
+  {
+    "id": "evt-1774804169159-904f",
+    "type": "exec",
+    "agentId": "pm",
+    "data": {
+      "cmd": "cat backlog.json | jq '.[] | select(.status == \"todo\") | .id'"
+    },
+    "timestamp": "2026-03-29T17:09:29.159Z"
+  },
+  {
+    "id": "evt-1774804169185-kpnp",
+    "type": "observation",
+    "agentId": "pm",
+    "data": {
+      "tokens": 5747,
+      "cost": 26,
+      "files": 0,
+      "cmds": 2
+    },
+    "timestamp": "2026-03-29T17:09:29.185Z"
+  },
+  {
+    "id": "evt-1774804184785-gz0x",
+    "type": "exec",
+    "agentId": "backend",
+    "data": {
+      "cmd": "git checkout main\ngit pull origin main\ngit checkout -b backend/maintenance"
+    },
+    "timestamp": "2026-03-29T17:09:44.785Z"
+  },
+  {
+    "id": "evt-1774804184833-hph1",
+    "type": "exec",
+    "agentId": "backend",
+    "data": {
+      "cmd": "npm uninstall lodash moment\nnpm install dotenv\nif [ ! -f .gitignore ]; then\n  ec"
+    },
+    "timestamp": "2026-03-29T17:09:44.833Z"
+  },
+  {
+    "id": "evt-1774804186617-p8su",
+    "type": "file_written",
+    "agentId": "backend",
+    "data": {
+      "filename": "workspace/backend/src/api/routes.js",
+      "bytes": 2031
+    },
+    "timestamp": "2026-03-29T17:09:46.617Z"
+  },
+  {
+    "id": "evt-1774804186618-w2fw",
+    "type": "file_written",
+    "agentId": "backend",
+    "data": {
+      "filename": "workspace/backend/src/config/database.js",
+      "bytes": 674
+    },
+    "timestamp": "2026-03-29T17:09:46.618Z"
+  },
+  {
+    "id": "evt-1774804186619-khym",
+    "type": "file_blocked",
+    "agentId": "backend",
+    "data": {
+      "filename": ".env.example",
+      "reason": "protected"
+    },
+    "timestamp": "2026-03-29T17:09:46.619Z"
+  },
+  {
+    "id": "evt-1774804186621-axwt",
+    "type": "file_written",
+    "agentId": "backend",
+    "data": {
+      "filename": "workspace/backend/src/middleware/errorHandler.js",
+      "bytes": 1409
+    },
+    "timestamp": "2026-03-29T17:09:46.621Z"
+  },
+  {
+    "id": "evt-1774804186622-vte6",
+    "type": "observation",
+    "agentId": "backend",
+    "data": {
+      "tokens": 3273,
+      "cost": 25,
+      "files": 3,
+      "cmds": 2
+    },
+    "timestamp": "2026-03-29T17:09:46.622Z"
+  },
+  {
+    "id": "evt-1774804187096-zixm",
+    "type": "exec",
+    "agentId": "marketing",
+    "data": {
+      "cmd": "mkdir -p workspace/blog"
+    },
+    "timestamp": "2026-03-29T17:09:47.096Z"
+  },
+  {
+    "id": "evt-1774804187111-2hke",
+    "type": "exec",
+    "agentId": "marketing",
+    "data": {
+      "cmd": "npm run lint          # Code style violations\nnpm run test:coverage # Test cover"
+    },
+    "timestamp": "2026-03-29T17:09:47.111Z"
+  },
+  {
+    "id": "evt-1774804187879-b6ok",
+    "type": "observation",
+    "agentId": "marketing",
+    "data": {
+      "tokens": 7860,
+      "cost": 44,
+      "files": 0,
+      "cmds": 2
+    },
+    "timestamp": "2026-03-29T17:09:47.879Z"
+  },
+  {
+    "id": "evt-1774804209523-fhdb",
+    "type": "exec",
+    "agentId": "finance-ops",
+    "data": {
+      "cmd": "cd workspace"
+    },
+    "timestamp": "2026-03-29T17:10:09.523Z"
+  },
+  {
+    "id": "evt-1774804209543-v53w",
+    "type": "observation",
+    "agentId": "finance-ops",
+    "data": {
+      "tokens": 9585,
+      "cost": 60,
+      "files": 0,
+      "cmds": 1
+    },
+    "timestamp": "2026-03-29T17:10:09.543Z"
+  },
+  {
+    "id": "evt-1774804223049-7asb",
+    "type": "exec",
+    "agentId": "data",
+    "data": {
+      "cmd": "cd workspace/dashboard"
+    },
+    "timestamp": "2026-03-29T17:10:23.049Z"
+  },
+  {
+    "id": "evt-1774804223065-r1yp",
+    "type": "exec",
+    "agentId": "data",
+    "data": {
+      "cmd": "touch index.html dashboard.js dashboard.css mock_data.json"
+    },
+    "timestamp": "2026-03-29T17:10:23.065Z"
+  },
+  {
+    "id": "evt-1774804223130-lx66",
+    "type": "observation",
+    "agentId": "data",
+    "data": {
+      "tokens": 10781,
+      "cost": 62,
+      "files": 0,
+      "cmds": 2
+    },
+    "timestamp": "2026-03-29T17:10:23.130Z"
+  },
+  {
+    "id": "evt-1774804223135-ausz",
+    "type": "round_end",
+    "agentId": "coo",
+    "data": {
+      "round": 3,
+      "agentsFired": 11
+    },
+    "timestamp": "2026-03-29T17:10:23.135Z"
+  },
+  {
+    "id": "evt-1774804223136-qzog",
+    "type": "engine_stop",
+    "agentId": "system",
+    "data": {
+      "totalRuns": 103,
+      "totalSpent": 2295
+    },
+    "timestamp": "2026-03-29T17:10:23.136Z"
+  }
+]

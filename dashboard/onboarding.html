@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trovek — Setup</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:#0a0a0a; color:#e8e8e8; font-family:'Inter',-apple-system,sans-serif; min-height:100vh; display:flex; align-items:center; justify-content:center; }
+    .container { max-width:560px; width:100%; padding:40px; }
+    .logo { margin-bottom:40px; }
+    .step { display:none; }
+    .step.active { display:block; }
+    h2 { font-size:24px; font-weight:700; margin-bottom:8px; }
+    p { color:#888; font-size:14px; margin-bottom:24px; line-height:1.6; }
+    .input { width:100%; background:#141414; border:1px solid #2a2a2a; border-radius:8px; padding:12px 16px; color:#e8e8e8; font-size:14px; margin-bottom:16px; outline:none; font-family:inherit; }
+    .input:focus { border-color:#555; }
+    .input::placeholder { color:#444; }
+    textarea.input { resize:vertical; min-height:80px; }
+    .checkbox-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:24px; }
+    .checkbox-item { background:#141414; border:1px solid #2a2a2a; border-radius:8px; padding:14px 16px; cursor:pointer; transition:all .15s; display:flex; align-items:center; gap:10px; font-size:13px; }
+    .checkbox-item:hover { border-color:#555; }
+    .checkbox-item.selected { border-color:#3ecf8e; background:rgba(62,207,142,0.05); }
+    .checkbox-item .check { width:18px; height:18px; border:2px solid #333; border-radius:4px; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:12px; }
+    .checkbox-item.selected .check { border-color:#3ecf8e; background:#3ecf8e; color:#0a0a0a; }
+    .connect-grid { display:grid; gap:8px; margin-bottom:24px; }
+    .connect-item { background:#141414; border:1px solid #2a2a2a; border-radius:8px; padding:14px 16px; display:flex; justify-content:space-between; align-items:center; }
+    .connect-item .name { font-size:13px; font-weight:500; }
+    .connect-item .desc { font-size:11px; color:#555; margin-top:2px; }
+    .connect-btn { background:#1a1a1a; border:1px solid #2a2a2a; border-radius:6px; padding:6px 14px; color:#888; font-size:12px; cursor:pointer; font-weight:500; }
+    .connect-btn:hover { border-color:#555; color:#e8e8e8; }
+    .connect-btn.connected { background:rgba(62,207,142,0.1); border-color:rgba(62,207,142,0.3); color:#3ecf8e; }
+    .btn { width:100%; background:#e8e8e8; color:#0a0a0a; border:none; padding:14px; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; margin-top:8px; }
+    .btn:hover { opacity:0.9; }
+    .btn-back { background:transparent; color:#555; border:1px solid #2a2a2a; margin-top:8px; }
+    .btn-back:hover { color:#888; border-color:#555; }
+    .progress { display:flex; gap:6px; margin-bottom:32px; }
+    .progress-dot { width:100%; height:3px; border-radius:2px; background:#1a1a1a; }
+    .progress-dot.done { background:#3ecf8e; }
+    .progress-dot.current { background:#e8e8e8; }
+    .summary-card { background:#141414; border:1px solid #2a2a2a; border-radius:8px; padding:16px; margin-bottom:12px; }
+    .summary-label { font-size:11px; color:#555; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px; }
+    .summary-value { font-size:14px; font-weight:500; }
+    .agent-preview { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+    .agent-chip { background:#1a1a1a; border:1px solid #2a2a2a; border-radius:16px; padding:4px 12px; font-size:11px; color:#888; }
+    .or-divider { text-align:center; color:#333; font-size:12px; margin:16px 0; position:relative; }
+    .or-divider::before,.or-divider::after { content:''; position:absolute; top:50%; width:40%; height:1px; background:#222; }
+    .or-divider::before { left:0; }
+    .or-divider::after { right:0; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="logo">
+    <svg width="160" height="34" viewBox="0 0 130 28">
+      <circle cx="5" cy="6" r="2.5" fill="#e8e8e8"/>
+      <circle cx="15" cy="12" r="3" fill="#e8e8e8"/>
+      <circle cx="5" cy="18" r="2" fill="#e8e8e8" opacity="0.6"/>
+      <line x1="5" y1="6" x2="15" y2="12" stroke="#e8e8e8" stroke-width="1" opacity="0.5"/>
+      <line x1="5" y1="18" x2="15" y2="12" stroke="#e8e8e8" stroke-width="1" opacity="0.5"/>
+      <text x="25" y="17" font-family="Inter,-apple-system,sans-serif" font-size="16" font-weight="600" letter-spacing="0.5" fill="#e8e8e8">Trovek</text>
+    </svg>
+  </div>
+
+  <div class="progress" id="progress"></div>
+
+  <!-- Step 1: Your business -->
+  <div class="step active" id="step-1">
+    <h2>Tell us about your business</h2>
+    <p>We'll set up AI employees tailored to what you do.</p>
+    <input class="input" id="company-name" placeholder="Company name">
+    <textarea class="input" id="company-desc" placeholder="What does your business do? (e.g. We build tax filing software for Irish accountants)"></textarea>
+    <input class="input" id="company-website" placeholder="Website URL (optional)">
+    <div class="or-divider">or</div>
+    <input class="input" id="company-repo" placeholder="GitHub repo URL (optional)">
+    <button class="btn" onclick="nextStep(2)">Continue</button>
+  </div>
+
+  <!-- Step 2: What do you need -->
+  <div class="step" id="step-2">
+    <h2>What do you need help with?</h2>
+    <p>Pick all that apply. We'll assign the right AI employees.</p>
+    <div class="checkbox-grid">
+      <div class="checkbox-item" onclick="toggleNeed(this,'build')"><span class="check"></span>Build product (code)</div>
+      <div class="checkbox-item" onclick="toggleNeed(this,'sales')"><span class="check"></span>Find customers (sales)</div>
+      <div class="checkbox-item" onclick="toggleNeed(this,'marketing')"><span class="check"></span>Marketing & content</div>
+      <div class="checkbox-item" onclick="toggleNeed(this,'support')"><span class="check"></span>Customer support</div>
+      <div class="checkbox-item" onclick="toggleNeed(this,'finance')"><span class="check"></span>Finance & invoicing</div>
+      <div class="checkbox-item" onclick="toggleNeed(this,'security')"><span class="check"></span>Security & compliance</div>
+      <div class="checkbox-item" onclick="toggleNeed(this,'analytics')"><span class="check"></span>Data & analytics</div>
+      <div class="checkbox-item" onclick="toggleNeed(this,'ops')"><span class="check"></span>Operations</div>
+    </div>
+    <button class="btn" onclick="nextStep(3)">Continue</button>
+    <button class="btn btn-back" onclick="nextStep(1)">Back</button>
+  </div>
+
+  <!-- Step 3: Connect tools -->
+  <div class="step" id="step-3">
+    <h2>Connect your tools</h2>
+    <p>Your AI employees will use these to work. Connect now or later.</p>
+    <div class="connect-grid">
+      <div class="connect-item"><div><div class="name">GitHub</div><div class="desc">Code repository — agents write and review code here</div></div><button class="connect-btn" onclick="toggleConnect(this)">Connect</button></div>
+      <div class="connect-item"><div><div class="name">Telegram</div><div class="desc">Get updates and approve work from your phone</div></div><button class="connect-btn" onclick="toggleConnect(this)">Connect</button></div>
+      <div class="connect-item"><div><div class="name">Email (Resend)</div><div class="desc">SDR sends outreach emails as you</div></div><button class="connect-btn" onclick="toggleConnect(this)">Connect</button></div>
+      <div class="connect-item"><div><div class="name">Stripe</div><div class="desc">Track payments and invoicing</div></div><button class="connect-btn" onclick="toggleConnect(this)">Connect</button></div>
+    </div>
+    <button class="btn" onclick="nextStep(4)">Continue</button>
+    <button class="btn btn-back" onclick="nextStep(2)">Back</button>
+  </div>
+
+  <!-- Step 4: Review & launch -->
+  <div class="step" id="step-4">
+    <h2>Your AI company is ready</h2>
+    <p>Here's what we'll set up for you.</p>
+
+    <div class="summary-card">
+      <div class="summary-label">Company</div>
+      <div class="summary-value" id="sum-name">—</div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-label">AI Employees</div>
+      <div class="agent-preview" id="sum-agents"></div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-label">Connected Tools</div>
+      <div class="summary-value" id="sum-tools">None yet</div>
+    </div>
+
+    <button class="btn" onclick="launch()" style="background:#3ecf8e;color:#0a0a0a">Launch Company</button>
+    <button class="btn btn-back" onclick="nextStep(3)">Back</button>
+  </div>
+
+  <!-- Step 5: Done -->
+  <div class="step" id="step-5">
+    <h2 style="text-align:center">Your AI company is running</h2>
+    <p style="text-align:center">Agents are already working. Check your dashboard.</p>
+    <button class="btn" onclick="window.location.href='/'">Open Dashboard</button>
+  </div>
+</div>
+
+<script>
+const TOTAL_STEPS = 5;
+let currentStep = 1;
+const needs = new Set();
+const connected = new Set();
+
+function updateProgress() {
+  const el = document.getElementById('progress');
+  el.innerHTML = Array.from({length:TOTAL_STEPS}, (_,i) => {
+    const cls = i+1 < currentStep ? 'done' : i+1 === currentStep ? 'current' : '';
+    return `<div class="progress-dot ${cls}"></div>`;
+  }).join('');
+}
+
+function nextStep(n) {
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.getElementById(`step-${n}`).classList.add('active');
+  currentStep = n;
+  updateProgress();
+  if (n === 4) buildSummary();
+}
+
+function toggleNeed(el, need) {
+  el.classList.toggle('selected');
+  if (needs.has(need)) needs.delete(need); else needs.add(need);
+  el.querySelector('.check').innerHTML = el.classList.contains('selected') ? '✓' : '';
+}
+
+function toggleConnect(btn) {
+  btn.classList.toggle('connected');
+  btn.textContent = btn.classList.contains('connected') ? 'Connected' : 'Connect';
+  const name = btn.parentElement.querySelector('.name').textContent;
+  if (btn.classList.contains('connected')) connected.add(name); else connected.delete(name);
+}
+
+function getAgentsForNeeds() {
+  const agents = [{ id:'ceo', name:'CEO' }, { id:'coo', name:'COO' }];
+  if (needs.has('build')) { agents.push({ id:'pm', name:'PM' }, { id:'backend', name:'Backend Engineer' }, { id:'frontend', name:'Frontend Engineer' }, { id:'qa', name:'QA' }); }
+  if (needs.has('sales')) agents.push({ id:'sdr', name:'SDR' });
+  if (needs.has('marketing')) agents.push({ id:'marketing', name:'Marketing' });
+  if (needs.has('support')) agents.push({ id:'cs', name:'Customer Success' });
+  if (needs.has('finance')) agents.push({ id:'cfo', name:'CFO' }, { id:'finance-ops', name:'Finance Ops' });
+  if (needs.has('security')) agents.push({ id:'security', name:'Security' }, { id:'compliance', name:'Compliance' });
+  if (needs.has('analytics')) agents.push({ id:'data', name:'Data Analyst' });
+  if (needs.has('ops')) agents.push({ id:'pm', name:'PM' });
+  // Deduplicate
+  const seen = new Set();
+  return agents.filter(a => { if (seen.has(a.id)) return false; seen.add(a.id); return true; });
+}
+
+function buildSummary() {
+  document.getElementById('sum-name').textContent = document.getElementById('company-name').value || 'My Company';
+  const agents = getAgentsForNeeds();
+  document.getElementById('sum-agents').innerHTML = agents.map(a => `<span class="agent-chip">${a.name}</span>`).join('');
+  document.getElementById('sum-tools').textContent = connected.size ? [...connected].join(', ') : 'None — you can add these later';
+}
+
+async function launch() {
+  const config = {
+    name: document.getElementById('company-name').value,
+    description: document.getElementById('company-desc').value,
+    website: document.getElementById('company-website').value,
+    repo: document.getElementById('company-repo').value,
+    needs: [...needs],
+    agents: getAgentsForNeeds().map(a => a.id),
+    connections: [...connected]
+  };
+
+  try {
+    await fetch('/api/onboard', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(config)
+    });
+  } catch {}
+
+  nextStep(5);
+}
+
+updateProgress();
+</script>
+</body>
+</html>

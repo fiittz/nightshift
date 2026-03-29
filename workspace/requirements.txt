@@ -1,0 +1,2 @@
+# Budget Tracker Requirements
+# No external dependencies required - uses Python standard library

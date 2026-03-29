@@ -313,6 +313,35 @@ const server = createServer(async (req, res) => {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ ok: true, id: body.id }));
   }
+  // POST /api/onboard — set up company from onboarding flow
+  else if (req.url === '/api/onboard' && req.method === 'POST') {
+    const body = await parseBody(req);
+    if (!body) { res.writeHead(400); res.end('{"error":"body required"}'); return; }
+
+    // Update company config
+    const reg = readJSON('company.json') || { company: {}, agents: [] };
+    reg.company.name = body.name || reg.company.name;
+    reg.company.founder = 'Founder';
+    if (body.repo) {
+      reg.company.repos = [{ id: 'main', url: body.repo, branch: 'main', type: 'product', description: body.description || '' }];
+    }
+    if (body.website) {
+      reg.company.website = body.website;
+    }
+
+    // Filter agents based on what user selected
+    if (body.agents && body.agents.length) {
+      reg.agents = reg.agents.filter(a => body.agents.includes(a.id));
+    }
+
+    writeJSON('company.json', reg);
+    res.writeHead(200); res.end(JSON.stringify({ ok: true, agents: reg.agents.length }));
+  }
+  // Serve onboarding
+  else if (req.url === '/setup' || req.url === '/onboarding') {
+    res.writeHead(200, { 'Content-Type': 'text/html' });
+    res.end(readFileSync(join(__dirname, 'onboarding.html'), 'utf-8'));
+  }
   // Serve dashboard
   else if (req.url === '/' || req.url === '/index.html') {
     res.writeHead(200, { 'Content-Type': 'text/html' });
