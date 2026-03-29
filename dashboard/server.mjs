@@ -226,6 +226,24 @@ const server = createServer(async (req, res) => {
       }
       res.writeHead(200); res.end('{"ok":true}');
     }
+    else if (req.url === '/api/connections/config' && req.method === 'PUT') {
+      const body = await parseBody(req);
+      if (!body) { res.writeHead(400); res.end('{"error":"body required"}'); return; }
+      const conn = readJSON('connections.json') || {};
+      const { category, provider, field, value } = body;
+      if (category === 'compute' && conn.compute?.providers?.[provider]) {
+        conn.compute.providers[provider].config = conn.compute.providers[provider].config || {};
+        conn.compute.providers[provider].config[field] = value;
+      } else if (category === 'llm' && conn.llm?.providers?.[provider]) {
+        conn.llm.providers[provider].config = conn.llm.providers[provider].config || {};
+        conn.llm.providers[provider].config[field] = value;
+      } else if (category === 'integrations' && conn.integrations?.[provider]) {
+        conn.integrations[provider].config = conn.integrations[provider].config || {};
+        conn.integrations[provider].config[field] = value;
+      }
+      writeJSON('connections.json', conn);
+      res.writeHead(200); res.end('{"ok":true}');
+    }
     else if (req.url.match(/^\/api\/connections\/test\//) && req.method === 'POST') {
       res.writeHead(200); res.end('{"ok":true}');
     }

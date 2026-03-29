@@ -886,6 +886,8 @@ async function addKBDoc(){
 async function deleteKBDoc(filename){await fetch(`/api/knowledge/${filename}`,{method:'DELETE'});refresh();}
 
 // ─── Connections ────────────────────────────────
+let editingConn = null;
+
 function rConn(){
   if(!S?.connections) { document.getElementById('conn-compute').innerHTML='<div class="empty">Loading...</div>'; return; }
   const c = S.connections;
@@ -893,43 +895,84 @@ function rConn(){
   // Compute
   document.getElementById('conn-compute').innerHTML = Object.entries(c.compute?.providers||{}).map(([k,v])=>{
     const isActive = c.compute?.active === k;
-    return `<div class="row" style="justify-content:space-between">
-      <div class="control-label"><span class="control-dot" style="background:${isActive?'var(--green)':v.status==='connected'?'var(--amber)':'var(--fg-muted)'}"></span><span style="font-weight:${isActive?'600':'400'}">${v.name}</span></div>
-      <div style="display:flex;gap:6px;align-items:center">
-        <span class="control-value">${isActive?'Active':v.status}</span>
-        ${!isActive?`<button class="control-btn" onclick="setCompute('${k}')">Use</button>`:'<span class="badge badge-approved" style="margin:0"><span class="badge-dot"></span>Active</span>'}
+    const cfg = v.config||{};
+    return `<div style="border-bottom:1px solid var(--border);padding:14px 20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:${editingConn==='compute-'+k?'12px':'0'}">
+        <div class="control-label"><span class="control-dot" style="background:${isActive?'var(--green)':'var(--fg-muted)'}"></span><span style="font-weight:500">${v.name}</span></div>
+        <div style="display:flex;gap:6px;align-items:center">
+          ${isActive?'<span class="badge badge-approved" style="margin:0"><span class="badge-dot"></span>Active</span>':''}
+          <button class="control-btn" onclick="editingConn=editingConn==='compute-${k}'?null:'compute-${k}';rConn()">Configure</button>
+          ${!isActive?`<button class="control-btn active-btn" onclick="setCompute('${k}')">Use</button>`:''}
+        </div>
       </div>
+      ${editingConn==='compute-'+k?`<div style="display:grid;gap:8px;padding-top:8px">
+        ${k==='oracle'||k==='ssh'?`<input class="input" placeholder="Host IP" value="${esc(cfg.host||'')}" onchange="updateConnConfig('compute','${k}','host',this.value)">
+        <input class="input" placeholder="SSH User" value="${esc(cfg.user||'')}" onchange="updateConnConfig('compute','${k}','user',this.value)">
+        <input class="input" placeholder="SSH Key Path" value="${esc(cfg.keyPath||'')}" onchange="updateConnConfig('compute','${k}','keyPath',this.value)">`:''}
+        ${k==='daytona'?`<input class="input" placeholder="Snapshot" value="${esc(cfg.snapshot||'daytona-small')}" onchange="updateConnConfig('compute','${k}','snapshot',this.value)">
+        <select class="input" onchange="updateConnConfig('compute','${k}','region',this.value)"><option value="eu" ${cfg.region==='eu'?'selected':''}>EU</option><option value="us" ${cfg.region==='us'?'selected':''}>US</option></select>`:''}
+        ${k==='docker'?`<input class="input" placeholder="Docker socket" value="${esc(cfg.socket||'/var/run/docker.sock')}" onchange="updateConnConfig('compute','${k}','socket',this.value)">`:''}
+        ${k==='local'?`<div style="font-size:12px;color:var(--fg-muted)">Runs on this machine. No configuration needed.</div>`:''}
+      </div>`:''}
     </div>`;
   }).join('');
 
   // LLM
   document.getElementById('conn-llm').innerHTML = Object.entries(c.llm?.providers||{}).map(([k,v])=>{
     const isActive = c.llm?.active === k;
-    return `<div class="row" style="justify-content:space-between">
-      <div class="control-label"><span class="control-dot" style="background:${isActive?'var(--green)':v.status==='connected'?'var(--amber)':'var(--fg-muted)'}"></span><span style="font-weight:${isActive?'600':'400'}">${v.name}</span></div>
-      <div style="display:flex;gap:6px;align-items:center">
-        <span class="control-value">${v.models?.slice(0,2).join(', ')||'--'}</span>
-        ${!isActive?`<button class="control-btn" onclick="setLLM('${k}')">Use</button>`:'<span class="badge badge-approved" style="margin:0"><span class="badge-dot"></span>Active</span>'}
-        <button class="control-btn" onclick="testConn('llm','${k}')">Test</button>
+    const cfg = v.config||{};
+    return `<div style="border-bottom:1px solid var(--border);padding:14px 20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:${editingConn==='llm-'+k?'12px':'0'}">
+        <div class="control-label"><span class="control-dot" style="background:${isActive?'var(--green)':'var(--fg-muted)'}"></span><span style="font-weight:500">${v.name}</span></div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span style="font-size:11px;color:var(--fg-muted)">${v.models?.slice(0,2).join(', ')||''}</span>
+          ${isActive?'<span class="badge badge-approved" style="margin:0"><span class="badge-dot"></span>Active</span>':''}
+          <button class="control-btn" onclick="editingConn=editingConn==='llm-${k}'?null:'llm-${k}';rConn()">Configure</button>
+          ${!isActive?`<button class="control-btn active-btn" onclick="setLLM('${k}')">Use</button>`:''}
+        </div>
       </div>
+      ${editingConn==='llm-'+k?`<div style="display:grid;gap:8px;padding-top:8px">
+        <div style="font-size:11px;color:var(--fg-muted)">API Key (env var: ${cfg.keyEnvVar||'LLM_API_KEY'})</div>
+        <input class="input" type="password" placeholder="API Key" value="${cfg.keyEnvVar?'••••••••':''}" onchange="updateConnConfig('llm','${k}','apiKey',this.value)">
+        <input class="input" placeholder="Base URL" value="${esc(cfg.baseUrl||'')}" onchange="updateConnConfig('llm','${k}','baseUrl',this.value)">
+        <button class="control-btn" onclick="testConn('llm','${k}')" style="width:fit-content">Test Connection</button>
+      </div>`:''}
     </div>`;
   }).join('');
 
   // Integrations
   document.getElementById('conn-integrations').innerHTML = Object.entries(c.integrations||{}).map(([k,v])=>{
-    return `<div class="row" style="justify-content:space-between">
-      <div class="control-label"><span class="control-dot" style="background:${v.status==='connected'?'var(--green)':'var(--fg-muted)'}"></span><span>${v.name}</span></div>
-      <div style="display:flex;gap:6px;align-items:center">
-        <span class="control-value">${v.status}</span>
-        <button class="control-btn" onclick="toggleIntegration('${k}')">${v.status==='connected'?'Disconnect':'Connect'}</button>
+    const cfg = v.config||{};
+    const isConnected = v.status === 'connected';
+    return `<div style="border-bottom:1px solid var(--border);padding:14px 20px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:${editingConn==='int-'+k?'12px':'0'}">
+        <div class="control-label"><span class="control-dot" style="background:${isConnected?'var(--green)':'var(--fg-muted)'}"></span><span style="font-weight:500">${v.name}</span></div>
+        <div style="display:flex;gap:6px;align-items:center">
+          ${isConnected?'<span class="badge badge-approved" style="margin:0"><span class="badge-dot"></span>Connected</span>':''}
+          <button class="control-btn" onclick="editingConn=editingConn==='int-${k}'?null:'int-${k}';rConn()">${isConnected?'Settings':'Connect'}</button>
+        </div>
       </div>
+      ${editingConn==='int-'+k?`<div style="display:grid;gap:8px;padding-top:8px">
+        ${cfg.tokenEnvVar?`<div style="font-size:11px;color:var(--fg-muted)">Token (env var: ${cfg.tokenEnvVar})</div><input class="input" type="password" placeholder="API Token" value="${isConnected?'••••••••':''}" onchange="updateConnConfig('integrations','${k}','token',this.value)">`:''}
+        ${cfg.keyEnvVar?`<div style="font-size:11px;color:var(--fg-muted)">API Key (env var: ${cfg.keyEnvVar})</div><input class="input" type="password" placeholder="API Key" value="${isConnected?'••••••••':''}" onchange="updateConnConfig('integrations','${k}','apiKey',this.value)">`:''}
+        ${cfg.urlEnvVar?`<div style="font-size:11px;color:var(--fg-muted)">URL (env var: ${cfg.urlEnvVar})</div><input class="input" placeholder="URL" value="${esc(cfg.url||'')}" onchange="updateConnConfig('integrations','${k}','url',this.value)">`:''}
+        ${cfg.webhookEnvVar?`<div style="font-size:11px;color:var(--fg-muted)">Webhook (env var: ${cfg.webhookEnvVar})</div><input class="input" placeholder="Webhook URL" value="${esc(cfg.webhook||'')}" onchange="updateConnConfig('integrations','${k}','webhook',this.value)">`:''}
+        ${cfg.chatIdEnvVar?`<div style="font-size:11px;color:var(--fg-muted)">Chat ID (env var: ${cfg.chatIdEnvVar})</div><input class="input" placeholder="Chat ID" value="${esc(cfg.chatId||'')}" onchange="updateConnConfig('integrations','${k}','chatId',this.value)">`:''}
+        ${cfg.fromEmail!==undefined?`<div style="font-size:11px;color:var(--fg-muted)">From Email</div><input class="input" placeholder="you@company.com" value="${esc(cfg.fromEmail||'')}" onchange="updateConnConfig('integrations','${k}','fromEmail',this.value)">`:''}
+        ${cfg.email!==undefined?`<div style="font-size:11px;color:var(--fg-muted)">Email</div><input class="input" placeholder="you@company.com" value="${esc(cfg.email||'')}" onchange="updateConnConfig('integrations','${k}','email',this.value)">`:''}
+        <div style="display:flex;gap:8px">
+          <button class="control-btn active-btn" onclick="toggleIntegration('${k}')">${isConnected?'Disconnect':'Save & Connect'}</button>
+        </div>
+      </div>`:''}
     </div>`;
   }).join('');
 }
+
 async function setCompute(k){await fetch('/api/connections/compute',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({active:k})});refresh()}
 async function setLLM(k){await fetch('/api/connections/llm',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({active:k})});refresh()}
 async function testConn(type,k){const r=await fetch(`/api/connections/test/${type}/${k}`,{method:'POST'});const d=await r.json();alert(d.ok?'Connected!':'Failed: '+(d.error||'unknown'))}
-async function toggleIntegration(k){await fetch(`/api/connections/integration/${k}/toggle`,{method:'POST'});refresh()}
+async function toggleIntegration(k){await fetch(`/api/connections/integration/${k}/toggle`,{method:'POST'});editingConn=null;refresh()}
+async function updateConnConfig(category,provider,field,value){await fetch('/api/connections/config',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({category,provider,field,value})});}
 
 // ─── Monitor ────────────────────────────────────
 function rMon(){
