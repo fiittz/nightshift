@@ -1,1 +1,57 @@
-[]
+[
+  {
+    "id": "TASK-001",
+    "title": "Set up initial test suite for core functionality",
+    "description": "Create basic test framework and write tests for critical paths in the codebase. Why: Ensure code quality and prevent regressions. Acceptance: Tests run successfully for main functions, coverage >70% on core modules.",
+    "type": "backend",
+    "domain": "general",
+    "priority": "high",
+    "status": "in-progress",
+    "assignee": "backend",
+    "branch": "backend/set-up-initial-test-suite-for-core-functionality"
+  },
+  {
+    "id": "TASK-002",
+    "title": "Security audit of current codebase",
+    "description": "Review code for security vulnerabilities, dependency issues, and best practices. Why: Protect against potential attacks and ensure compliance. Acceptance: Report generated with findings, critical issues addressed.",
+    "type": "backend",
+    "domain": "general",
+    "priority": "high",
+    "status": "in-progress",
+    "assignee": "security",
+    "branch": "security/security-audit-of-current-codebase"
+  },
+  {
+    "id": "TASK-003",
+    "title": "Research Vercel prospect for sales outreach",
+    "description": "Analyze Vercel's business, recent announcements, and identify pain points where our product could help. Why: Prepare for effective sales outreach. Acceptance: Research summary with key insights and suggested talking points.",
+    "type": "frontend",
+    "domain": "custom",
+    "priority": "medium",
+    "status": "in-progress",
+    "assignee": "sdr",
+    "branch": null
+  },
+  {
+    "id": "TASK-004",
+    "title": "Research Netlify prospect for sales outreach",
+    "description": "Analyze Netlify's business, recent announcements, and identify pain points where our product could help. Why: Prepare for effective sales outreach. Acceptance: Research summary with key insights and suggested talking points.",
+    "type": "frontend",
+    "domain": "custom",
+    "priority": "medium",
+    "status": "todo",
+    "assignee": null,
+    "branch": null
+  },
+  {
+    "id": "TASK-005",
+    "title": "Create backlog management system",
+    "description": "Build a system to manage tasks, track status, and assign work. Why: Improve team productivity and visibility. Acceptance: System allows CRUD operations on tasks, displays backlog, and integrates with current workflow.",
+    "type": "backend",
+    "domain": "general",
+    "priority": "high",
+    "status": "todo",
+    "assignee": null,
+    "branch": null
+  }
+]

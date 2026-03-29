@@ -204,13 +204,13 @@ async function runAgent(agentId, task, taskKey) {
 
   // ACTION: Log the action
   const action = logEvent('action', agentId, { task: task.substring(0, 100), taskKey });
-  updateAgent(agentId, { status: 'running', lastActiveAt: new Date().toISOString() });
+  await updateAgent(agentId, useSupabase ? { status: 'running', last_active_at: new Date().toISOString() } : { status: 'running', lastActiveAt: new Date().toISOString() });
 
   // Build prompt
   const instructions = text(agent.adapterConfig?.promptFile || `agents/${agentId}.md`);
   const backlog = text('backlog.json');
   const prospects = text('prospects.json');
-  const session = getSession(agentId, taskKey);
+  const session = (await getSession(agentId, taskKey)) || [];
   const knowledge = getRelevantKnowledge(task);
   const knowledgeContext = knowledge.length ? `\n\n## Relevant Knowledge\n${knowledge.map(d => `### ${d.file}\n${d.content}`).join('\n\n')}` : '';
 
