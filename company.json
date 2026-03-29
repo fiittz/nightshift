@@ -1,0 +1,150 @@
+{
+  "company": {
+    "id": "my-company",
+    "name": "My AI Company",
+    "founder": "Your Name",
+    "settings": {
+      "requireApprovalForNewHires": true,
+      "maxAgents": 20,
+      "defaultModel": "deepseek/deepseek-v3.2",
+      "stabilityFirst": true
+    },
+    "repos": [
+      {
+        "id": "my-product",
+        "url": "${PRODUCT_REPO_URL}",
+        "branch": "main",
+        "path": "product-repo",
+        "type": "product",
+        "description": "Main product repository"
+      }
+    ],
+    "branchStrategy": {
+      "engineerPrefix": true,
+      "protectedBranches": ["main"],
+      "namingConvention": "<agent>/<task-slug>"
+    },
+    "telegram": {
+      "botTokenEnvVar": "TELEGRAM_BOT_TOKEN",
+      "chatIdEnvVar": "TELEGRAM_CHAT_ID"
+    },
+    "llm": {
+      "provider": "openai-compatible",
+      "baseUrl": "${LLM_BASE_URL}",
+      "apiKeyEnvVar": "LLM_API_KEY"
+    }
+  },
+  "agents": [
+    {
+      "id": "ceo",
+      "name": "CEO",
+      "role": "Chief Executive Officer",
+      "title": "Strategy, agenda, quality audits, hiring",
+      "status": "idle",
+      "reportsTo": null,
+      "permissions": { "canCreateAgents": true, "canFireAgents": true, "canSetAgenda": true },
+      "adapterConfig": { "model": "deepseek/deepseek-v3.2", "promptFile": "agents/ceo.md" },
+      "runtimeConfig": { "heartbeat": { "intervalRounds": 5 } },
+      "budget": { "monthlyCentsLimit": 5000, "spentCents": 0, "totalTokens": 0 },
+      "stats": { "totalRuns": 0 }
+    },
+    {
+      "id": "pm",
+      "name": "PM",
+      "role": "Product Manager",
+      "title": "Specs, backlog, task breakdowns",
+      "status": "idle",
+      "reportsTo": "ceo",
+      "permissions": { "canWriteBacklog": true },
+      "adapterConfig": { "model": "deepseek/deepseek-v3.2", "promptFile": "agents/pm.md" },
+      "budget": { "monthlyCentsLimit": 3000, "spentCents": 0, "totalTokens": 0 },
+      "stats": { "totalRuns": 0 }
+    },
+    {
+      "id": "backend",
+      "name": "Backend Engineer",
+      "role": "Backend Engineer",
+      "title": "APIs, business logic, data layer",
+      "status": "idle",
+      "reportsTo": "coo",
+      "permissions": { "canWriteCode": true, "canPushBranches": true },
+      "adapterConfig": { "model": "deepseek/deepseek-v3.2", "promptFile": "agents/backend.md" },
+      "budget": { "monthlyCentsLimit": 5000, "spentCents": 0, "totalTokens": 0 },
+      "stats": { "totalRuns": 0 }
+    },
+    {
+      "id": "frontend",
+      "name": "Frontend Engineer",
+      "role": "Frontend Engineer",
+      "title": "UI, components, styling",
+      "status": "idle",
+      "reportsTo": "coo",
+      "permissions": { "canWriteCode": true, "canPushBranches": true },
+      "adapterConfig": { "model": "deepseek/deepseek-v3.2", "promptFile": "agents/frontend.md" },
+      "budget": { "monthlyCentsLimit": 5000, "spentCents": 0, "totalTokens": 0 },
+      "stats": { "totalRuns": 0 }
+    },
+    {
+      "id": "qa",
+      "name": "QA",
+      "role": "QA Engineer",
+      "title": "Code review, tests, impact analysis",
+      "status": "idle",
+      "reportsTo": "coo",
+      "permissions": { "canApproveCode": true },
+      "adapterConfig": { "model": "deepseek/deepseek-v3.2", "promptFile": "agents/qa.md" },
+      "budget": { "monthlyCentsLimit": 3000, "spentCents": 0, "totalTokens": 0 },
+      "stats": { "totalRuns": 0 }
+    },
+    {
+      "id": "compliance",
+      "name": "Compliance",
+      "role": "Compliance Specialist",
+      "title": "Domain-specific validation",
+      "status": "idle",
+      "reportsTo": "coo",
+      "permissions": { "canApproveCompliance": true },
+      "adapterConfig": { "model": "deepseek/deepseek-v3.2", "promptFile": "agents/compliance.md" },
+      "budget": { "monthlyCentsLimit": 2000, "spentCents": 0, "totalTokens": 0 },
+      "stats": { "totalRuns": 0 }
+    },
+    {
+      "id": "security",
+      "name": "Security",
+      "role": "Security & DevOps",
+      "title": "Secret scanning, dependency audits, lint",
+      "status": "idle",
+      "reportsTo": "coo",
+      "permissions": { "canBlockDeploy": true },
+      "adapterConfig": { "model": "deepseek/deepseek-v3.2", "promptFile": "agents/security.md" },
+      "budget": { "monthlyCentsLimit": 2000, "spentCents": 0, "totalTokens": 0 },
+      "stats": { "totalRuns": 0 }
+    },
+    {
+      "id": "sdr",
+      "name": "SDR",
+      "role": "Sales Development Rep",
+      "title": "Prospect research, outreach, CRM",
+      "status": "idle",
+      "reportsTo": "coo",
+      "permissions": { "canDraftEmails": true },
+      "adapterConfig": { "model": "deepseek/deepseek-v3.2", "promptFile": "agents/sdr.md" },
+      "budget": { "monthlyCentsLimit": 2000, "spentCents": 0, "totalTokens": 0 },
+      "stats": { "totalRuns": 0 }
+    },
+    {
+      "id": "coo",
+      "name": "COO",
+      "role": "Chief Operating Officer",
+      "title": "Conductor — orchestrates pipeline, triggers agents",
+      "status": "idle",
+      "reportsTo": "ceo",
+      "permissions": { "canTriggerAgents": true, "canSendTelegram": true },
+      "adapterConfig": { "model": "deepseek/deepseek-v3.2", "promptFile": "agents/coo.md" },
+      "budget": { "monthlyCentsLimit": 1000, "spentCents": 0, "totalTokens": 0 },
+      "stats": { "totalRuns": 0 }
+    }
+  ],
+  "pendingHires": [],
+  "firedAgents": []
+}

@@ -1,0 +1,14 @@
+.env
+.env.local
+!.env.example
+*.p12
+*.pem
+*.key
+credentials.*
+secrets.*
+node_modules/
+data/sessions.json
+data/runs.json
+workspace/*-output.log
+workspace/activity.log
+agenda.json
