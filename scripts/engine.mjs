@@ -15,6 +15,7 @@ import { readFileSync, writeFileSync, appendFileSync, existsSync, mkdirSync, rea
 import { execSync } from 'child_process';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import { db } from './db.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
@@ -28,6 +29,8 @@ const MAX_ROUNDS = parseInt(process.argv[2] || '10');
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 const WORKSPACE = process.env.WORKSPACE || join(ROOT, 'workspace');
+const COMPANY_ID = process.env.COMPANY_ID || 'bb18cce2-25b1-4304-a046-47b113052ec4';
+const useSupabase = !!process.env.SUPABASE_URL;
 
 if (!LLM_API_KEY) { console.error('Set LLM_API_KEY'); process.exit(1); }
 
@@ -37,43 +40,64 @@ const json = (f) => { const p = join(ROOT, f); if (!existsSync(p)) return null; 
 const save = (f, d) => writeFileSync(join(ROOT, f), JSON.stringify(d, null, 2), 'utf-8');
 const text = (f) => { const p = join(ROOT, f); return existsSync(p) ? readFileSync(p, 'utf-8') : ''; };
 
-// ─── Event Log (immutable, append-only) ─────────────────
+// ─── Event Log ──────────────────────────────────────────
 
-function logEvent(type, agentId, data) {
-  const event = { id: `evt-${Date.now()}-${Math.random().toString(36).slice(2,6)}`, type, agentId, data, timestamp: new Date().toISOString() };
-  const events = json('data/events.json') || [];
-  events.push(event);
-  if (events.length > 1000) events.splice(0, events.length - 1000);
-  save('data/events.json', events);
-
-  // Also write to activity log for dashboard
-  const msg = `[${event.timestamp}] [${agentId||'system'}] ${type}: ${JSON.stringify(data).substring(0, 120)}`;
+async function logEvent(type, agentId, data) {
+  const msg = `[${new Date().toISOString()}] [${agentId||'system'}] ${type}: ${JSON.stringify(data).substring(0, 120)}`;
   console.log(msg);
   try { appendFileSync(join(ROOT, 'workspace', 'activity.log'), msg + '\n'); } catch {}
 
-  return event;
+  if (useSupabase) {
+    try { await db.logEvent(COMPANY_ID, agentId, type, data); } catch {}
+  }
+  // Also log to local for dashboard fallback
+  try { await db.log(COMPANY_ID, agentId, `${type}: ${JSON.stringify(data).substring(0, 200)}`); } catch {}
 }
 
 // ─── Company Registry ───────────────────────────────────
 
-function getCompany() { return json('company.json') || { agents: [] }; }
-function saveCompany(c) { save('company.json', c); }
-function getAgent(id) { return getCompany().agents.find(a => a.id === id); }
+let _agents = null; // cache
 
-function updateAgent(id, updates) {
-  const c = getCompany();
-  const a = c.agents.find(x => x.id === id);
-  if (a) { Object.assign(a, updates); saveCompany(c); }
+async function loadAgents() {
+  if (useSupabase) {
+    _agents = await db.getAgents(COMPANY_ID);
+  } else {
+    const c = json('company.json') || { agents: [] };
+    _agents = c.agents || [];
+  }
+  return _agents;
+}
+
+function getAgentCached(id) { return (_agents || []).find(a => a.id === id); }
+
+async function updateAgent(id, updates) {
+  if (useSupabase) {
+    await db.updateAgent(id, COMPANY_ID, updates);
+    // Update cache
+    const a = (_agents || []).find(x => x.id === id);
+    if (a) Object.assign(a, updates);
+  } else {
+    const c = json('company.json') || { agents: [] };
+    const a = c.agents.find(x => x.id === id);
+    if (a) { Object.assign(a, updates); save('company.json', c); }
+  }
 }
 
 // ─── Sessions ───────────────────────────────────────────
 
-function getSession(agentId, taskKey) {
+async function getSession(agentId, taskKey) {
+  if (useSupabase) {
+    return await db.getSession(agentId, taskKey || 'default', COMPANY_ID);
+  }
   const s = json('data/sessions.json') || {};
   return s[`${agentId}:${taskKey || 'default'}`] || [];
 }
 
-function saveSession(agentId, taskKey, history) {
+async function saveSession(agentId, taskKey, history) {
+  if (useSupabase) {
+    await db.saveSession(agentId, taskKey || 'default', COMPANY_ID, history);
+    return;
+  }
   const s = json('data/sessions.json') || {};
   s[`${agentId}:${taskKey || 'default'}`] = history.slice(-6);
   save('data/sessions.json', s);
@@ -167,12 +191,14 @@ async function checkTelegram() {
  * Returns a structured Observation.
  */
 async function runAgent(agentId, task, taskKey) {
-  const agent = getAgent(agentId);
-  if (!agent) { logEvent('agent_not_found', agentId, {}); return null; }
+  const agent = getAgentCached(agentId);
+  if (!agent) { await logEvent('agent_not_found', agentId, {}); return null; }
 
-  // Budget check
-  if ((agent.budget?.spentCents || 0) >= (agent.budget?.monthlyCentsLimit || 5000)) {
-    logEvent('budget_exceeded', agentId, { spent: agent.budget.spentCents, limit: agent.budget.monthlyCentsLimit });
+  // Budget check — handle both Supabase (snake_case) and JSON (camelCase) formats
+  const spent = agent.budget_spent_cents ?? agent.budget?.spentCents ?? 0;
+  const limit = agent.budget_limit_cents ?? agent.budget?.monthlyCentsLimit ?? 5000;
+  if (spent >= limit) {
+    await logEvent('budget_exceeded', agentId, { spent, limit });
     return null;
   }
 
@@ -269,30 +295,44 @@ async function runAgent(agentId, task, taskKey) {
       durationMs: duration
     };
 
-    logEvent('observation', agentId, { tokens: observation.tokens.total, cost: observation.costCents, files: filesWritten.length, cmds: cmdResults.length });
+    await logEvent('observation', agentId, { tokens: observation.tokens.total, cost: observation.costCents, files: filesWritten.length, cmds: cmdResults.length });
 
     // Update budget
-    const c = getCompany();
-    const a = c.agents.find(x => x.id === agentId);
-    if (a) {
-      a.budget = a.budget || {};
-      a.budget.spentCents = (a.budget.spentCents || 0) + observation.costCents;
-      a.budget.totalTokens = (a.budget.totalTokens || 0) + observation.tokens.total;
-      a.stats = a.stats || {};
-      a.stats.totalRuns = (a.stats.totalRuns || 0) + 1;
-      a.status = 'idle';
-      a.lastActiveAt = new Date().toISOString();
-      saveCompany(c);
+    if (useSupabase) {
+      await updateAgent(agentId, {
+        budget_spent_cents: spent + observation.costCents,
+        total_tokens: (agent.total_tokens || 0) + observation.tokens.total,
+        total_runs: (agent.total_runs || 0) + 1,
+        status: 'idle',
+        last_active_at: new Date().toISOString()
+      });
+    } else {
+      const c = json('company.json') || { agents: [] };
+      const a = c.agents.find(x => x.id === agentId);
+      if (a) {
+        a.budget = a.budget || {};
+        a.budget.spentCents = (a.budget.spentCents || 0) + observation.costCents;
+        a.budget.totalTokens = (a.budget.totalTokens || 0) + observation.tokens.total;
+        a.stats = a.stats || {};
+        a.stats.totalRuns = (a.stats.totalRuns || 0) + 1;
+        a.status = 'idle';
+        a.lastActiveAt = new Date().toISOString();
+        save('company.json', c);
+      }
     }
 
     // Save session
-    saveSession(agentId, taskKey, [...session, { role: 'user', content: task }, { role: 'assistant', content: response }]);
+    await saveSession(agentId, taskKey, [...session, { role: 'user', content: task }, { role: 'assistant', content: response }]);
 
-    // Save run to runs.json
-    const runs = json('data/runs.json') || [];
-    runs.push({ id: `run-${Date.now()}`, agentId, taskKey, timestamp: new Date().toISOString(), ...observation.tokens, costCents: observation.costCents, durationMs: duration, inputPreview: task.substring(0, 100), outputPreview: response.substring(0, 200) });
-    if (runs.length > 500) runs.splice(0, runs.length - 500);
-    save('data/runs.json', runs);
+    // Save run
+    if (useSupabase) {
+      try { await db.createRun({ company_id: COMPANY_ID, agent_id: agentId, task_key: taskKey, input_preview: task.substring(0, 100), output_preview: response.substring(0, 200), input_tokens: observation.tokens.input, output_tokens: observation.tokens.output, total_tokens: observation.tokens.total, cost_cents: observation.costCents, duration_ms: duration }); } catch {}
+    } else {
+      const runs = json('data/runs.json') || [];
+      runs.push({ id: `run-${Date.now()}`, agentId, taskKey, timestamp: new Date().toISOString(), ...observation.tokens, costCents: observation.costCents, durationMs: duration, inputPreview: task.substring(0, 100), outputPreview: response.substring(0, 200) });
+      if (runs.length > 500) runs.splice(0, runs.length - 500);
+      save('data/runs.json', runs);
+    }
 
     // Save agent output log
     appendFileSync(join(ROOT, 'workspace', `${agentId}-output.log`), `\n[${new Date().toISOString()}] (${observation.tokens.total} tokens, $${(observation.costCents / 100).toFixed(3)})\n${response.substring(0, 1000)}\n`);
@@ -335,8 +375,7 @@ function advancePipeline() {
 }
 
 function assignTasks(backlog) {
-  const company = getCompany();
-  const agents = company.agents || [];
+  const agents = _agents || [];
   const findByRole = (role) => agents.find(a => a.role.toLowerCase().includes(role))?.id;
   const backendId = findByRole('backend') || 'backend';
   const frontendId = findByRole('frontend') || 'frontend';
@@ -398,13 +437,16 @@ function getAgentJob(agent, backlog) {
 // ─── CONDUCTOR ROUND ────────────────────────────────────
 
 async function round(num) {
-  logEvent('round_start', 'coo', { round: num, maxRounds: MAX_ROUNDS });
+  await logEvent('round_start', 'coo', { round: num, maxRounds: MAX_ROUNDS });
   console.log(`\n${'═'.repeat(40)} Round ${num}/${MAX_ROUNDS} ${'═'.repeat(40)}`);
 
+  // Reload agents from Supabase each round
+  await loadAgents();
+
   let backlog = json('backlog.json') || [];
-  const company = getCompany();
+  const agents = _agents || [];
   const counts = {}; backlog.forEach(t => { counts[t.status] = (counts[t.status] || 0) + 1; });
-  const spent = company.agents.reduce((s, a) => s + (a.budget?.spentCents || 0), 0);
+  const spent = agents.reduce((s, a) => s + (a.budget_spent_cents ?? a.budget?.spentCents ?? 0), 0);
 
   console.log(`Pipeline: ${counts['todo'] || 0} todo | ${counts['in-progress'] || 0} building | ${counts['review'] || 0} review | ${counts['approved'] || 0} approved | ${counts['ready'] || 0} ready | $${(spent / 100).toFixed(2)} spent`);
 
@@ -429,7 +471,7 @@ async function round(num) {
   backlog = json('backlog.json') || [];
 
   // Phase 3: Fire ALL working agents in parallel
-  const workingAgents = company.agents.filter(a => {
+  const workingAgents = (_agents || []).filter(a => {
     const role = (a.role || '').toLowerCase();
     return !role.includes('chief executive') && !role.includes('chief operating') && !role.includes('chief financial') && !role.includes('chief revenue');
   });
@@ -463,16 +505,18 @@ async function main() {
   console.log(`  TROVEK ENGINE v2.0`);
   console.log(`  Model: ${DEFAULT_MODEL}`);
   console.log(`  Rounds: ${MAX_ROUNDS}`);
-  console.log(`  Agents: ${getCompany().agents.length}`);
-  console.log(`${'═'.repeat(50)}\n`);
-
   // Init data files
   if (!existsSync(join(ROOT, 'data'))) mkdirSync(join(ROOT, 'data'), { recursive: true });
   if (!json('data/events.json')) save('data/events.json', []);
   if (!json('data/sessions.json')) save('data/sessions.json', {});
   if (!json('data/runs.json')) save('data/runs.json', []);
 
-  logEvent('engine_start', 'system', { model: DEFAULT_MODEL, rounds: MAX_ROUNDS });
+  await loadAgents();
+  console.log(`  Agents: ${(_agents || []).length}`);
+  console.log(`  Backend: ${useSupabase ? 'Supabase' : 'JSON files'}`);
+  console.log(`${'═'.repeat(50)}\n`);
+
+  await logEvent('engine_start', 'system', { model: DEFAULT_MODEL, rounds: MAX_ROUNDS });
 
   for (let i = 1; i <= MAX_ROUNDS; i++) {
     await checkTelegram();
@@ -480,10 +524,10 @@ async function main() {
     if (i < MAX_ROUNDS) await checkTelegram();
   }
 
-  const company = getCompany();
-  const totalSpent = company.agents.reduce((s, a) => s + (a.budget?.spentCents || 0), 0);
-  const totalRuns = company.agents.reduce((s, a) => s + (a.stats?.totalRuns || 0), 0);
-  logEvent('engine_stop', 'system', { totalRuns, totalSpent });
+  await loadAgents();
+  const totalSpent = (_agents || []).reduce((s, a) => s + (a.budget_spent_cents ?? a.budget?.spentCents ?? 0), 0);
+  const totalRuns = (_agents || []).reduce((s, a) => s + (a.total_runs ?? a.stats?.totalRuns ?? 0), 0);
+  await logEvent('engine_stop', 'system', { totalRuns, totalSpent });
   console.log(`\nDone. ${totalRuns} runs, $${(totalSpent / 100).toFixed(2)} spent.`);
 }
 
