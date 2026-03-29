@@ -10,7 +10,11 @@
     :root { --bg:#0a0a0a; --bg-card:#141414; --bg-sidebar:#111; --bg-hover:#1a1a1a; --fg:#e8e8e8; --fg-dim:#888; --fg-muted:#555; --border:#222; --border-card:#2a2a2a; --accent:#c8a2ff; --green:#3ecf8e; --amber:#f5a623; --red:#ef4444; --blue:#3b82f6; }
     body { background:var(--bg); color:var(--fg); font-family:'Inter',-apple-system,sans-serif; min-height:100vh; font-size:14px; }
     .layout { display:flex; height:100vh; }
-    .sidebar { width:240px; background:var(--bg-sidebar); border-right:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; }
+    .sidebar { width:240px; background:var(--bg-sidebar); border-right:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; transition:width .2s,margin .2s; overflow:hidden; }
+    .sidebar.collapsed { width:0; border-right:none; }
+    .sidebar-toggle { position:fixed; top:12px; left:12px; z-index:100; background:var(--bg-card); border:1px solid var(--border-card); border-radius:6px; width:32px; height:32px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--fg-dim); font-size:16px; transition:left .2s; }
+    .sidebar-toggle:hover { color:var(--fg); border-color:var(--fg-muted); }
+    .sidebar-toggle.shifted { left:252px; }
     .sidebar-logo { padding:20px 20px 24px; display:flex; align-items:center; gap:10px; }
     .sidebar-logo h1 { font-size:18px; font-weight:700; letter-spacing:-0.5px; }
     .sidebar-logo .ver { font-size:11px; color:var(--fg-muted); background:var(--bg-hover); padding:2px 6px; border-radius:4px; }
@@ -88,14 +92,26 @@
     .empty { padding:40px 20px; text-align:center; color:var(--fg-muted); font-size:13px; }
     .hidden { display:none; }
     .count-badge { font-size:11px; font-weight:600; padding:2px 8px; border-radius:9999px; background:var(--bg-hover); color:var(--fg-dim); border:1px solid var(--border); }
+    .control-panel { padding:8px 12px; border-top:1px solid var(--border); }
+    .control-item { display:flex; align-items:center; justify-content:space-between; padding:8px 12px; border-radius:6px; font-size:12px; color:var(--fg-dim); }
+    .control-item:hover { background:var(--bg-hover); }
+    .control-dot { width:6px; height:6px; border-radius:50%; }
+    .control-label { display:flex; align-items:center; gap:8px; }
+    .control-value { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--fg-muted); }
+    .control-btn { background:var(--bg-hover); border:1px solid var(--border-card); border-radius:4px; padding:3px 8px; font-size:10px; color:var(--fg-dim); cursor:pointer; font-weight:500; }
+    .control-btn:hover { border-color:var(--fg-muted); color:var(--fg); }
+    .control-btn.active-btn { background:rgba(62,207,142,0.1); border-color:rgba(62,207,142,0.3); color:var(--green); }
+    .control-btn.danger-btn { background:rgba(239,68,68,0.1); border-color:rgba(239,68,68,0.3); color:var(--red); }
+    .section-divider { height:1px; background:var(--border); margin:8px 12px; }
     ::-webkit-scrollbar { width:4px; } ::-webkit-scrollbar-track { background:transparent; } ::-webkit-scrollbar-thumb { background:#333; border-radius:2px; }
   </style>
 </head>
 <body>
+<div class="sidebar-toggle shifted" id="sb-toggle" onclick="toggleSidebar()">&#9776;</div>
 <div class="layout">
-  <div class="sidebar">
+  <div class="sidebar" id="sidebar-el">
     <div class="sidebar-logo">
-      <svg width="130" height="28" viewBox="0 0 130 28">
+      <svg width="195" height="42" viewBox="0 0 130 28">
         <circle cx="5" cy="6" r="2.5" fill="#e8e8e8"/>
         <circle cx="15" cy="12" r="3" fill="#e8e8e8"/>
         <circle cx="5" cy="18" r="2" fill="#e8e8e8" opacity="0.6"/>
@@ -106,7 +122,69 @@
       <span class="ver">v1.0</span>
     </div>
     <div class="sidebar-nav" id="sidebar"></div>
-    <div class="sidebar-footer"><div id="footer-stats">--</div></div>
+    <!-- Control Panel -->
+    <div class="control-panel">
+      <div class="nav-label" style="margin-bottom:6px">Environment</div>
+      <div class="control-item">
+        <div class="control-label"><span class="control-dot" id="env-server-dot" style="background:var(--fg-muted)"></span><span>Server</span></div>
+        <span class="control-value" id="env-server">Offline</span>
+      </div>
+      <div class="control-item">
+        <div class="control-label"><span class="control-dot" id="env-llm-dot" style="background:var(--fg-muted)"></span><span>LLM API</span></div>
+        <span class="control-value" id="env-llm">--</span>
+      </div>
+      <div class="control-item">
+        <div class="control-label"><span class="control-dot" id="env-tg-dot" style="background:var(--fg-muted)"></span><span>Telegram</span></div>
+        <span class="control-value" id="env-tg">--</span>
+      </div>
+      <div class="control-item">
+        <div class="control-label"><span class="control-dot" id="env-repo-dot" style="background:var(--fg-muted)"></span><span>Repo</span></div>
+        <span class="control-value" id="env-repo">--</span>
+      </div>
+    </div>
+
+    <div class="control-panel">
+      <div class="nav-label" style="margin-bottom:6px">AI Company</div>
+      <div class="control-item">
+        <span style="font-size:12px">Conductor</span>
+        <div style="display:flex;gap:4px">
+          <button class="control-btn active-btn" id="btn-run" onclick="startConductor()">Run</button>
+          <button class="control-btn danger-btn" id="btn-stop" onclick="stopConductor()">Stop</button>
+        </div>
+      </div>
+      <div class="control-item">
+        <span style="font-size:12px">Mode</span>
+        <select id="run-mode" class="control-btn" style="border-radius:4px;padding:3px 6px">
+          <option value="continuous">24/7</option>
+          <option value="rounds">Fixed rounds</option>
+          <option value="manual">Manual</option>
+        </select>
+      </div>
+      <div class="control-item">
+        <span style="font-size:12px">Agents active</span>
+        <span class="control-value" id="env-agents">0 / 0</span>
+      </div>
+    </div>
+
+    <div class="control-panel">
+      <div class="nav-label" style="margin-bottom:6px">Budget</div>
+      <div class="control-item">
+        <span style="font-size:12px">Spent today</span>
+        <span class="control-value" id="env-spent">$0.00</span>
+      </div>
+      <div class="control-item">
+        <span style="font-size:12px">Total tokens</span>
+        <span class="control-value" id="env-tokens">0</span>
+      </div>
+      <div class="control-item">
+        <span style="font-size:12px">Total runs</span>
+        <span class="control-value" id="env-runs">0</span>
+      </div>
+    </div>
+
+    <div class="sidebar-footer" style="padding:12px 20px;border-top:1px solid var(--border)">
+      <div id="footer-stats" style="font-size:11px;color:var(--fg-muted)">--</div>
+    </div>
   </div>
   <div class="main">
     <div class="tabs">
@@ -130,6 +208,46 @@
 <script>
 // AD is built dynamically from company.json
 let AD=[];
+function toggleSidebar(){const sb=document.getElementById('sidebar-el');const btn=document.getElementById('sb-toggle');sb.classList.toggle('collapsed');btn.classList.toggle('shifted');btn.innerHTML=sb.classList.contains('collapsed')?'&#9776;':'&#10005;'}
+
+function updateControls(){
+  if(!S?.registry) return;
+  const agents = S.registry.agents||[];
+  const running = agents.filter(a=>a.status==='running').length;
+  const total = agents.length;
+  const spent = agents.reduce((s,a)=>s+(a.budget?.spentCents||0),0);
+  const tokens = agents.reduce((s,a)=>s+(a.budget?.totalTokens||0),0);
+  const runs = agents.reduce((s,a)=>s+(a.stats?.totalRuns||0),0);
+  const hasActivity = (S.activity||[]).length > 1;
+  const repos = S.registry.company?.repos||[];
+
+  // Server
+  document.getElementById('env-server-dot').style.background='var(--green)';
+  document.getElementById('env-server').textContent='Online';
+
+  // LLM
+  const llmProvider = S.registry.company?.llm?.provider||'--';
+  document.getElementById('env-llm-dot').style.background = runs > 0 ? 'var(--green)' : 'var(--amber)';
+  document.getElementById('env-llm').textContent = runs > 0 ? 'Connected' : 'Standby';
+
+  // Telegram
+  const hasTg = hasActivity && (S.activity||[]).some(l=>l.includes('Telegram'));
+  document.getElementById('env-tg-dot').style.background = hasTg ? 'var(--green)' : 'var(--fg-muted)';
+  document.getElementById('env-tg').textContent = hasTg ? 'Connected' : 'Not set';
+
+  // Repo
+  document.getElementById('env-repo-dot').style.background = repos.length ? 'var(--green)' : 'var(--fg-muted)';
+  document.getElementById('env-repo').textContent = repos.length ? repos[0].id : 'None';
+
+  // Agents
+  document.getElementById('env-agents').textContent = `${running} / ${total}`;
+  document.getElementById('env-spent').textContent = `$${(spent/100).toFixed(2)}`;
+  document.getElementById('env-tokens').textContent = tokens > 1000 ? `${(tokens/1000).toFixed(0)}k` : tokens;
+  document.getElementById('env-runs').textContent = runs;
+}
+
+function startConductor(){ fetch('/api/conductor/start',{method:'POST'}).catch(()=>{}); }
+function stopConductor(){ fetch('/api/conductor/stop',{method:'POST'}).catch(()=>{}); }
 const ST=['todo','in-progress','review','approved','ready','pr-open','merged'];
 const SL={'todo':'Todo','in-progress':'Building','review':'Review','approved':'Approved','ready':'Ready','pr-open':'PR Open','merged':'Merged'};
 const AC={ceo:'var(--amber)',coo:'var(--green)',pm:'var(--fg-dim)',backend:'var(--blue)',frontend:'var(--accent)',qa:'var(--green)',compliance:'var(--amber)',security:'var(--red)',sdr:'var(--amber)'};
@@ -267,7 +385,7 @@ async function createTask(){const t=document.getElementById('nt-title').value;if
 async function refresh(){try{const r=await fetch('/api/state');S=await r.json();
 // Build AD dynamically from registry
 if(S.registry?.agents){AD=S.registry.agents.map(a=>({id:a.id,name:a.name,role:a.role,section:a.department||'Other'}));AC={};S.registry.agents.forEach(a=>{AC[a.id]=DEPT_COLORS[a.department]||'var(--fg)'});}
-rSB();rP('pipeline',S.backlog);rTK('task-list',S.backlog);document.getElementById('task-count').textContent=(S.backlog||[]).length;rAC(S.activity);rP('eng-pipeline',S.backlog);rTK('eng-tasks',S.backlog);['backend','frontend'].forEach(id=>{const el=document.getElementById(`eng-${id}-log`);if(el)el.textContent=S.agentLogs?.[id]||'No output'});document.getElementById('sales-count').textContent=(S.prospects||[]).length;const sp=document.getElementById('sales-prospects');if(S.prospects?.length)sp.innerHTML=S.prospects.map(p=>`<div class="row"><span class="row-title">${esc(p.name)}</span><span style="color:var(--fg-muted);font-size:12px">${esc(p.location||'')}</span><span class="badge badge-${p.status==='new'?'todo':'in-progress'}"><span class="badge-dot"></span>${p.status}</span></div>`).join('');else sp.innerHTML='<div class="empty">No prospects</div>';const sl=document.getElementById('sales-sdr-log');if(sl)sl.textContent=S.agentLogs?.sdr||'No output';if(CT==='agent'&&SA)rAD();if(CT==='tickets')rT();if(CT==='flow')rF();if(CT==='settings')rS()}catch(e){console.error(e)}}
+rSB();rP('pipeline',S.backlog);rTK('task-list',S.backlog);document.getElementById('task-count').textContent=(S.backlog||[]).length;rAC(S.activity);rP('eng-pipeline',S.backlog);rTK('eng-tasks',S.backlog);['backend','frontend'].forEach(id=>{const el=document.getElementById(`eng-${id}-log`);if(el)el.textContent=S.agentLogs?.[id]||'No output'});document.getElementById('sales-count').textContent=(S.prospects||[]).length;const sp=document.getElementById('sales-prospects');if(S.prospects?.length)sp.innerHTML=S.prospects.map(p=>`<div class="row"><span class="row-title">${esc(p.name)}</span><span style="color:var(--fg-muted);font-size:12px">${esc(p.location||'')}</span><span class="badge badge-${p.status==='new'?'todo':'in-progress'}"><span class="badge-dot"></span>${p.status}</span></div>`).join('');else sp.innerHTML='<div class="empty">No prospects</div>';const sl=document.getElementById('sales-sdr-log');if(sl)sl.textContent=S.agentLogs?.sdr||'No output';if(CT==='agent'&&SA)rAD();if(CT==='tickets')rT();if(CT==='flow')rF();if(CT==='settings')rS();updateControls()}catch(e){console.error(e)}}
 refresh();setInterval(refresh,3000);
 </script>
 </body>
