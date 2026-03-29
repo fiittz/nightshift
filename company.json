@@ -1,8 +1,8 @@
 {
   "company": {
     "id": "my-company",
-    "name": "My AI Company",
-    "founder": "Your Name",
+    "name": "Balnce",
+    "founder": "Founder",
     "settings": {
       "requireApprovalForNewHires": true,
       "maxAgents": 30,
@@ -14,7 +14,8 @@
       "provider": "openai-compatible",
       "baseUrl": "${LLM_BASE_URL}",
       "apiKeyEnvVar": "LLM_API_KEY"
-    }
+    },
+    "website": "balnce.ie"
   },
   "agents": [
     {
@@ -87,29 +88,6 @@
       },
       "budget": {
         "monthlyCentsLimit": 1000,
-        "spentCents": 0,
-        "totalTokens": 0
-      },
-      "stats": {
-        "totalRuns": 0
-      }
-    },
-    {
-      "id": "cro",
-      "name": "CRO",
-      "role": "Chief Revenue Officer",
-      "department": "Revenue",
-      "status": "idle",
-      "reportsTo": "ceo",
-      "permissions": {
-        "canViewCRM": true
-      },
-      "adapterConfig": {
-        "model": "deepseek/deepseek-v3.2",
-        "promptFile": "agents/cro.md"
-      },
-      "budget": {
-        "monthlyCentsLimit": 2000,
         "spentCents": 0,
         "totalTokens": 0
       },
