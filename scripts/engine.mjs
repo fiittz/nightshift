@@ -488,11 +488,33 @@ async function round(num) {
     await Promise.all(jobs);
   }
 
-  // Phase 4: Notify on ready tasks
+  // Phase 4: Daily digest only — no spam
+  // Only send Telegram at 9am OR if explicitly asked via "status"
+  // Ready tasks accumulate silently — founder checks dashboard or texts "status"
   backlog = json('backlog.json') || [];
-  const ready = backlog.filter(t => t.status === 'ready' && !t.pr_created);
+  const ready = backlog.filter(t => t.status === 'ready' && !t.pr_created && !t._notified);
+
   if (ready.length) {
-    await telegram(`TROVEK — ${ready.length} task(s) ready:\n${ready.map(t => `${t.id}: ${t.title}`).join('\n')}\n\nReply "merge TASK-XXX"`);
+    const hour = new Date().getHours();
+    const isDigestTime = (hour === 9 && num <= 3); // Only send at ~9am
+
+    if (isDigestTime) {
+      const agents = _agents || [];
+      const spent = agents.reduce((s, a) => s + (a.budget_spent_cents ?? a.budget?.spentCents ?? 0), 0);
+      const totalRuns = agents.reduce((s, a) => s + (a.total_runs ?? a.stats?.totalRuns ?? 0), 0);
+      const allTasks = backlog.length;
+      const merged = backlog.filter(t => t.status === 'merged').length;
+
+      await telegram(
+        `TROVEK — Daily Update\n\n` +
+        `Ready for merge: ${ready.length}\n${ready.map(t => `  ${t.id}: ${t.title}`).join('\n')}\n\n` +
+        `Pipeline: ${allTasks} tasks, ${merged} merged\n` +
+        `Budget: $${(spent / 100).toFixed(2)} | ${totalRuns} runs\n\n` +
+        `Reply "merge TASK-XXX" or "status" for details`
+      );
+      ready.forEach(t => t._notified = true);
+      save('backlog.json', backlog);
+    }
   }
 
   logEvent('round_end', 'coo', { round: num, agentsFired: jobs.length });
