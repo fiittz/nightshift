@@ -194,6 +194,7 @@
       <div class="tab" onclick="switchTab('tickets')">Tickets</div>
       <div class="tab" onclick="switchTab('flow')">Flow</div>
       <div class="tab" onclick="switchTab('agent')">Agent Detail</div>
+      <div class="tab" onclick="switchTab('schedule')">Schedule</div>
       <div class="tab" onclick="switchTab('knowledge')">Knowledge</div>
       <div class="tab" onclick="switchTab('connections')">Connections</div>
       <div class="tab" onclick="switchTab('monitor')">Monitor</div>
@@ -252,6 +253,39 @@
       </div>
     </div></div>
     <div class="content hidden" id="tab-agent"><div class="content-inner" id="agent-detail"><div class="empty">Select an agent from the sidebar.</div></div></div>
+    <!-- Schedule tab -->
+    <div class="content hidden" id="tab-schedule">
+      <div class="content-inner">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <h2 style="font-size:15px;font-weight:600">Scheduled Jobs</h2>
+          <button class="btn" onclick="document.getElementById('sched-add').style.display=document.getElementById('sched-add').style.display==='none'?'block':'none'">+ Add Schedule</button>
+        </div>
+        <div id="sched-add" class="card" style="display:none;margin-bottom:16px">
+          <div style="padding:16px 20px;display:grid;gap:10px">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <input id="sched-name" placeholder="Job name" class="input">
+              <select id="sched-agent" class="input"></select>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <input id="sched-cron" placeholder="Cron expression (e.g. 0 9 * * *)" class="input">
+              <select id="sched-preset" class="input" onchange="document.getElementById('sched-cron').value=this.value">
+                <option value="">Custom cron...</option>
+                <option value="0 * * * *">Every hour</option>
+                <option value="0 9 * * *">Daily at 9am</option>
+                <option value="0 9 * * 1-5">Weekdays at 9am</option>
+                <option value="0 6 * * *">Daily at 6am</option>
+                <option value="0 */6 * * *">Every 6 hours</option>
+                <option value="0 9 * * 1">Weekly Monday 9am</option>
+              </select>
+            </div>
+            <textarea id="sched-task" placeholder="Task description — what the agent should do" rows="2" class="input" style="resize:vertical"></textarea>
+            <div style="display:flex;gap:8px"><button class="btn" onclick="addSchedule()">Create</button><button class="btn btn-outline" onclick="document.getElementById('sched-add').style.display='none'">Cancel</button></div>
+          </div>
+        </div>
+        <div id="sched-list"></div>
+      </div>
+    </div>
+
     <!-- Knowledge tab -->
     <div class="content hidden" id="tab-knowledge">
       <div class="content-inner">
@@ -566,7 +600,50 @@ async function createTask(){const t=document.getElementById('nt-title').value;if
 async function refresh(){try{const r=await fetch('/api/state');S=await r.json();
 // Build AD dynamically from registry
 if(S.registry?.agents){AD=S.registry.agents.map(a=>({id:a.id,name:a.name,role:a.role,section:a.department||'Other'}));AC={};S.registry.agents.forEach(a=>{AC[a.id]=DEPT_COLORS[a.department]||'var(--fg)'});}
-rSB();rP('pipeline',S.backlog);rTK('task-list',S.backlog);document.getElementById('task-count').textContent=(S.backlog||[]).length;rAC(S.activity);rP('eng-pipeline',S.backlog);rTK('eng-tasks',S.backlog);['backend','frontend'].forEach(id=>{const el=document.getElementById(`eng-${id}-log`);if(el)el.textContent=S.agentLogs?.[id]||'No output'});document.getElementById('sales-count').textContent=(S.prospects||[]).length;const sp=document.getElementById('sales-prospects');if(S.prospects?.length)sp.innerHTML=S.prospects.map(p=>`<div class="row"><span class="row-title">${esc(p.name)}</span><span style="color:var(--fg-muted);font-size:12px">${esc(p.location||'')}</span><span class="badge badge-${p.status==='new'?'todo':'in-progress'}"><span class="badge-dot"></span>${p.status}</span></div>`).join('');else sp.innerHTML='<div class="empty">No prospects</div>';const sl=document.getElementById('sales-sdr-log');if(sl)sl.textContent=S.agentLogs?.sdr||'No output';if(CT==='agent'&&SA)rAD();if(CT==='tickets')rT();if(CT==='flow')rF();if(CT==='knowledge')rKB();if(CT==='connections')rConn();if(CT==='monitor')rMon();if(CT==='settings')rS();updateControls()}catch(e){console.error(e)}}
+rSB();rP('pipeline',S.backlog);rTK('task-list',S.backlog);document.getElementById('task-count').textContent=(S.backlog||[]).length;rAC(S.activity);rP('eng-pipeline',S.backlog);rTK('eng-tasks',S.backlog);['backend','frontend'].forEach(id=>{const el=document.getElementById(`eng-${id}-log`);if(el)el.textContent=S.agentLogs?.[id]||'No output'});document.getElementById('sales-count').textContent=(S.prospects||[]).length;const sp=document.getElementById('sales-prospects');if(S.prospects?.length)sp.innerHTML=S.prospects.map(p=>`<div class="row"><span class="row-title">${esc(p.name)}</span><span style="color:var(--fg-muted);font-size:12px">${esc(p.location||'')}</span><span class="badge badge-${p.status==='new'?'todo':'in-progress'}"><span class="badge-dot"></span>${p.status}</span></div>`).join('');else sp.innerHTML='<div class="empty">No prospects</div>';const sl=document.getElementById('sales-sdr-log');if(sl)sl.textContent=S.agentLogs?.sdr||'No output';if(CT==='agent'&&SA)rAD();if(CT==='tickets')rT();if(CT==='flow')rF();if(CT==='schedule')rSched();if(CT==='knowledge')rKB();if(CT==='connections')rConn();if(CT==='monitor')rMon();if(CT==='settings')rS();updateControls()}catch(e){console.error(e)}}
+
+// ─── Schedule ───────────────────────────────────
+function rSched(){
+  const schedules = S?.schedules||[];
+  // Populate agent selector
+  const sel = document.getElementById('sched-agent');
+  if(sel && S?.registry?.agents) { sel.innerHTML = S.registry.agents.map(a=>`<option value="${a.id}">${a.name} (${a.role})</option>`).join(''); }
+
+  const el = document.getElementById('sched-list');
+  if(!schedules.length){el.innerHTML='<div class="empty">No scheduled jobs. Create one above.</div>';return;}
+  el.innerHTML = schedules.map(s=>`
+    <div class="card" style="margin-bottom:8px">
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="control-dot" style="background:${s.enabled?'var(--green)':'var(--fg-muted)'}"></span>
+            <span style="font-weight:500">${esc(s.name)}</span>
+            <span class="badge badge-${s.enabled?'approved':'todo'}" style="margin:0"><span class="badge-dot"></span>${s.enabled?'Active':'Paused'}</span>
+          </div>
+          <div style="font-size:12px;color:var(--fg-muted);margin-top:4px">
+            <span style="font-family:'JetBrains Mono',monospace">${s.cron}</span> &middot; ${s.agent} &middot; ${esc(s.task?.substring(0,60)||'')}
+          </div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="control-btn" onclick="toggleSchedule('${s.id}')">${s.enabled?'Pause':'Enable'}</button>
+          <button class="control-btn" onclick="runScheduleNow('${s.id}')">Run Now</button>
+          <button class="control-btn danger-btn" onclick="deleteSchedule('${s.id}')">Delete</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+async function addSchedule(){
+  const name=document.getElementById('sched-name').value;
+  const agent=document.getElementById('sched-agent').value;
+  const cron=document.getElementById('sched-cron').value;
+  const task=document.getElementById('sched-task').value;
+  if(!name||!cron||!task)return;
+  await fetch('/api/schedules',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,agent,cron,task})});
+  document.getElementById('sched-add').style.display='none';refresh();
+}
+async function toggleSchedule(id){await fetch(`/api/schedules/${id}/toggle`,{method:'POST'});refresh();}
+async function runScheduleNow(id){await fetch(`/api/schedules/${id}/run`,{method:'POST'});refresh();}
+async function deleteSchedule(id){await fetch(`/api/schedules/${id}`,{method:'DELETE'});refresh();}
 
 // ─── Knowledge Base ─────────────────────────────
 let kbFilter = 'all';

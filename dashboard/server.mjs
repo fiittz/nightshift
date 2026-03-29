@@ -68,6 +68,7 @@ const server = createServer(async (req, res) => {
       runs: readJSON('data/runs.json') || [],
       connections: readJSON('connections.json') || {},
       knowledge: getKnowledge(),
+      schedules: readJSON('schedules.json') || [],
       agenda: readJSON('agenda.json'),
       timestamp: new Date().toISOString()
     }));
@@ -188,6 +189,36 @@ const server = createServer(async (req, res) => {
   // GET knowledge files for state
   // (injected into /api/state response above)
 
+  // POST /api/schedules
+  else if (req.url === '/api/schedules' && req.method === 'POST') {
+    const body = await parseBody(req);
+    if (!body?.name) { res.writeHead(400); res.end('{"error":"name required"}'); return; }
+    const schedules = readJSON('schedules.json') || [];
+    schedules.push({ id: `sched-${Date.now()}`, name: body.name, agent: body.agent, cron: body.cron, task: body.task, enabled: true });
+    writeJSON('schedules.json', schedules);
+    res.writeHead(200); res.end('{"ok":true}');
+  }
+  // POST /api/schedules/:id/toggle
+  else if (req.url.match(/^\/api\/schedules\/[\w-]+\/toggle$/) && req.method === 'POST') {
+    const id = req.url.split('/')[3];
+    const schedules = readJSON('schedules.json') || [];
+    const s = schedules.find(x => x.id === id);
+    if (s) { s.enabled = !s.enabled; writeJSON('schedules.json', schedules); }
+    res.writeHead(200); res.end('{"ok":true}');
+  }
+  // POST /api/schedules/:id/run — run immediately
+  else if (req.url.match(/^\/api\/schedules\/[\w-]+\/run$/) && req.method === 'POST') {
+    // TODO: actually trigger the agent
+    res.writeHead(200); res.end('{"ok":true,"message":"queued"}');
+  }
+  // DELETE /api/schedules/:id
+  else if (req.url.match(/^\/api\/schedules\/[\w-]+$/) && req.method === 'DELETE') {
+    const id = req.url.split('/')[3];
+    let schedules = readJSON('schedules.json') || [];
+    schedules = schedules.filter(x => x.id !== id);
+    writeJSON('schedules.json', schedules);
+    res.writeHead(200); res.end('{"ok":true}');
+  }
   // POST /api/knowledge — add a document
   else if (req.url === '/api/knowledge' && req.method === 'POST') {
     const body = await parseBody(req);

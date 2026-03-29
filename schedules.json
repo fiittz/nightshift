@@ -1,0 +1,6 @@
+[
+  { "id": "ceo-audit", "name": "CEO Daily Audit", "agent": "ceo", "cron": "0 9 * * *", "task": "Audit the product, pipeline, tests. Set the agenda.", "enabled": true },
+  { "id": "security-scan", "name": "Daily Security Scan", "agent": "security", "cron": "0 6 * * *", "task": "Full security audit on main branch.", "enabled": true },
+  { "id": "sdr-followup", "name": "SDR Follow-up Check", "agent": "sdr", "cron": "0 10 * * 1-5", "task": "Check for prospects needing follow-up. Draft emails.", "enabled": true },
+  { "id": "qa-regression", "name": "Nightly Regression", "agent": "qa", "cron": "0 2 * * *", "task": "Run full test suite on main. Report failures.", "enabled": false }
+]
