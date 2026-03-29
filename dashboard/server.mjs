@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { createServer } from 'http';
-import { readFileSync, writeFileSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync, unlinkSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -11,6 +11,25 @@ const PORT = 3000;
 function readJSON(f) { const p = join(PROJECT_ROOT, f); if (!existsSync(p)) return null; try { return JSON.parse(readFileSync(p, 'utf-8')); } catch { return null; } }
 function writeJSON(f, d) { writeFileSync(join(PROJECT_ROOT, f), JSON.stringify(d, null, 2), 'utf-8'); }
 function readText(f) { const p = join(PROJECT_ROOT, f); if (!existsSync(p)) return ''; return readFileSync(p, 'utf-8'); }
+
+function getKnowledge() {
+  const kbDir = join(PROJECT_ROOT, 'knowledge');
+  const docs = [];
+  const categories = ['company', 'product', 'domain', 'customers', 'competitors'];
+  for (const cat of categories) {
+    const dir = join(kbDir, cat);
+    if (!existsSync(dir)) continue;
+    try {
+      for (const file of readdirSync(dir)) {
+        if (!file.endsWith('.md') && !file.endsWith('.txt') && !file.endsWith('.json')) continue;
+        const content = readFileSync(join(dir, file), 'utf-8');
+        const title = content.split('\n')[0]?.replace(/^#+\s*/, '') || file;
+        docs.push({ title, category: cat, filename: `${cat}/${file}`, content });
+      }
+    } catch {}
+  }
+  return docs;
+}
 
 function getAgentLogs() {
   const reg = readJSON('company.json') || { agents: [] };
@@ -48,6 +67,7 @@ const server = createServer(async (req, res) => {
       registry: readJSON('company.json') || { agents: [] },
       runs: readJSON('data/runs.json') || [],
       connections: readJSON('connections.json') || {},
+      knowledge: getKnowledge(),
       agenda: readJSON('agenda.json'),
       timestamp: new Date().toISOString()
     }));
@@ -165,6 +185,27 @@ const server = createServer(async (req, res) => {
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ ok: true, id: backlog[backlog.length - 1].id }));
   }
+  // GET knowledge files for state
+  // (injected into /api/state response above)
+
+  // POST /api/knowledge — add a document
+  else if (req.url === '/api/knowledge' && req.method === 'POST') {
+    const body = await parseBody(req);
+    if (!body?.title || !body?.content) { res.writeHead(400); res.end('{"error":"title and content required"}'); return; }
+    const filename = body.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/-+$/, '') + '.md';
+    const category = body.category || 'company';
+    const dir = join(PROJECT_ROOT, 'knowledge', category);
+    if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
+    writeFileSync(join(dir, filename), `# ${body.title}\n\n${body.content}`);
+    res.writeHead(200); res.end(JSON.stringify({ ok: true, filename: `${category}/${filename}` }));
+  }
+  // DELETE /api/knowledge/:filename
+  else if (req.url.startsWith('/api/knowledge/') && req.method === 'DELETE') {
+    const filename = decodeURIComponent(req.url.replace('/api/knowledge/', ''));
+    const filepath = join(PROJECT_ROOT, 'knowledge', filename);
+    try { unlinkSync(filepath); } catch {}
+    res.writeHead(200); res.end('{"ok":true}');
+  }
   // POST /api/agents — create a new agent
   else if (req.url === '/api/agents' && req.method === 'POST') {
     const body = await parseBody(req);
@@ -183,9 +224,8 @@ const server = createServer(async (req, res) => {
     writeJSON('company.json', reg);
     // Write agent instructions file if provided
     if (body.instructions) {
-      const { writeFileSync: wf } = await import('fs');
       const agentPath = join(PROJECT_ROOT, 'agents', `${body.id}.md`);
-      wf(agentPath, `# ${body.name} — ${body.role}\n\n## Role\n${body.instructions}\n`);
+      writeFileSync(agentPath, `# ${body.name} — ${body.role}\n\n## Role\n${body.instructions}\n`);
     }
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ ok: true, id: body.id }));

@@ -194,6 +194,7 @@
       <div class="tab" onclick="switchTab('tickets')">Tickets</div>
       <div class="tab" onclick="switchTab('flow')">Flow</div>
       <div class="tab" onclick="switchTab('agent')">Agent Detail</div>
+      <div class="tab" onclick="switchTab('knowledge')">Knowledge</div>
       <div class="tab" onclick="switchTab('connections')">Connections</div>
       <div class="tab" onclick="switchTab('monitor')">Monitor</div>
       <div class="tab" onclick="switchTab('settings')">Settings</div>
@@ -251,6 +252,38 @@
       </div>
     </div></div>
     <div class="content hidden" id="tab-agent"><div class="content-inner" id="agent-detail"><div class="empty">Select an agent from the sidebar.</div></div></div>
+    <!-- Knowledge tab -->
+    <div class="content hidden" id="tab-knowledge">
+      <div class="content-inner">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div class="filters">
+            <button class="filter-btn active" onclick="kbFilter='all';rKB();this.parentNode.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">All</button>
+            <button class="filter-btn" onclick="kbFilter='company';rKB();this.parentNode.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Company</button>
+            <button class="filter-btn" onclick="kbFilter='product';rKB();this.parentNode.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Product</button>
+            <button class="filter-btn" onclick="kbFilter='domain';rKB();this.parentNode.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Domain</button>
+            <button class="filter-btn" onclick="kbFilter='customers';rKB();this.parentNode.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Customers</button>
+            <button class="filter-btn" onclick="kbFilter='competitors';rKB();this.parentNode.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));this.classList.add('active')">Competitors</button>
+          </div>
+          <button class="btn" onclick="document.getElementById('kb-add').style.display=document.getElementById('kb-add').style.display==='none'?'block':'none'">+ Add Document</button>
+        </div>
+        <div id="kb-add" class="card" style="display:none;margin-bottom:16px">
+          <div style="padding:16px 20px;display:grid;gap:10px">
+            <input id="kb-title" placeholder="Document title" class="input">
+            <select id="kb-category" class="input">
+              <option value="company">Company</option>
+              <option value="product">Product</option>
+              <option value="domain">Domain</option>
+              <option value="customers">Customers</option>
+              <option value="competitors">Competitors</option>
+            </select>
+            <textarea id="kb-content" placeholder="Document content (Markdown supported)" rows="8" class="input" style="resize:vertical;font-family:'JetBrains Mono',monospace;font-size:12px"></textarea>
+            <div style="display:flex;gap:8px"><button class="btn" onclick="addKBDoc()">Save</button><button class="btn btn-outline" onclick="document.getElementById('kb-add').style.display='none'">Cancel</button></div>
+          </div>
+        </div>
+        <div id="kb-list"></div>
+      </div>
+    </div>
+
     <!-- Connections tab -->
     <div class="content hidden" id="tab-connections">
       <div class="content-inner">
@@ -533,7 +566,33 @@ async function createTask(){const t=document.getElementById('nt-title').value;if
 async function refresh(){try{const r=await fetch('/api/state');S=await r.json();
 // Build AD dynamically from registry
 if(S.registry?.agents){AD=S.registry.agents.map(a=>({id:a.id,name:a.name,role:a.role,section:a.department||'Other'}));AC={};S.registry.agents.forEach(a=>{AC[a.id]=DEPT_COLORS[a.department]||'var(--fg)'});}
-rSB();rP('pipeline',S.backlog);rTK('task-list',S.backlog);document.getElementById('task-count').textContent=(S.backlog||[]).length;rAC(S.activity);rP('eng-pipeline',S.backlog);rTK('eng-tasks',S.backlog);['backend','frontend'].forEach(id=>{const el=document.getElementById(`eng-${id}-log`);if(el)el.textContent=S.agentLogs?.[id]||'No output'});document.getElementById('sales-count').textContent=(S.prospects||[]).length;const sp=document.getElementById('sales-prospects');if(S.prospects?.length)sp.innerHTML=S.prospects.map(p=>`<div class="row"><span class="row-title">${esc(p.name)}</span><span style="color:var(--fg-muted);font-size:12px">${esc(p.location||'')}</span><span class="badge badge-${p.status==='new'?'todo':'in-progress'}"><span class="badge-dot"></span>${p.status}</span></div>`).join('');else sp.innerHTML='<div class="empty">No prospects</div>';const sl=document.getElementById('sales-sdr-log');if(sl)sl.textContent=S.agentLogs?.sdr||'No output';if(CT==='agent'&&SA)rAD();if(CT==='tickets')rT();if(CT==='flow')rF();if(CT==='connections')rConn();if(CT==='monitor')rMon();if(CT==='settings')rS();updateControls()}catch(e){console.error(e)}}
+rSB();rP('pipeline',S.backlog);rTK('task-list',S.backlog);document.getElementById('task-count').textContent=(S.backlog||[]).length;rAC(S.activity);rP('eng-pipeline',S.backlog);rTK('eng-tasks',S.backlog);['backend','frontend'].forEach(id=>{const el=document.getElementById(`eng-${id}-log`);if(el)el.textContent=S.agentLogs?.[id]||'No output'});document.getElementById('sales-count').textContent=(S.prospects||[]).length;const sp=document.getElementById('sales-prospects');if(S.prospects?.length)sp.innerHTML=S.prospects.map(p=>`<div class="row"><span class="row-title">${esc(p.name)}</span><span style="color:var(--fg-muted);font-size:12px">${esc(p.location||'')}</span><span class="badge badge-${p.status==='new'?'todo':'in-progress'}"><span class="badge-dot"></span>${p.status}</span></div>`).join('');else sp.innerHTML='<div class="empty">No prospects</div>';const sl=document.getElementById('sales-sdr-log');if(sl)sl.textContent=S.agentLogs?.sdr||'No output';if(CT==='agent'&&SA)rAD();if(CT==='tickets')rT();if(CT==='flow')rF();if(CT==='knowledge')rKB();if(CT==='connections')rConn();if(CT==='monitor')rMon();if(CT==='settings')rS();updateControls()}catch(e){console.error(e)}}
+
+// ─── Knowledge Base ─────────────────────────────
+let kbFilter = 'all';
+function rKB(){
+  if(!S?.knowledge){document.getElementById('kb-list').innerHTML='<div class="empty">No documents yet. Add your first document above.</div>';return;}
+  const docs = kbFilter==='all' ? S.knowledge : S.knowledge.filter(d=>d.category===kbFilter);
+  if(!docs.length){document.getElementById('kb-list').innerHTML=`<div class="empty">No documents in "${kbFilter}"</div>`;return;}
+  document.getElementById('kb-list').innerHTML = docs.map(d=>`
+    <div class="card" style="margin-bottom:8px">
+      <div class="row" style="justify-content:space-between;cursor:pointer" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+        <div><div style="font-weight:500">${esc(d.title)}</div><div style="font-size:11px;color:var(--fg-muted);margin-top:2px">${d.category} &middot; ${d.filename}</div></div>
+        <button class="btn btn-outline" style="font-size:10px;padding:3px 8px" onclick="event.stopPropagation();deleteKBDoc('${d.filename}')">Delete</button>
+      </div>
+      <div style="display:none;padding:12px 20px;border-top:1px solid var(--border);max-height:300px;overflow-y:auto"><pre class="output-pre" style="padding:0">${esc(d.content?.substring(0,2000)||'')}</pre></div>
+    </div>`).join('');
+}
+async function addKBDoc(){
+  const title=document.getElementById('kb-title').value;
+  const category=document.getElementById('kb-category').value;
+  const content=document.getElementById('kb-content').value;
+  if(!title||!content)return;
+  await fetch('/api/knowledge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title,category,content})});
+  document.getElementById('kb-title').value='';document.getElementById('kb-content').value='';
+  document.getElementById('kb-add').style.display='none';refresh();
+}
+async function deleteKBDoc(filename){await fetch(`/api/knowledge/${filename}`,{method:'DELETE'});refresh();}
 
 // ─── Connections ────────────────────────────────
 function rConn(){
