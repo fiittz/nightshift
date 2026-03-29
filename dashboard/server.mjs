@@ -190,6 +190,49 @@ const server = createServer(async (req, res) => {
   // GET knowledge files for state
   // (injected into /api/state response above)
 
+  // GET /api/agents/:id/versions
+  else if (req.url.match(/^\/api\/agents\/[\w-]+\/versions$/) && req.method === 'GET') {
+    const id = req.url.split('/')[3];
+    const versions = readJSON('data/agent-versions.json') || {};
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify(versions[id] || []));
+  }
+  // PUT /api/agents/:id/instructions
+  else if (req.url.match(/^\/api\/agents\/[\w-]+\/instructions$/) && req.method === 'PUT') {
+    const id = req.url.split('/')[3];
+    const body = await parseBody(req);
+    if (!body?.instructions) { res.writeHead(400); res.end('{"error":"instructions required"}'); return; }
+    // Save current version to history
+    const agentFile = join(PROJECT_ROOT, 'agents', `${id}.md`);
+    const versions = readJSON('data/agent-versions.json') || {};
+    if (!versions[id]) versions[id] = [];
+    if (existsSync(agentFile)) {
+      const current = readFileSync(agentFile, 'utf-8');
+      versions[id].unshift({ timestamp: new Date().toISOString(), content: current, preview: current.substring(0, 80) });
+      if (versions[id].length > 20) versions[id] = versions[id].slice(0, 20);
+    }
+    writeJSON('data/agent-versions.json', versions);
+    // Write new instructions
+    writeFileSync(agentFile, body.instructions);
+    res.writeHead(200); res.end('{"ok":true}');
+  }
+  // POST /api/agents/:id/rollback
+  else if (req.url.match(/^\/api\/agents\/[\w-]+\/rollback$/) && req.method === 'POST') {
+    const id = req.url.split('/')[3];
+    const body = await parseBody(req);
+    const versions = readJSON('data/agent-versions.json') || {};
+    const v = versions[id]?.[body?.versionIndex];
+    if (!v) { res.writeHead(404); res.end('{"error":"version not found"}'); return; }
+    // Save current as new version before rollback
+    const agentFile = join(PROJECT_ROOT, 'agents', `${id}.md`);
+    if (existsSync(agentFile)) {
+      const current = readFileSync(agentFile, 'utf-8');
+      versions[id].unshift({ timestamp: new Date().toISOString(), content: current, preview: 'Before rollback: ' + current.substring(0, 60) });
+    }
+    writeFileSync(agentFile, v.content);
+    writeJSON('data/agent-versions.json', versions);
+    res.writeHead(200); res.end('{"ok":true}');
+  }
   // POST /api/marketplace/:id/install
   else if (req.url.match(/^\/api\/marketplace\/[\w-]+\/install$/) && req.method === 'POST') {
     const id = req.url.split('/')[3];
