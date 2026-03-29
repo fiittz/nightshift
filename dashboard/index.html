@@ -118,7 +118,8 @@
   </div>
 </div>
 <script>
-const AD=[{id:'ceo',name:'CEO',role:'Strategy',section:'Leadership'},{id:'coo',name:'COO',role:'Conductor',section:'Leadership'},{id:'pm',name:'PM',role:'Product',section:'Product'},{id:'backend',name:'Backend',role:'Engineer',section:'Engineering'},{id:'frontend',name:'Frontend',role:'Engineer',section:'Engineering'},{id:'qa',name:'QA',role:'Quality',section:'Quality'},{id:'compliance',name:'Compliance',role:'Domain',section:'Quality'},{id:'security',name:'Security',role:'DevOps',section:'Quality'},{id:'sdr',name:'SDR',role:'Sales',section:'Sales'}];
+// AD is built dynamically from company.json
+let AD=[];
 const ST=['todo','in-progress','review','approved','ready','pr-open','merged'];
 const SL={'todo':'Todo','in-progress':'Building','review':'Review','approved':'Approved','ready':'Ready','pr-open':'PR Open','merged':'Merged'};
 const AC={ceo:'var(--amber)',coo:'var(--green)',pm:'var(--fg-dim)',backend:'var(--blue)',frontend:'var(--accent)',qa:'var(--green)',compliance:'var(--amber)',security:'var(--red)',sdr:'var(--amber)'};
@@ -135,16 +136,128 @@ function rAD(){const el=document.getElementById('agent-detail');if(!SA||!S){el.i
 function gD(t){const a=t?.assignee||'';if(a==='sdr'||t?.domain==='crm')return'sales';if(a==='qa'||a==='compliance'||a==='security')return'quality';return'engineering'}
 function filterTickets(f,b){TF=f;document.querySelectorAll('.filter-btn').forEach(x=>x.classList.remove('active'));if(b)b.classList.add('active');rT()}
 function rT(){if(!S)return;const bl=S.backlog||[];const f=TF==='all'?bl:bl.filter(t=>gD(t)===TF);const el=document.getElementById('tickets-list');if(!f.length){el.innerHTML='<div class="empty">No tickets</div>';return}el.innerHTML=f.map(t=>{const s=(t.status||'').replace(/\s+/g,'-');return`<div class="ticket" data-ticket="${t.id}" onclick="this.classList.toggle('open')"><div class="ticket-header"><div style="display:flex;gap:8px;align-items:center"><span class="row-id">${t.id}</span><span class="badge badge-${s}"><span class="badge-dot"></span>${t.status}</span></div><div class="ticket-title">${esc(t.title)}</div><div class="ticket-meta">${t.assignee?`<span>${t.assignee}</span>`:'<span>Unassigned</span>'}${t.branch?`<span>${esc(t.branch)}</span>`:''}</div></div><div class="ticket-timeline">${t.description?`<div style="padding:12px 20px;font-size:12px;color:var(--fg-dim)">${esc(t.description)}</div>`:''}</div></div>`}).join('')}
-const FN=[{id:'ceo',x:400,y:20},{id:'pm',x:400,y:120},{id:'backend',x:200,y:240},{id:'frontend',x:600,y:240},{id:'qa',x:400,y:360},{id:'compliance',x:220,y:460},{id:'security',x:580,y:460},{id:'sdr',x:780,y:120},{id:'coo',x:30,y:120}];
-const FE=[['ceo','pm'],['pm','backend'],['pm','frontend'],['backend','qa'],['frontend','qa'],['qa','compliance'],['qa','security']];
-function rF(){if(!S)return;const c=document.getElementById('flow-canvas');let h='';for(const[f,t]of FE){const fn=FN.find(n=>n.id===f),tn=FN.find(n=>n.id===t);if(!fn||!tn)continue;const x1=fn.x+65,y1=fn.y+35,x2=tn.x+65,y2=tn.y+5,dx=x2-x1,dy=y2-y1,len=Math.sqrt(dx*dx+dy*dy),angle=Math.atan2(dy,dx)*180/Math.PI;h+=`<div class="flow-line" style="left:${x1}px;top:${y1}px;width:${len}px;height:1px;transform:rotate(${angle}deg);transform-origin:0 0"></div>`}for(const n of FN){const a=AD.find(x=>x.id===n.id);const s=gs(n.id);const col=AC[n.id]||'var(--fg)';h+=`<div class="flow-node ${s==='working'?'working':''}" style="left:${n.x}px;top:${n.y}px" onclick="selectAgent('${n.id}')"><div class="node-name" style="color:${col}">${a?.name||n.id}</div><div class="node-role">${a?.role||''}</div></div>`}c.innerHTML=h}
+// Dynamic flow — reads hierarchy from company.json reportsTo field
+function buildOrgTree(agents) {
+  // Build tree levels by walking reportsTo
+  const byId = {}; agents.forEach(a => byId[a.id] = a);
+  const children = {}; agents.forEach(a => { const p = a.reportsTo || '__root'; if(!children[p])children[p]=[]; children[p].push(a.id); });
+
+  // BFS to assign levels
+  const levels = {}; const queue = children['__root'] || (agents.filter(a=>!a.reportsTo).map(a=>a.id));
+  queue.forEach(id => levels[id] = 0);
+  const bfs = [...queue];
+  while(bfs.length) {
+    const id = bfs.shift();
+    (children[id]||[]).forEach(cid => { levels[cid] = (levels[id]||0)+1; bfs.push(cid); });
+  }
+
+  // Group by level
+  const byLevel = {};
+  Object.entries(levels).forEach(([id,lv]) => { if(!byLevel[lv])byLevel[lv]=[]; byLevel[lv].push(id); });
+
+  // Position nodes
+  const nodes = [];
+  const maxLevels = Math.max(...Object.keys(byLevel).map(Number))+1;
+  const yGap = 100;
+  for(let lv=0; lv<maxLevels; lv++) {
+    const ids = byLevel[lv]||[];
+    const totalWidth = ids.length * 160;
+    const startX = Math.max(20, (900 - totalWidth) / 2);
+    ids.forEach((id,i) => {
+      nodes.push({ id, x: startX + i * 160, y: 20 + lv * yGap });
+    });
+  }
+
+  // Build edges from reportsTo
+  const edges = [];
+  agents.forEach(a => { if(a.reportsTo && byId[a.reportsTo]) edges.push([a.reportsTo, a.id]); });
+
+  return { nodes, edges };
+}
+
+const DEPT_COLORS = { Leadership:'var(--amber)', Engineering:'var(--blue)', Product:'var(--fg-dim)', Quality:'var(--green)', Sales:'var(--amber)', Marketing:'var(--accent)', Finance:'var(--green)', Revenue:'var(--amber)', Support:'var(--blue)' };
+
+function rF() {
+  if(!S?.registry?.agents) return;
+  const agents = S.registry.agents;
+  const { nodes, edges } = buildOrgTree(agents);
+  const nodeMap = {}; nodes.forEach(n => nodeMap[n.id] = n);
+  const canvas = document.getElementById('flow-canvas');
+  // Set canvas height based on tree depth
+  const maxY = Math.max(...nodes.map(n=>n.y)) + 100;
+  canvas.style.minHeight = maxY + 'px';
+
+  let h = '';
+  // Draw edges
+  for(const [fromId, toId] of edges) {
+    const f = nodeMap[fromId], t = nodeMap[toId];
+    if(!f||!t) continue;
+    const x1=f.x+65, y1=f.y+45, x2=t.x+65, y2=t.y+5;
+    // Draw bezier-like L-shaped connector
+    const midY = (y1+y2)/2;
+    h += `<svg style="position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;overflow:visible"><line x1="${x1}" y1="${y1}" x2="${x1}" y2="${midY}" stroke="#333" stroke-width="1"/><line x1="${x1}" y1="${midY}" x2="${x2}" y2="${midY}" stroke="#333" stroke-width="1"/><line x1="${x2}" y1="${midY}" x2="${x2}" y2="${y2}" stroke="#333" stroke-width="1"/></svg>`;
+  }
+  // Draw nodes
+  for(const n of nodes) {
+    const agent = agents.find(a=>a.id===n.id);
+    if(!agent) continue;
+    const st = gs(n.id);
+    const dept = agent.department || '';
+    const col = DEPT_COLORS[dept] || 'var(--fg)';
+    const statusDot = st==='working'?'var(--amber)':st==='active'?'var(--green)':'var(--fg-muted)';
+    h += `<div class="flow-node ${st==='working'?'working':''}" style="left:${n.x}px;top:${n.y}px" onclick="showFlowDetail('${n.id}')">
+      <div style="display:flex;align-items:center;gap:6px;justify-content:center"><span style="width:6px;height:6px;border-radius:50%;background:${statusDot}"></span><span class="node-name" style="color:${col}">${agent.name}</span></div>
+      <div class="node-role">${agent.role}</div>
+      <div style="font-size:9px;color:var(--fg-muted);margin-top:4px">${dept}</div>
+    </div>`;
+  }
+  canvas.innerHTML = h;
+}
+
+function showFlowDetail(id) {
+  const panel = document.getElementById('flow-detail');
+  const agent = S?.registry?.agents?.find(a=>a.id===id);
+  if(!agent) return;
+  panel.style.display='block';
+  document.getElementById('fd-title').textContent=`${agent.name} — ${agent.role}`;
+  const dept = agent.department||'';
+  const col = DEPT_COLORS[dept]||'var(--fg)';
+  const reportsTo = agent.reportsTo ? S.registry.agents.find(a=>a.id===agent.reportsTo)?.name||agent.reportsTo : 'Board (Founder)';
+  const directReports = S.registry.agents.filter(a=>a.reportsTo===id).map(a=>a.name);
+
+  document.getElementById('fd-body').innerHTML=`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+      <div><div style="font-size:11px;color:var(--fg-muted);text-transform:uppercase;margin-bottom:4px">Department</div><div style="color:${col};font-weight:600">${dept}</div></div>
+      <div><div style="font-size:11px;color:var(--fg-muted);text-transform:uppercase;margin-bottom:4px">Reports To</div><div>${reportsTo}</div></div>
+      <div><div style="font-size:11px;color:var(--fg-muted);text-transform:uppercase;margin-bottom:4px">Direct Reports</div><div>${directReports.length?directReports.join(', '):'None'}</div></div>
+      <div><div style="font-size:11px;color:var(--fg-muted);text-transform:uppercase;margin-bottom:4px">Model</div>
+        <select onchange="updateAgent('${id}',this.value)" class="input" style="width:100%">
+          <option value="deepseek/deepseek-v3.2" ${agent.adapterConfig?.model==='deepseek/deepseek-v3.2'?'selected':''}>DeepSeek V3.2</option>
+          <option value="deepseek/deepseek-r1-0528" ${agent.adapterConfig?.model==='deepseek/deepseek-r1-0528'?'selected':''}>DeepSeek R1</option>
+          <option value="qwen/qwen3-235b-a22b-2507" ${agent.adapterConfig?.model==='qwen/qwen3-235b-a22b-2507'?'selected':''}>Qwen 3 235B</option>
+        </select>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="stat-value">${agent.stats?.totalRuns||0}</div><div class="stat-label">Runs</div></div>
+      <div class="stat"><div class="stat-value">${((agent.budget?.totalTokens||0)/1000).toFixed(0)}k</div><div class="stat-label">Tokens</div></div>
+      <div class="stat"><div class="stat-value">$${((agent.budget?.spentCents||0)/100).toFixed(2)}</div><div class="stat-label">Spent</div></div>
+    </div>
+    <div style="margin-top:12px"><div style="font-size:11px;color:var(--fg-muted);text-transform:uppercase;margin-bottom:8px">Permissions</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap">${Object.entries(agent.permissions||{}).map(([k,v])=>v?`<span class="badge badge-approved">${k}</span>`:``).join('')}</div></div>
+  `;
+}
+async function updateAgent(id,model){await fetch('/api/settings/agent/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({model})});refresh()}
 function rS(){if(!S?.registry)return;const r=S.registry,co=r.company||{},repos=co.repos||[],settings=co.settings||{},agents=r.agents||[];document.getElementById('s-repos').innerHTML=repos.length?repos.map(x=>`<div class="row" style="justify-content:space-between"><div><div style="font-weight:500">${esc(x.id)}</div><div style="font-size:11px;color:var(--fg-muted)">${esc(x.url)} (${x.branch})</div></div><button class="btn btn-danger" onclick="deleteRepo('${x.id}')" style="font-size:11px;padding:4px 10px">Remove</button></div>`).join(''):'<div class="empty">No repos</div>';if(settings.requireApprovalForNewHires!==undefined)document.getElementById('s-approval').checked=settings.requireApprovalForNewHires;if(settings.defaultModel)document.getElementById('s-model').value=settings.defaultModel;document.getElementById('s-agents').innerHTML=agents.map(a=>`<div class="row" style="gap:12px"><span style="width:80px;font-weight:500;color:${AC[a.id]||'var(--fg)'}">${a.name}</span><span style="flex:1;color:var(--fg-muted);font-size:12px">${a.role}</span><span style="font-family:'JetBrains Mono';font-size:11px;color:var(--fg-muted)">$${((a.budget?.spentCents||0)/100).toFixed(2)}</span></div>`).join('');const sp=agents.reduce((s,a)=>s+(a.budget?.spentCents||0),0),tk=agents.reduce((s,a)=>s+(a.budget?.totalTokens||0),0),rn=agents.reduce((s,a)=>s+(a.stats?.totalRuns||0),0);document.getElementById('s-budget').innerHTML=`<div class="stats"><div class="stat"><div class="stat-value">$${(sp/100).toFixed(2)}</div><div class="stat-label">Spent</div></div><div class="stat"><div class="stat-value">${(tk/1000).toFixed(0)}k</div><div class="stat-label">Tokens</div></div><div class="stat"><div class="stat-value">${rn}</div><div class="stat-label">Runs</div></div></div>`}
 function showAddRepo(){document.getElementById('arf').style.display='block'}
 async function addRepo(){const u=document.getElementById('r-url').value;if(!u)return;await fetch('/api/settings/repos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:u,branch:document.getElementById('r-branch').value||'main',description:document.getElementById('r-desc').value})});document.getElementById('arf').style.display='none';refresh()}
 async function deleteRepo(id){await fetch(`/api/settings/repos/${id}`,{method:'DELETE'});refresh()}
 async function saveCo(){await fetch('/api/settings/company',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({requireApprovalForNewHires:document.getElementById('s-approval').checked,defaultModel:document.getElementById('s-model').value})})}
 async function createTask(){const t=document.getElementById('nt-title').value;if(!t)return;await fetch('/api/tasks',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:t,description:document.getElementById('nt-desc').value,type:document.getElementById('nt-type').value,domain:document.getElementById('nt-domain').value,priority:document.getElementById('nt-pri').value})});document.getElementById('nt-title').value='';document.getElementById('ntf').style.display='none';refresh()}
-async function refresh(){try{const r=await fetch('/api/state');S=await r.json();rSB();rP('pipeline',S.backlog);rTK('task-list',S.backlog);document.getElementById('task-count').textContent=(S.backlog||[]).length;rAC(S.activity);rP('eng-pipeline',S.backlog);rTK('eng-tasks',S.backlog);['backend','frontend'].forEach(id=>{const el=document.getElementById(`eng-${id}-log`);if(el)el.textContent=S.agentLogs?.[id]||'No output'});document.getElementById('sales-count').textContent=(S.prospects||[]).length;const sp=document.getElementById('sales-prospects');if(S.prospects?.length)sp.innerHTML=S.prospects.map(p=>`<div class="row"><span class="row-title">${esc(p.name)}</span><span style="color:var(--fg-muted);font-size:12px">${esc(p.location||'')}</span><span class="badge badge-${p.status==='new'?'todo':'in-progress'}"><span class="badge-dot"></span>${p.status}</span></div>`).join('');else sp.innerHTML='<div class="empty">No prospects</div>';const sl=document.getElementById('sales-sdr-log');if(sl)sl.textContent=S.agentLogs?.sdr||'No output';if(CT==='agent'&&SA)rAD();if(CT==='tickets')rT();if(CT==='flow')rF();if(CT==='settings')rS()}catch(e){console.error(e)}}
+async function refresh(){try{const r=await fetch('/api/state');S=await r.json();
+// Build AD dynamically from registry
+if(S.registry?.agents){AD=S.registry.agents.map(a=>({id:a.id,name:a.name,role:a.role,section:a.department||'Other'}));AC={};S.registry.agents.forEach(a=>{AC[a.id]=DEPT_COLORS[a.department]||'var(--fg)'});}
+rSB();rP('pipeline',S.backlog);rTK('task-list',S.backlog);document.getElementById('task-count').textContent=(S.backlog||[]).length;rAC(S.activity);rP('eng-pipeline',S.backlog);rTK('eng-tasks',S.backlog);['backend','frontend'].forEach(id=>{const el=document.getElementById(`eng-${id}-log`);if(el)el.textContent=S.agentLogs?.[id]||'No output'});document.getElementById('sales-count').textContent=(S.prospects||[]).length;const sp=document.getElementById('sales-prospects');if(S.prospects?.length)sp.innerHTML=S.prospects.map(p=>`<div class="row"><span class="row-title">${esc(p.name)}</span><span style="color:var(--fg-muted);font-size:12px">${esc(p.location||'')}</span><span class="badge badge-${p.status==='new'?'todo':'in-progress'}"><span class="badge-dot"></span>${p.status}</span></div>`).join('');else sp.innerHTML='<div class="empty">No prospects</div>';const sl=document.getElementById('sales-sdr-log');if(sl)sl.textContent=S.agentLogs?.sdr||'No output';if(CT==='agent'&&SA)rAD();if(CT==='tickets')rT();if(CT==='flow')rF();if(CT==='settings')rS()}catch(e){console.error(e)}}
 refresh();setInterval(refresh,3000);
 </script>
 </body>
